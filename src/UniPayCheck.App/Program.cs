@@ -25,6 +25,3 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
-// Teste GIT.
-// Teste GIT.
