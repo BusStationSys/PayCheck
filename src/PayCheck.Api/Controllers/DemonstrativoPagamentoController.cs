@@ -1,20 +1,21 @@
 ﻿namespace PayCheck.Api.Controllers
 {
-    using ARVTech.DataAccess.Business.UniPayCheck;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
-    using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Collections.Generic;
+    using Microsoft.AspNetCore.Mvc;
+    using PayCheck.Business.Interfaces;
 
     [Route("api/[controller]")]
     [ApiController]
     public class DemonstrativoPagamentoController : ControllerBase
     {
+        private readonly IMatriculaDemonstrativoPagamentoBusiness _business;
 
-
-        public DemonstrativoPagamentoController()
+        public DemonstrativoPagamentoController(IMatriculaDemonstrativoPagamentoBusiness business)
         {
+            // this._repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
+            this._business = business ?? throw new ArgumentNullException(nameof(business));
         }
 
         [HttpGet]
@@ -22,18 +23,16 @@
         {
             try
             {
-                return Ok();
+                var dps = this._business.GetAll();
 
-                //var agentes = this._repository.GetAll();
+                if (dps is null || dps.Count() == 0)
+                {
+                    return NotFound(
+                        $"Demonstrativos de Pagamento não encontrado!");
+                }
 
-                //if (agentes is null)
-                //{
-                //    return NotFound(
-                //        "Demonstrativos de Pagamento não encontrados!");
-                //}
-
-                //return Ok(
-                //    agentes);
+                return Ok(
+                    dps);
             }
             catch
             {
@@ -44,24 +43,24 @@
         [HttpGet("{guid}")]
         public IActionResult GetDemonstrativoPagamento(Guid guid)
         {
-            return null;
-            //try
-            //{
-            //    var record = this._repository.Get(guid);
+            try
+            {
+                var dp = this._business.Get(
+                    guid);
 
-            //    if (record is null)
-            //    {
-            //        return NotFound(
-            //            $"Demonstrativo de Pagamento {guid} não encontrado!");
-            //    }
+                if (dp is null)
+                {
+                    return NotFound(
+                        $"Demonstrativo de Pagamento {guid} não encontrado!");
+                }
 
-            //    return Ok(
-            //        record);
-            //}
-            //catch
-            //{
-            //    throw;
-            //}
+                return Ok(
+                    dp);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         [HttpGet("{competencia}/{matricula}")]
@@ -69,24 +68,11 @@
         {
             try
             {
-                var mdp = new MatriculaDemonstrativoPagamentoBusiness(
-                    null);
+                var dps = this._business.Get(
+                    competencia,
+                    matricula);
 
-                var dp = new MatriculaDemonstrativoPagamentoDto
-                {
-                    Competencia = "20230501",
-                    Guid = Guid.NewGuid(),
-                    GuidMatricula = Guid.NewGuid(),
-                };
-
-                //var dps = mdp.Get(
-                //    competencia,
-                //    matricula);
-
-                var dps = new List<MatriculaDemonstrativoPagamentoDto>();
-                dps.Add(dp);
-
-                if (dps is null || dps.Count == 0)
+                if (dps is null)
                 {
                     return NotFound(
                         "Demonstrativos de Pagamento não encontrados!");

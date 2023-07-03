@@ -23,7 +23,7 @@ namespace PayCheck.Web.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/20230501/75800";
+            string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento";
 
             List<DemonstrativoPagamentoViewModel>? demonstrativosPagamento = null;
 

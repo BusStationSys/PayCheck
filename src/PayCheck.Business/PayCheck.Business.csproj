@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <BaseOutputPath>bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;S1155;</NoWarn>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;S1155;</NoWarn>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Empresarius\**" />
+    <Compile Remove="Parker\**" />
+    <EmbeddedResource Remove="Empresarius\**" />
+    <EmbeddedResource Remove="Parker\**" />
+    <None Remove="Empresarius\**" />
+    <None Remove="Parker\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="EventoBusiness.cs" />
+    <Compile Remove="GrupoService.cs" />
+    <Compile Remove="MatriculaBusiness.cs" />
+    <Compile Remove="MatriculaDemonstrativoPagamentoEventoBusiness.cs" />
+    <Compile Remove="MatriculaDemonstrativoPagamentoTotalizadorBusiness.cs" />
+    <Compile Remove="MatriculaEspelhoPontoBusiness.cs" />
+    <Compile Remove="PessoaFisicaBusiness.cs" />
+    <Compile Remove="PessoaJuridicaBusiness.cs" />
+    <Compile Remove="PessoaService.cs" />
+    <Compile Remove="UniPayCheck\EventoBusiness.cs" />
+    <Compile Remove="UniPayCheck\MatriculaBusiness.cs" />
+    <Compile Remove="UniPayCheck\MatriculaDemonstrativoPagamentoEventoBusiness.cs" />
+    <Compile Remove="UniPayCheck\MatriculaDemonstrativoPagamentoTotalizadorBusiness.cs" />
+    <Compile Remove="UniPayCheck\MatriculaEspelhoPontoBusiness.cs" />
+    <Compile Remove="UniPayCheck\PessoaFisicaBusiness.cs" />
+    <Compile Remove="UniPayCheck\PessoaJuridicaBusiness.cs" />
+    <Compile Remove="UsuarioService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\ARVTech.DataAccess\submodules\ARVTech.Transmission\src\ARVTech.Transmission.Engine\ARVTech.Transmission.Engine.csproj" />
+    <ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.DTOs\ARVTech.DataAccess.DTOs.csproj" />
+    <ProjectReference Include="..\PayCheck.Infrastructure\PayCheck.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
