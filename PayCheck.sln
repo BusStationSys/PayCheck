@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayCheck.Web", "src\PayChec
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayCheck.Api", "src\PayCheck.Api\PayCheck.Api.csproj", "{F3C699D1-8223-4FCC-AD0C-7E087F73224B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.DataAccess.DTOs", "..\ARVTech.DataAccess\src\ARVTech.DataAccess.DTOs\ARVTech.DataAccess.DTOs.csproj", "{4BE0A23A-CF6C-478C-8D86-E905733F8586}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.DataAccess.DTOs", "submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.DTOs\ARVTech.DataAccess.DTOs.csproj", "{4BE0A23A-CF6C-478C-8D86-E905733F8586}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.DataAccess.Business", "..\ARVTech.DataAccess\src\ARVTech.DataAccess.Business\ARVTech.DataAccess.Business.csproj", "{079DCCE1-DF4B-4FF0-832B-1AE743654520}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.DataAccess.Business", "submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Business\ARVTech.DataAccess.Business.csproj", "{079DCCE1-DF4B-4FF0-832B-1AE743654520}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
