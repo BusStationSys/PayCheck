@@ -36,7 +36,7 @@ namespace PayCheck.Web.Controllers
 
                 if (!string.IsNullOrEmpty(data))
                 {
-                    //demonstrativosPagamento = JsonConvert.DeserializeObject<List<DemonstrativoPagamentoViewModel>>(data);
+                    demonstrativosPagamento = JsonConvert.DeserializeObject<List<DemonstrativoPagamentoViewModel>>(data);
                 }
             }
 

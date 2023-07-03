@@ -64,7 +64,7 @@
             //}
         }
 
-        [HttpGet("{competencia}/matricula")]
+        [HttpGet("{competencia}/{matricula}")]
         public IActionResult GetDemonstrativoPagamento(string competencia, string matricula)
         {
             try
