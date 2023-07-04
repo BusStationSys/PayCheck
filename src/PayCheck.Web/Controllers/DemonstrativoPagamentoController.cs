@@ -43,5 +43,38 @@ namespace PayCheck.Web.Controllers
             return View(
                 demonstrativosPagamento);
         }
+
+        [HttpGet(), ActionName("Details")]
+        public IActionResult Details(Guid? guid)
+        {
+            if (guid == null)
+            {
+                return NotFound();
+            }
+
+            string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/{guid}";
+
+            DemonstrativoPagamentoViewModel demonstrativoPagamento = null;
+
+            HttpResponseMessage httpResponseMessage = this._httpClient.GetAsync(
+                requestUri).Result;
+
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                string data = httpResponseMessage.Content.ReadAsStringAsync().Result;
+
+                if (!string.IsNullOrEmpty(data))
+                {
+                    demonstrativoPagamento = JsonConvert.DeserializeObject<DemonstrativoPagamentoViewModel>(data);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+
+            return View(
+                demonstrativoPagamento);
+        }
     }
 }

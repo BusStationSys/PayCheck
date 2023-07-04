@@ -13,6 +13,7 @@ public class DemonstrativoPagamentoViewModel
     public Guid GuidMatricula { get; set; }
 
     [Required]
+    [Display(Name = "Competência")]
     public string? Competencia { get; set; }
 
     [NotMapped]
