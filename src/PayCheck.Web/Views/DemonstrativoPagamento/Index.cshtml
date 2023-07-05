@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PayCheck.Web.Models.DemonstrativoPagamentoViewModel>
+﻿@model IEnumerable<ARVTech.DataAccess.DTOs.UniPayCheck.MatriculaDemonstrativoPagamentoResponse>
 
 @{
     ViewData["Title"] = "Index";
@@ -25,15 +25,18 @@
             </th>*@
 
             <th>
-
                 @Html.DisplayNameFor(model => model.Competencia)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Matricula.Matricula)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Matricula.Colaborador.Nome)
+            </th>
+            <th>
 
             </th>
-
-            <th></th>
-
         </tr>
-
     </thead>
 
     <tbody>
@@ -45,6 +48,12 @@
             </td>*@
                 <td>
                     @Convert.ToInt32(item.AnoCompetencia).ToString("0000") / @Convert.ToInt32(item.MesCompetencia).ToString("00")
+                </td>
+                <td>
+                    @item.Matricula.Matricula
+                </td>
+                <td>
+                    @item.Matricula.Colaborador.Nome
                 </td>
                 <td>
                     @*                    @Html.ActionLink("Edit", "Edit", new { id=item.Guid }) |

@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using PayCheck.Web.Models;
-
-namespace PayCheck.Web.Controllers
+﻿namespace PayCheck.Web.Controllers
 {
+    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using Microsoft.AspNetCore.Mvc;
+    using Newtonsoft.Json;
+
     public class DemonstrativoPagamentoController : Controller
     {
         private const string UriString = @"https://localhost:7104/api";
@@ -25,7 +25,7 @@ namespace PayCheck.Web.Controllers
         {
             string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento";
 
-            List<DemonstrativoPagamentoViewModel>? demonstrativosPagamento = null;
+            List<MatriculaDemonstrativoPagamentoResponse>? mdps = null;
 
             HttpResponseMessage httpResponseMessage = this._httpClient.GetAsync(
                 requestUri).Result;
@@ -36,12 +36,12 @@ namespace PayCheck.Web.Controllers
 
                 if (!string.IsNullOrEmpty(data))
                 {
-                    demonstrativosPagamento = JsonConvert.DeserializeObject<List<DemonstrativoPagamentoViewModel>>(data);
+                    mdps = JsonConvert.DeserializeObject<List<MatriculaDemonstrativoPagamentoResponse>>(data);
                 }
             }
 
             return View(
-                demonstrativosPagamento);
+                mdps);
         }
 
         [HttpGet(), ActionName("Details")]
@@ -54,7 +54,7 @@ namespace PayCheck.Web.Controllers
 
             string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/{guid}";
 
-            DemonstrativoPagamentoViewModel demonstrativoPagamento = null;
+            MatriculaDemonstrativoPagamentoResponse mdp = null;
 
             HttpResponseMessage httpResponseMessage = this._httpClient.GetAsync(
                 requestUri).Result;
@@ -65,7 +65,7 @@ namespace PayCheck.Web.Controllers
 
                 if (!string.IsNullOrEmpty(data))
                 {
-                    demonstrativoPagamento = JsonConvert.DeserializeObject<DemonstrativoPagamentoViewModel>(data);
+                    mdp = JsonConvert.DeserializeObject<MatriculaDemonstrativoPagamentoResponse>(data);
                 }
                 else
                 {
@@ -74,7 +74,7 @@ namespace PayCheck.Web.Controllers
             }
 
             return View(
-                demonstrativoPagamento);
+                mdp);
         }
     }
 }
