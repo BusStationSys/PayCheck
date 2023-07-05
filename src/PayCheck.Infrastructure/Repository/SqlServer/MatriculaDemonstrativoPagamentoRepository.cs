@@ -341,35 +341,33 @@
             try
             {
                 //  Maneira utilizada para trazer os relacionamentos 1:N.
-                string cmdText = @"      SELECT {0},
-                                                {1}
-                                           FROM [{2}].[dbo].[{3}] as {4} WITH(NOLOCK)
-                                     INNER JOIN [{2}].[dbo].[{5}] as {6} WITH(NOLOCK)
-                                             ON {6}.[GUID] = {4}.[GUIDMATRICULA] ";
+                string cmdText = $@"      SELECT {this._columnsMatriculasDemonstrativosPagamento},
+                                                 {this._columnsMatriculas},
+                                                 {this._columnsPessoasFisicas},
+                                                 {this._columnsPessoasJuridicas}
+                                            FROM [{this._connection.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamento}] as {base.TableAliasMatriculasDemonstrativosPagamento} WITH(NOLOCK)
+                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNameMatriculas}] as {base.TableAliasMatriculas} WITH(NOLOCK)
+                                              ON [{base.TableAliasMatriculasDemonstrativosPagamento}].[GUIDMATRICULA] = [{base.TableAliasMatriculas}].[GUID] 
+                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNamePessoasFisicas}] as {base.TableAliasPessoasFisicas} WITH(NOLOCK)
+                                              ON [{base.TableAliasMatriculas}].[GUIDCOLABORADOR] = [{base.TableAliasPessoasFisicas}].[GUID]
+                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNamePessoasJuridicas}] as {base.TableAliasPessoasJuridicas} WITH(NOLOCK)
+                                              ON [{base.TableAliasMatriculas}].[GUIDEMPREGADOR] = [{base.TableAliasPessoasJuridicas}].[GUID] 
+                                        ORDER BY [{base.TableAliasMatriculasDemonstrativosPagamento}].[COMPETENCIA] Desc,
+                                                 [{base.TableAliasMatriculas}].[MATRICULA],
+                                                 [{base.TableAliasPessoasFisicas}].[NOME] ";
 
-                cmdText = string.Format(
-                    CultureInfo.InvariantCulture,
+                var matriculasDemonstrativosPagamentoEntity = base._connection.Query<MatriculaDemonstrativoPagamentoEntity, MatriculaEntity, PessoaFisicaEntity, PessoaJuridicaEntity, MatriculaDemonstrativoPagamentoEntity>(
                     cmdText,
-                    this._columnsMatriculasDemonstrativosPagamento,
-                    this._columnsMatriculas,
-                    base._connection.Database,
-                    base.TableNameMatriculasDemonstrativosPagamento,
-                    base.TableAliasMatriculasDemonstrativosPagamento,
-                    base.TableNameMatriculas,
-                    base.TableAliasMatriculas);
-
-                var matriculasDemonstrativosPagamentoEntity = base._connection.Query<MatriculaDemonstrativoPagamentoEntity, MatriculaEntity, MatriculaDemonstrativoPagamentoEntity>(
-                    cmdText,
-                    map: (mapMatriculaDemonstrativoPagamento, mapMatricula) =>
+                    map: (mapMatriculaDemonstrativoPagamento, mapMatricula, mapPessoaFisica, mapPessoaJuridica) =>
                     {
-                        //mapMatricula.Colaborador = mapPessoaFisica;
-                        //mapMatricula.Empregador = mapPessoaJuridica;
+                        mapMatricula.Colaborador = mapPessoaFisica;
+                        mapMatricula.Empregador = mapPessoaJuridica;
 
                         mapMatriculaDemonstrativoPagamento.Matricula = mapMatricula;
 
                         return mapMatriculaDemonstrativoPagamento;
                     },
-                    splitOn: "GUID,GUID",
+                    splitOn: "GUID,GUID,GUID,GUID",
                     transaction: this._transaction);
 
                 return matriculasDemonstrativosPagamentoEntity;
@@ -496,10 +494,12 @@
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public MatriculaDemonstrativoPagamentoEntity Update(MatriculaDemonstrativoPagamentoEntity entity)
+        public MatriculaDemonstrativoPagamentoEntity Update(Guid pk, MatriculaDemonstrativoPagamentoEntity entity)
         {
             try
             {
+                entity.Guid = pk;
+
                 string cmdText = @" UPDATE [{0}].[dbo].[MATRICULAS_DEMONSTRATIVOS_PAGAMENTO]
                                        SET [GUIDMATRICULA] = {1}GuidMatricula,
                                            [COMPETENCIA] = {1}Competencia

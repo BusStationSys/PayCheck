@@ -7,7 +7,7 @@
     using AutoMapper;
     using PayCheck.Business.Interfaces;
     using PayCheck.Infrastructure.UnitOfWork.Interfaces;
-    
+
     public class MatriculaDemonstrativoPagamentoBusiness : BaseBusiness, IMatriculaDemonstrativoPagamentoBusiness
     {
         private readonly int _idBaseFgts = 1;
@@ -26,10 +26,15 @@
             var mapperConfiguration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<MatriculaDemonstrativoPagamentoDto, MatriculaDemonstrativoPagamentoEntity>().ReverseMap();
+                cfg.CreateMap<MatriculaDemonstrativoPagamentoResponse, MatriculaDemonstrativoPagamentoEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaDto, MatriculaEntity>().ReverseMap();
+                cfg.CreateMap<MatriculaResponse, MatriculaEntity>().ReverseMap();
                 cfg.CreateMap<PessoaFisicaDto, PessoaFisicaEntity>().ReverseMap();
+                cfg.CreateMap<PessoaFisicaResponse, PessoaFisicaEntity>().ReverseMap();
                 cfg.CreateMap<PessoaJuridicaDto, PessoaJuridicaEntity>().ReverseMap();
+                cfg.CreateMap<PessoaJuridicaResponse, PessoaJuridicaEntity>().ReverseMap();
                 cfg.CreateMap<PessoaDto, PessoaEntity>().ReverseMap();
+                cfg.CreateMap<PessoaResponse, PessoaEntity>().ReverseMap();
             });
 
             this._mapper = new Mapper(mapperConfiguration);
@@ -117,7 +122,7 @@
         /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
-        public MatriculaDemonstrativoPagamentoDto Get(Guid guid)
+        public MatriculaDemonstrativoPagamentoResponse Get(Guid guid)
         {
             try
             {
@@ -130,7 +135,7 @@
                     var entity = connection.Repositories.MatriculaDemonstrativoPagamentoRepository.Get(
                         guid);
 
-                    return this._mapper.Map<MatriculaDemonstrativoPagamentoDto>(
+                    return this._mapper.Map<MatriculaDemonstrativoPagamentoResponse>(
                         entity);
                 }
             }
@@ -146,7 +151,7 @@
         /// <param name="competencia"></param>
         /// <param name="matricula"></param>
         /// <returns></returns>
-        public IEnumerable<MatriculaDemonstrativoPagamentoDto> Get(string competencia, string matricula)
+        public IEnumerable<MatriculaDemonstrativoPagamentoResponse> Get(string competencia, string matricula)
         {
             try
             {
@@ -165,7 +170,7 @@
                         competencia,
                         matricula);
 
-                    return this._mapper.Map<IEnumerable<MatriculaDemonstrativoPagamentoDto>>(entity);
+                    return this._mapper.Map<IEnumerable<MatriculaDemonstrativoPagamentoResponse>>(entity);
                 }
             }
             catch
@@ -178,7 +183,7 @@
         /// 
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<MatriculaDemonstrativoPagamentoDto> GetAll()
+        public IEnumerable<MatriculaDemonstrativoPagamentoResponse> GetAll()
         {
             try
             {
@@ -186,7 +191,7 @@
                 {
                     var entity = connection.Repositories.MatriculaDemonstrativoPagamentoRepository.GetAll();
 
-                    return this._mapper.Map<IEnumerable<MatriculaDemonstrativoPagamentoDto>>(entity);
+                    return this._mapper.Map<IEnumerable<MatriculaDemonstrativoPagamentoResponse>>(entity);
                 }
             }
             catch
@@ -527,6 +532,7 @@
                 if (dto.Guid != null && dto.Guid != Guid.Empty)
                 {
                     entity = connection.Repositories.MatriculaDemonstrativoPagamentoRepository.Update(
+                        (Guid)dto.Guid,
                         entity);
                 }
                 else

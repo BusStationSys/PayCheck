@@ -2,10 +2,10 @@
 {
     using System.Collections.Generic;
 
-    public interface IReadRepository<out T, Y> where T : class
+    public interface IReadRepository<out T, in U> where T : class
     {
         IEnumerable<T> GetAll();
 
-        T Get(Y id);
+        T Get(U pk);
     }
 }

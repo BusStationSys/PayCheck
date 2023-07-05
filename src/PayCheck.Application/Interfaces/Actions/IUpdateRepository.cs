@@ -1,7 +1,7 @@
 ﻿namespace PayCheck.Application.Interfaces.Actions
 {
-    public interface IUpdateRepository<T> where T : class
+    public interface IUpdateRepository<out T, in U, in V> where T : class
     {
-        T Update(T entity);
+        T Update(U pk, V entity);
     }
 }
