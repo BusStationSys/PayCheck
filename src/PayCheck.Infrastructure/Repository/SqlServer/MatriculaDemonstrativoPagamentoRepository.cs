@@ -224,36 +224,26 @@
         {
             try
             {
-                if (guid == Guid.Empty)
-                    throw new ArgumentNullException(
-                        nameof(guid));
-
                 //  Maneira utilizada para trazer os relacionamentos 1:N.
-                string cmdText = @"      SELECT {0},
-                                                {1}
-                                           FROM [{2}].[dbo].[{3}] as {4} WITH(NOLOCK)
-                                     INNER JOIN [{2}].[dbo].[{5}] as {6} WITH(NOLOCK)
-                                             ON {6}.[GUID] = {4}.[GUIDMATRICULA]
-                                          WHERE UPPER({4}.[GUID]) = {7}Guid ";
+                string cmdText = $@"      SELECT {this._columnsMatriculasDemonstrativosPagamento},
+                                                 {this._columnsMatriculas},
+                                                 {this._columnsPessoasFisicas},
+                                                 {this._columnsPessoasJuridicas}
+                                            FROM [{this._connection.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamento}] as {base.TableAliasMatriculasDemonstrativosPagamento} WITH(NOLOCK)
+                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNameMatriculas}] as {base.TableAliasMatriculas} WITH(NOLOCK)
+                                              ON [{base.TableAliasMatriculasDemonstrativosPagamento}].[GUIDMATRICULA] = [{base.TableAliasMatriculas}].[GUID] 
+                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNamePessoasFisicas}] as {base.TableAliasPessoasFisicas} WITH(NOLOCK)
+                                              ON [{base.TableAliasMatriculas}].[GUIDCOLABORADOR] = [{base.TableAliasPessoasFisicas}].[GUID]
+                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNamePessoasJuridicas}] as {base.TableAliasPessoasJuridicas} WITH(NOLOCK)
+                                              ON [{base.TableAliasMatriculas}].[GUIDEMPREGADOR] = [{base.TableAliasPessoasJuridicas}].[GUID] 
+                                           WHERE UPPER([{base.TableAliasMatriculasDemonstrativosPagamento}].[GUID]) = {base.ParameterSymbol}Guid ";
 
-                cmdText = string.Format(
-                    CultureInfo.InvariantCulture,
+                var matriculaDemonstrativoPagamentoEntity = base._connection.Query<MatriculaDemonstrativoPagamentoEntity, MatriculaEntity, PessoaFisicaEntity, PessoaJuridicaEntity, MatriculaDemonstrativoPagamentoEntity>(
                     cmdText,
-                    this._columnsMatriculasDemonstrativosPagamento,
-                    this._columnsMatriculas,
-                    base._connection.Database,
-                    base.TableNameMatriculasDemonstrativosPagamento,
-                    base.TableAliasMatriculasDemonstrativosPagamento,
-                    base.TableNameMatriculas,
-                    base.TableAliasMatriculas,
-                    base.ParameterSymbol);
-
-                var matriculaDemonstrativoPagamentoEntity = base._connection.Query<MatriculaDemonstrativoPagamentoEntity, MatriculaEntity, MatriculaDemonstrativoPagamentoEntity>(
-                    cmdText,
-                    map: (mapMatriculaDemonstrativoPagamento, mapMatricula) =>
+                    map: (mapMatriculaDemonstrativoPagamento, mapMatricula, mapPessoaFisica, mapPessoaJuridica) =>
                     {
-                        //mapMatricula.Colaborador = mapPessoaFisica;
-                        //mapMatricula.Empregador = mapPessoaJuridica;
+                        mapMatricula.Colaborador = mapPessoaFisica;
+                        mapMatricula.Empregador = mapPessoaJuridica;
 
                         mapMatriculaDemonstrativoPagamento.Matricula = mapMatricula;
 
@@ -263,7 +253,7 @@
                     {
                         Guid = guid,
                     },
-                    splitOn: "GUID,GUID",
+                    splitOn: "GUID,GUID,GUID,GUID",
                     transaction: this._transaction);
 
                 return matriculaDemonstrativoPagamentoEntity.FirstOrDefault();
@@ -346,12 +336,16 @@
                                                  {this._columnsPessoasFisicas},
                                                  {this._columnsPessoasJuridicas}
                                             FROM [{this._connection.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamento}] as {base.TableAliasMatriculasDemonstrativosPagamento} WITH(NOLOCK)
+
                                       INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNameMatriculas}] as {base.TableAliasMatriculas} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculasDemonstrativosPagamento}].[GUIDMATRICULA] = [{base.TableAliasMatriculas}].[GUID] 
+
                                       INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNamePessoasFisicas}] as {base.TableAliasPessoasFisicas} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculas}].[GUIDCOLABORADOR] = [{base.TableAliasPessoasFisicas}].[GUID]
+
                                       INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNamePessoasJuridicas}] as {base.TableAliasPessoasJuridicas} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculas}].[GUIDEMPREGADOR] = [{base.TableAliasPessoasJuridicas}].[GUID] 
+
                                         ORDER BY [{base.TableAliasMatriculasDemonstrativosPagamento}].[COMPETENCIA] Desc,
                                                  [{base.TableAliasMatriculas}].[MATRICULA],
                                                  [{base.TableAliasPessoasFisicas}].[NOME] ";
@@ -377,7 +371,6 @@
                 throw;
             }
         }
-
 
         /// <summary>
         /// Get all "Matrículas Demonstrativos Pagamento" records by "Competência".

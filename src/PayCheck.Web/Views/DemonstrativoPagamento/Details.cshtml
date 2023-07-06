@@ -6,27 +6,172 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<h1 class="h3 mb-1 text-gray-800">
+    Demonstrativo de Pagamento
+</h1>
 
-<div>
-    <h4>Demonstrativos de Pagamento</h4>
-    <hr />
-    <dl class="row">
-@*        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Guid)
-        </dt>*@
-@*        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Guid)
-        </dd>*@
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Competencia)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Competencia)
-        </dd>
-    </dl>
+@*<p>
+    <h6 class="text-justify">Ambitioni dedisse scripsisse iudicaretur. Cras mattis iudicium purus sit amet fermentum. Donec sed odio operae, eu vulputate felis rhoncus. Praeterea iter est quasdam res quas ex communi. At nos hinc posthac, sitientis piros Afros. Petierunt uti sibi concilium totius Galliae in diem certam indicere. Cras mattis iudicium purus sit amet fermentum.</h6>
+</p>*@
+
+<div class="row">
+    <div class="col-xl-7 col-md-7 mb-4">
+        <label for="txtRazaoSocial">Razão Social</label>
+        <input asp-for=Matricula.Empregador.RazaoSocial type="text" class="form-control" id="txtRazaoSocial">
+    </div>
+
+    <div class="col-xl-3 col-md-3 mb-4">
+        <label for="txtCnpj">CNPJ</label>
+        <input asp-for=Matricula.Empregador.Cnpj type="text" class="form-control" id="txtCnpj">
+    </div>
+
+    <div class="col-xl-2 col-md-2 mb-4">
+        <label for="txtCompetencia">Competência</label>
+        <input asp-for=CompetenciaFormatada type="text" class="form-control" id="txtCompetencia">
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-3 col-md-4 mb-4">
+        <label for="txtMatricula">Matrícula</label>
+        <input asp-for=Matricula.Matricula type="text" class="form-control" id="txtMatricula">
+    </div>
+
+    <div class="col-xl-7 col-md-6 mb-4">
+        <label for="txtNome">Nome</label>
+        <input asp-for=Matricula.Colaborador.Nome type="text" class="form-control" id="txtNome">
+    </div>
+
+    <div class="col-xl-2 col-md-2 mb-4">
+        <label for="txtDataAdmissao">Data Admissão</label>
+        <input asp-for=Matricula.DataAdmissao type="date" class="form-control" id="txtDataAdmissao">
+    </div>
+</div>
+
+<div class="row">
+
+    <!-- Collapsable Card Example TOTAL DE VENCIMENTOS -->
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card shadow mb-4 border-left-primary shadow">
+            <!-- Card Header - Accordion -->
+            <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse"
+               role="button" aria-expanded="true" aria-controls="collapseCardExample">
+                <h6 class="m-0 font-weight-bold text-primary text-uppercase mb-1">Total de Vencimentos</h6>
+            </a>
+
+            <!-- Card Content - Collapse -->
+            <div class="collapse show" id="collapseCardExample">
+                <div class="card-body">
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">R$ 99.999,99</div>
+
+                    This is a collapsable card example using Bootstrap's built in collapse
+                    functionality. <strong>Click on the card header</strong> to see the card body
+                    collapse and expand!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Collapsable Card Example TOTAL DE DESCONTOS -->
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card shadow mb-4 border-left-danger shadow">
+            <!-- Card Header - Accordion -->
+            <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse"
+               role="button" aria-expanded="true" aria-controls="collapseCardExample">
+                <h6 class="m-0 font-weight-bold text-danger text-uppercase mb-1">Total de Descontos</h6>
+            </a>
+
+            <!-- Card Content - Collapse -->
+            <div class="collapse show" id="collapseCardExample">
+                <div class="card-body">
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">R$ 88.888,88</div>
+
+                    This is a collapsable card example using Bootstrap's built in collapse
+                    functionality. <strong>Click on the card header</strong> to see the card body
+                    collapse and expand!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Collapsable Card Example TOTAL LÍQUIDO -->
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card shadow mb-4 border-left-warning shadow">
+            <!-- Card Header - Accordion -->
+            <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse"
+               role="button" aria-expanded="true" aria-controls="collapseCardExample">
+                <h6 class="m-0 font-weight-bold text-warning text-uppercase mb-1">Total Líquido</h6>
+            </a>
+
+            <!-- Card Content - Collapse -->
+            <div class="collapse show" id="collapseCardExample">
+                <div class="card-body">
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">R$ 77.777,77</div>
+
+                    This is a collapsable card example using Bootstrap's built in collapse
+                    functionality. <strong>Click on the card header</strong> to see the card body
+                    collapse and expand!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total de Descontos -->
+@*    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            Total de Descontos
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">R$ 99.999,99</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+    <!-- Total de Líquido -->
+@*    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Total Líquido
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">R$ 99.999,99</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+
+        <!-- Default Card Example -->
+
+        <!-- Basic Card Example -->
+        
+    </div>
+
+    <div class="col-lg-6">
+
+        <!-- Dropdown Card Example -->
+        
+        <!-- Collapsable Card Example -->
+    </div>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @*@Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |*@
     <a asp-action="Index">Back to List</a>
 </div>

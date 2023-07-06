@@ -6,7 +6,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Demonstrativos de Pagamento</h1>
+<h1 class="h3 mb-1 text-gray-800">Demonstrativos de Pagamento</h1>
 
 @*<p>
     <a asp-action="Create">Create New</a>
@@ -47,7 +47,7 @@
             @Html.DisplayFor(modelItem => item.Guid)
             </td>*@
                 <td>
-                    @Convert.ToInt32(item.AnoCompetencia).ToString("0000") / @Convert.ToInt32(item.MesCompetencia).ToString("00")
+                    @item.CompetenciaFormatada
                 </td>
                 <td>
                     @item.Matricula.Matricula
