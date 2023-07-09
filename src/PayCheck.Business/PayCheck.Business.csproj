@@ -52,7 +52,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\ARVTech.DataAccess\submodules\ARVTech.Transmission\src\ARVTech.Transmission.Engine\ARVTech.Transmission.Engine.csproj" />
     <ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.DTOs\ARVTech.DataAccess.DTOs.csproj" />
     <ProjectReference Include="..\PayCheck.Infrastructure\PayCheck.Infrastructure.csproj" />
   </ItemGroup>

@@ -14,6 +14,9 @@
 
     public abstract class BaseRepository : IDisposable
     {
+        protected readonly string TableAliasEventos = "E";
+        protected readonly string TableNameEventos = "EVENTOS";
+
         protected readonly string TableAliasMatriculas = "M";
         protected readonly string TableNameMatriculas = "MATRICULAS";
 

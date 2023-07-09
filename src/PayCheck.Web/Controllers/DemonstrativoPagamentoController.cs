@@ -44,7 +44,7 @@
                 mdps);
         }
 
-        [HttpGet(), ActionName("Details")]
+        [HttpGet()]
         public IActionResult Details(Guid? guid)
         {
             if (guid == null)

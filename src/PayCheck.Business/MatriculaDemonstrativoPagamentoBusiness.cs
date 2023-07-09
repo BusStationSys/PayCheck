@@ -3,7 +3,6 @@
     using System;
     using ARVTech.DataAccess.Core.Entities.UniPayCheck;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
-    using ARVTech.Transmission.Engine.UniPayCheck.Results;
     using AutoMapper;
     using PayCheck.Business.Interfaces;
     using PayCheck.Infrastructure.UnitOfWork.Interfaces;
@@ -25,8 +24,12 @@
 
             var mapperConfiguration = new MapperConfiguration(cfg =>
             {
+                cfg.CreateMap<EventoDto, EventoEntity>().ReverseMap();
+                cfg.CreateMap<EventoResponse, EventoEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaDemonstrativoPagamentoDto, MatriculaDemonstrativoPagamentoEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaDemonstrativoPagamentoResponse, MatriculaDemonstrativoPagamentoEntity>().ReverseMap();
+                cfg.CreateMap<MatriculaDemonstrativoPagamentoEventoDto, MatriculaDemonstrativoPagamentoEventoEntity>().ReverseMap();
+                cfg.CreateMap<MatriculaDemonstrativoPagamentoEventoResponse, MatriculaDemonstrativoPagamentoEventoEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaDto, MatriculaEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaResponse, MatriculaEntity>().ReverseMap();
                 cfg.CreateMap<PessoaFisicaDto, PessoaFisicaEntity>().ReverseMap();
