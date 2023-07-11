@@ -30,6 +30,8 @@
                 cfg.CreateMap<MatriculaDemonstrativoPagamentoResponse, MatriculaDemonstrativoPagamentoEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaDemonstrativoPagamentoEventoDto, MatriculaDemonstrativoPagamentoEventoEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaDemonstrativoPagamentoEventoResponse, MatriculaDemonstrativoPagamentoEventoEntity>().ReverseMap();
+                cfg.CreateMap<MatriculaDemonstrativoPagamentoTotalizadorDto, MatriculaDemonstrativoPagamentoTotalizadorEntity>().ReverseMap();
+                cfg.CreateMap<MatriculaDemonstrativoPagamentoTotalizadorResponse, MatriculaDemonstrativoPagamentoTotalizadorEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaDto, MatriculaEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaResponse, MatriculaEntity>().ReverseMap();
                 cfg.CreateMap<PessoaFisicaDto, PessoaFisicaEntity>().ReverseMap();
@@ -38,6 +40,8 @@
                 cfg.CreateMap<PessoaJuridicaResponse, PessoaJuridicaEntity>().ReverseMap();
                 cfg.CreateMap<PessoaDto, PessoaEntity>().ReverseMap();
                 cfg.CreateMap<PessoaResponse, PessoaEntity>().ReverseMap();
+                cfg.CreateMap<TotalizadorDto, TotalizadorEntity>().ReverseMap();
+                cfg.CreateMap<TotalizadorResponse, TotalizadorEntity>().ReverseMap();
             });
 
             this._mapper = new Mapper(mapperConfiguration);

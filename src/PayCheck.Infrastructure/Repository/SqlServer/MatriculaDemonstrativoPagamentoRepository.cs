@@ -15,8 +15,10 @@
         private readonly string _columnsMatriculas;
         private readonly string _columnsMatriculasDemonstrativosPagamento;
         private readonly string _columnsMatriculasDemonstrativosPagamentoEventos;
+        private readonly string _columnsMatriculasDemonstrativosPagamentoTotalizadores;
         private readonly string _columnsPessoasFisicas;
         private readonly string _columnsPessoasJuridicas;
+        private readonly string _columnsTotalizadores;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MatriculaRepository"/> class.
@@ -45,11 +47,19 @@
 
             this.MapAttributeToField(
                 typeof(
+                    MatriculaDemonstrativoPagamentoTotalizadorEntity));
+
+            this.MapAttributeToField(
+                typeof(
                     PessoaFisicaEntity));
 
             this.MapAttributeToField(
                 typeof(
                     PessoaJuridicaEntity));
+
+            this.MapAttributeToField(
+                typeof(
+                    TotalizadorEntity));
 
             this._columnsEventos = base.GetAllColumnsFromTable(
                 base.TableNameEventos,
@@ -63,6 +73,14 @@
                 base.TableNameMatriculasDemonstrativosPagamento,
                 base.TableAliasMatriculasDemonstrativosPagamento);
 
+            this._columnsMatriculasDemonstrativosPagamentoEventos = base.GetAllColumnsFromTable(
+                base.TableNameMatriculasDemonstrativosPagamentoEventos,
+                base.TableAliasMatriculasDemonstrativosPagamentoEventos);
+
+            this._columnsMatriculasDemonstrativosPagamentoTotalizadores = base.GetAllColumnsFromTable(
+                base.TableNameMatriculasDemonstrativosPagamentoTotalizadores,
+                base.TableAliasMatriculasDemonstrativosPagamentoTotalizadores);
+
             this._columnsPessoasFisicas = base.GetAllColumnsFromTable(
                 base.TableNamePessoasFisicas,
                 base.TableAliasPessoasFisicas,
@@ -73,9 +91,9 @@
                 base.TableAliasPessoasJuridicas,
                 "PJ.LOGOTIPO");
 
-            this._columnsMatriculasDemonstrativosPagamentoEventos = base.GetAllColumnsFromTable(
-                base.TableNameMatriculasDemonstrativosPagamentoEventos,
-                base.TableAliasMatriculasDemonstrativosPagamentoEventos);
+            this._columnsTotalizadores = base.GetAllColumnsFromTable(
+                base.TableNameTotalizadores,
+                base.TableAliasTotalizadores);
         }
 
         /// <summary>
@@ -107,11 +125,19 @@
 
             this.MapAttributeToField(
                 typeof(
+                    MatriculaDemonstrativoPagamentoTotalizadorEntity));
+
+            this.MapAttributeToField(
+                typeof(
                     PessoaFisicaEntity));
 
             this.MapAttributeToField(
                 typeof(
                     PessoaJuridicaEntity));
+
+            this.MapAttributeToField(
+                typeof(
+                    TotalizadorEntity));
 
             this._columnsEventos = base.GetAllColumnsFromTable(
                 base.TableNameEventos,
@@ -125,6 +151,14 @@
                 base.TableNameMatriculasDemonstrativosPagamento,
                 base.TableAliasMatriculasDemonstrativosPagamento);
 
+            this._columnsMatriculasDemonstrativosPagamentoEventos = base.GetAllColumnsFromTable(
+                base.TableNameMatriculasDemonstrativosPagamentoEventos,
+                base.TableAliasMatriculasDemonstrativosPagamentoEventos);
+
+            this._columnsMatriculasDemonstrativosPagamentoTotalizadores = base.GetAllColumnsFromTable(
+                base.TableNameMatriculasDemonstrativosPagamentoTotalizadores,
+                base.TableAliasMatriculasDemonstrativosPagamentoTotalizadores);
+
             this._columnsPessoasFisicas = base.GetAllColumnsFromTable(
                 base.TableNamePessoasFisicas,
                 base.TableAliasPessoasFisicas,
@@ -135,9 +169,9 @@
                 base.TableAliasPessoasJuridicas,
                 "PJ.LOGOTIPO");
 
-            this._columnsMatriculasDemonstrativosPagamentoEventos = base.GetAllColumnsFromTable(
-                base.TableNameMatriculasDemonstrativosPagamentoEventos,
-                base.TableAliasMatriculasDemonstrativosPagamentoEventos);
+            this._columnsTotalizadores = base.GetAllColumnsFromTable(
+                base.TableNameTotalizadores,
+                base.TableAliasTotalizadores);
         }
 
         /// <summary>
@@ -286,7 +320,9 @@
                                                  {this._columnsPessoasFisicas},
                                                  {this._columnsPessoasJuridicas},
                                                  {this._columnsMatriculasDemonstrativosPagamentoEventos},
-                                                 {this._columnsEventos}
+                                                 {this._columnsEventos},
+                                                 {this._columnsMatriculasDemonstrativosPagamentoTotalizadores},
+                                                 {this._columnsTotalizadores}
                                             FROM [{this._connection.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamento}] as {base.TableAliasMatriculasDemonstrativosPagamento} WITH(NOLOCK)
 
                                       INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNameMatriculas}] as {base.TableAliasMatriculas} WITH(NOLOCK)
@@ -304,36 +340,73 @@
                                       INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNameEventos}] as {base.TableAliasEventos} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculasDemonstrativosPagamentoEventos}].[IDEVENTO] = [{base.TableAliasEventos}].[ID]
 
-                                           WHERE UPPER([{base.TableAliasMatriculasDemonstrativosPagamento}].[GUID]) = {base.ParameterSymbol}Guid
-                                        
-                                        ORDER BY [{base.TableAliasEventos}].[ID] ";
+                                 LEFT OUTER JOIN [{this._connection.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamentoTotalizadores}] as {base.TableAliasMatriculasDemonstrativosPagamentoTotalizadores} WITH(NOLOCK)
+                                              ON [{base.TableAliasMatriculasDemonstrativosPagamento}].[GUID] = {base.TableAliasMatriculasDemonstrativosPagamentoTotalizadores}.[GUIDMATRICULA_DEMONSTRATIVO_PAGAMENTO]
 
-                var matriculasDemonstrativosPagamentoEntity = base._connection.Query<MatriculaDemonstrativoPagamentoEntity, MatriculaEntity, PessoaFisicaEntity, PessoaJuridicaEntity, MatriculaDemonstrativoPagamentoEventoEntity, EventoEntity, MatriculaDemonstrativoPagamentoEntity>(
+                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNameTotalizadores}] as {base.TableAliasTotalizadores} WITH(NOLOCK)
+                                              ON [{base.TableAliasMatriculasDemonstrativosPagamentoTotalizadores}].[IDTOTALIZADOR] = [{base.TableAliasTotalizadores}].[ID]
+
+                                           WHERE UPPER([{base.TableAliasMatriculasDemonstrativosPagamento}].[GUID]) = {base.ParameterSymbol}Guid ";
+
+                base._connection.Query<MatriculaDemonstrativoPagamentoEntity>(
                     cmdText,
-                    map: (mapMatriculaDemonstrativoPagamento, mapMatricula, mapPessoaFisica, mapPessoaJuridica, mapMatriculaDemonstrativoPagamentoEventos, mapEvento) =>
+                    new[]
                     {
-                        if (!matriculasDemonstrativosPagamentoResult.ContainsKey(mapMatriculaDemonstrativoPagamento.Guid))
+                        typeof(MatriculaDemonstrativoPagamentoEntity),
+                        typeof(MatriculaEntity),
+                        typeof(PessoaFisicaEntity),
+                        typeof(PessoaJuridicaEntity),
+                        typeof(MatriculaDemonstrativoPagamentoEventoEntity),
+                        typeof(EventoEntity),
+                        typeof(MatriculaDemonstrativoPagamentoTotalizadorEntity),
+                        typeof(TotalizadorEntity),
+                    },
+                    obj =>
+                    {
+                        var matriculaDemonstrativoPagamentoEntity = (MatriculaDemonstrativoPagamentoEntity)obj[0];
+                        var matriculaEntity = (MatriculaEntity)obj[1];
+                        var pessoaFisicaEntity = (PessoaFisicaEntity)obj[2];
+                        var pessoaJuridicaEntity = (PessoaJuridicaEntity)obj[3];
+                        var matriculaDemonstrativoPagamentoEventoEntity = (MatriculaDemonstrativoPagamentoEventoEntity)obj[4];
+                        var eventoEntity = (EventoEntity)obj[5];
+                        var matriculaDemonstrativoPagamentoTotalizadorEntity = (MatriculaDemonstrativoPagamentoTotalizadorEntity)obj[6];
+                        var totalizadorEntity = (TotalizadorEntity)obj[7];
+
+                        if (!matriculasDemonstrativosPagamentoResult.ContainsKey(matriculaDemonstrativoPagamentoEntity.Guid))
                         {
-                            mapMatricula.Colaborador = mapPessoaFisica;
-                            mapMatricula.Empregador = mapPessoaJuridica;
+                            matriculaDemonstrativoPagamentoEntity.MatriculaDemonstrativoPagamentoEventos = new List<MatriculaDemonstrativoPagamentoEventoEntity>();
+                            matriculaDemonstrativoPagamentoEntity.MatriculaDemonstrativoPagamentoTotalizadores = new List<MatriculaDemonstrativoPagamentoTotalizadorEntity>();
 
-                            mapMatriculaDemonstrativoPagamento.Matricula = mapMatricula;
+                            matriculaEntity.Colaborador = pessoaFisicaEntity;
+                            matriculaEntity.Empregador = pessoaJuridicaEntity;
 
-                            mapMatriculaDemonstrativoPagamento.MatriculaDemonstrativoPagamentoEventos = new List<MatriculaDemonstrativoPagamentoEventoEntity>();
+                            matriculaDemonstrativoPagamentoEntity.Matricula = matriculaEntity;
 
                             matriculasDemonstrativosPagamentoResult.Add(
-                                mapMatriculaDemonstrativoPagamento.Guid,
-                                mapMatriculaDemonstrativoPagamento);
+                                matriculaDemonstrativoPagamentoEntity.Guid,
+                                matriculaDemonstrativoPagamentoEntity);
                         }
 
-                        MatriculaDemonstrativoPagamentoEntity current = matriculasDemonstrativosPagamentoResult[mapMatriculaDemonstrativoPagamento.Guid];
+                        MatriculaDemonstrativoPagamentoEntity current = matriculasDemonstrativosPagamentoResult[matriculaDemonstrativoPagamentoEntity.Guid];
 
-                        if (mapMatriculaDemonstrativoPagamentoEventos != null && !current.MatriculaDemonstrativoPagamentoEventos.Contains(mapMatriculaDemonstrativoPagamentoEventos))
+                        if (matriculaDemonstrativoPagamentoEventoEntity != null &&
+                            !current.MatriculaDemonstrativoPagamentoEventos.Any(
+                                mdpe => mdpe.IdEvento == matriculaDemonstrativoPagamentoEventoEntity.IdEvento))
                         {
-                            mapMatriculaDemonstrativoPagamentoEventos.Evento = mapEvento;
+                            matriculaDemonstrativoPagamentoEventoEntity.Evento = eventoEntity;
 
                             current.MatriculaDemonstrativoPagamentoEventos.Add(
-                                mapMatriculaDemonstrativoPagamentoEventos);
+                                matriculaDemonstrativoPagamentoEventoEntity);
+                        }
+
+                        if (matriculaDemonstrativoPagamentoTotalizadorEntity != null &&
+                            !current.MatriculaDemonstrativoPagamentoTotalizadores.Any(
+                                mdpt => mdpt.IdTotalizador == matriculaDemonstrativoPagamentoTotalizadorEntity.IdTotalizador))
+                        {
+                            matriculaDemonstrativoPagamentoTotalizadorEntity.Totalizador = totalizadorEntity;
+
+                            current.MatriculaDemonstrativoPagamentoTotalizadores.Add(
+                                matriculaDemonstrativoPagamentoTotalizadorEntity);
                         }
 
                         return null;
@@ -342,7 +415,7 @@
                     {
                         Guid = guid,
                     },
-                    splitOn: "GUID,GUID,GUID,GUID,GUID,ID",
+                    splitOn: "GUID,GUID,GUID,GUID,GUID,ID,GUID,ID",
                     transaction: this._transaction);
 
                 return matriculasDemonstrativosPagamentoResult.Values.FirstOrDefault();

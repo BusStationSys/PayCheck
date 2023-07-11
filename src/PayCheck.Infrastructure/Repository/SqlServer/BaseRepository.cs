@@ -41,6 +41,9 @@
         protected readonly string TableAliasPessoasJuridicas = "PJ";
         protected readonly string TableNamePessoasJuridicas = "PESSOAS_JURIDICAS";
 
+        protected readonly string TableAliasTotalizadores = "T";
+        protected readonly string TableNameTotalizadores = "TOTALIZADORES";
+
         private bool _disposedValue = false;    //  To detect redundant calls.
 
         protected readonly string ParameterSymbol = "@";

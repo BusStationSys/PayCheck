@@ -10,10 +10,6 @@
     Demonstrativo de Pagamento
 </h1>
 
-@*<p>
-    <h6 class="text-justify">Ambitioni dedisse scripsisse iudicaretur. Cras mattis iudicium purus sit amet fermentum. Donec sed odio operae, eu vulputate felis rhoncus. Praeterea iter est quasdam res quas ex communi. At nos hinc posthac, sitientis piros Afros. Petierunt uti sibi concilium totius Galliae in diem certam indicere. Cras mattis iudicium purus sit amet fermentum.</h6>
-</p>*@
-
 <div class="row">
     <div class="col-xl-7 col-md-7 mb-4">
         <label for="txtRazaoSocial">Razão Social</label>
@@ -61,7 +57,7 @@
 
             <!-- Card Content - Collapse -->
             <div class="collapse show" id="collapseCardVencimentos">
-                <div class="card-header bg-transparent border-primary font-weight-bold text-gray-800">R$ 99.999,99</div>
+                <div class="card-header bg-transparent border-primary font-weight-bold text-gray-800">R$ @Model.TotalVencimentos.ToString("#,###,###,##0.00")</div>
 
                 @if (Model.MatriculaDemonstrativoPagamentoEventos != null &&
                     Model.MatriculaDemonstrativoPagamentoEventos.Where(
@@ -70,10 +66,8 @@
                     @foreach (var mdpe in Model.MatriculaDemonstrativoPagamentoEventos.Where(
                         e => e.Evento.Tipo == "V"))
                     {
-                        <div class="card-body">
-                            @*<h5 class="card-title font-weight-bold text-gray-800">R$ 99.999,99</h5>*@
-
-                            <strong>@mdpe.Evento.Descricao: </strong> R$ @mdpe.Valor
+                        <div class="card-body text-primary">
+                            <strong>@mdpe.Evento.Descricao: </strong> R$ @mdpe.Valor.ToString("#,###,###,##0.00")
                         </div>
                     }
                 }
@@ -97,17 +91,17 @@
 
             <!-- Card Content - Collapse -->
             <div class="collapse show" id="collapseCardDescontos">
-                <div class="card-header bg-transparent border-danger font-weight-bold text-gray-800">R$ 88.888,88</div>
+                <div class="card-header bg-transparent border-danger font-weight-bold text-gray-800">R$ @Model.TotalDescontos.ToString("#,###,###,##0.00")</div>
 
                 @if (Model.MatriculaDemonstrativoPagamentoEventos != null &&
                     Model.MatriculaDemonstrativoPagamentoEventos.Where(
                         e => e.Evento.Tipo == "D").Count() > 0)
                 {
                     @foreach (var mdpe in Model.MatriculaDemonstrativoPagamentoEventos.Where(
-                                 e => e.Evento.Tipo == "D"))
+                        e => e.Evento.Tipo == "D"))
                     {
-                        <div class="card-body">
-                            <strong>@mdpe.Evento.Descricao: </strong> R$ @mdpe.Valor
+                        <div class="card-body text-danger">
+                            <strong>@mdpe.Evento.Descricao: </strong>R$ @mdpe.Valor.ToString("#,###,###,##0.00")
                         </div>
                     }
                 }
@@ -131,17 +125,28 @@
 
             <!-- Card Content - Collapse -->
             <div class="collapse show" id="collapseCardLiquido">
-                <div class="card-header bg-transparent border-warning font-weight-bold text-gray-800">R$ 77.777,77</div>
+                <div class="card-header bg-transparent border-warning font-weight-bold text-gray-800">R$ @Model.TotalLiquido.ToString("#,###,###,##0.00")</div>
 
-                <div class="card-body text-warning">
-                    <strong>G: </strong> R$ 7
-                </div>
-                <div class="card-body text-warning">
-                    <strong>H: </strong> R$ 8
-                </div>
-                <div class="card-body text-warning">
-                    <strong>I: </strong> R$ 9
-                </div>
+                @if (Model.MatriculaDemonstrativoPagamentoTotalizadores != null &&
+                    Model.MatriculaDemonstrativoPagamentoTotalizadores.Where(
+                        t => t.IdTotalizador != 3 &&
+                        t.IdTotalizador != 4 &&
+                        t.IdTotalizador != 7).Count() > 0)
+                {
+                    @foreach (var mdpt in Model.MatriculaDemonstrativoPagamentoTotalizadores.Where(
+                        t => t.IdTotalizador != 3 &&
+                        t.IdTotalizador != 4 &&
+                        t.IdTotalizador != 7))
+                    {
+                        <div class="card-body text-warning">
+                            <strong>@mdpt.Totalizador.Descricao: </strong>R$ @mdpt.Valor.ToString("#,###,###,##0.00")
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="card-footer bg-transparent border-warning font-weight-bold text-uppercase text-gray-800">Não foram encontrados Totalizadores para a Competência e Colaborador.</div>
+                }
             </div>
         </div>
     </div>
