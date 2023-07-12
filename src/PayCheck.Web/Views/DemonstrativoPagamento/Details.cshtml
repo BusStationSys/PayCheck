@@ -60,14 +60,24 @@
                 <div class="card-header bg-transparent border-primary font-weight-bold text-gray-800">R$ @Model.TotalVencimentos.ToString("#,###,###,##0.00")</div>
 
                 @if (Model.MatriculaDemonstrativoPagamentoEventos != null &&
-                Model.MatriculaDemonstrativoPagamentoEventos.Where(
-                e => e.Evento.Tipo == "V").Count() > 0)
+                    Model.MatriculaDemonstrativoPagamentoEventos.Where(
+                        e => e.Evento.Tipo == "V").Count() > 0)
                 {
                     @foreach (var mdpe in Model.MatriculaDemonstrativoPagamentoEventos.Where(
-                   e => e.Evento.Tipo == "V").OrderBy(mdpe => mdpe.IdEvento))
+                        e => e.Evento.Tipo == "V").OrderBy(
+                            mdpe => mdpe.IdEvento))
                     {
-                        <div class="card-body text-primary">
-                            <strong>@mdpe.Evento.Descricao: </strong> R$ @mdpe.Valor.ToString("#,###,###,##0.00")
+                        <div class="card-body">
+                            <p class="text-primary">
+                                <strong>@mdpe.Evento.Descricao:</strong> R$ @mdpe.Valor.ToString("#,###,###,##0.00")
+                            </p>
+
+                            @if (mdpe.Referencia is not null)
+                            {
+                                <p class="text-primary">
+                                    <small class="text-muted">(Referência: @Convert.ToDecimal(mdpe.Referencia).ToString("#,###,###,##0.00"))</small>
+                                </p>
+                            }
                         </div>
                     }
                 }
@@ -94,14 +104,24 @@
                 <div class="card-header bg-transparent border-danger font-weight-bold text-gray-800">R$ @Model.TotalDescontos.ToString("#,###,###,##0.00")</div>
 
                 @if (Model.MatriculaDemonstrativoPagamentoEventos != null &&
-                Model.MatriculaDemonstrativoPagamentoEventos.Where(
-                e => e.Evento.Tipo == "D").Count() > 0)
+                    Model.MatriculaDemonstrativoPagamentoEventos.Where(
+                        e => e.Evento.Tipo == "D").Count() > 0)
                 {
                     @foreach (var mdpe in Model.MatriculaDemonstrativoPagamentoEventos.Where(
-                   e => e.Evento.Tipo == "D").OrderBy(mdpe => mdpe.IdEvento))
+                        e => e.Evento.Tipo == "D").OrderBy(
+                            mdpe => mdpe.IdEvento))
                     {
-                        <div class="card-body text-danger">
-                            <strong>@mdpe.Evento.Descricao: </strong>R$ @mdpe.Valor.ToString("#,###,###,##0.00")
+                        <div class="card-body">
+                            <p class="text-danger">
+                                <strong>@mdpe.Evento.Descricao:</strong> R$ @mdpe.Valor.ToString("#,###,###,##0.00")
+                            </p>
+
+                            @if (mdpe.Referencia is not null)
+                            {
+                                <p class="text-danger">
+                                    <small class="text-muted">(Referência: @Convert.ToDecimal(mdpe.Referencia).ToString("#,###,###,##0.00"))</small>
+                                </p>
+                            }
                         </div>
                     }
                 }
@@ -126,19 +146,19 @@
             <!-- Card Content - Collapse -->
             <div class="collapse show" id="collapseCardOutros">
                 @if (Model.MatriculaDemonstrativoPagamentoTotalizadores != null &&
-                Model.MatriculaDemonstrativoPagamentoTotalizadores.Where(
-                t => t.IdTotalizador != 3 &&
-                t.IdTotalizador != 4 &&
-                t.IdTotalizador != 7).Count() > 0)
+                    Model.MatriculaDemonstrativoPagamentoTotalizadores.Where(
+                        t => t.IdTotalizador != 3 &&
+                        t.IdTotalizador != 4 &&
+                        t.IdTotalizador != 7).Count() > 0)  // Deve ignorar nesse Card o Total de Vencimentos (3), Total de Descontos (4) e Total Líquido (7) que são mostrados no Card de Totais Liquidos.
                 {
                     @foreach (var mdpt in Model.MatriculaDemonstrativoPagamentoTotalizadores.Where(
-                   t => t.IdTotalizador != 3 &&
-                   t.IdTotalizador != 4 &&
-                   t.IdTotalizador != 7).OrderBy(
-                   mdpt => mdpt.IdTotalizador))
+                        t => t.IdTotalizador != 3 &&
+                        t.IdTotalizador != 4 &&
+                        t.IdTotalizador != 7).OrderBy(
+                            mdpt => mdpt.IdTotalizador))
                     {
                         <div class="card-body text-warning">
-                            <strong>@mdpt.Totalizador.Descricao: </strong>R$ @mdpt.Valor.ToString("#,###,###,##0.00")
+                            <strong>@mdpt.Totalizador.Descricao:</strong> R$ @mdpt.Valor.ToString("#,###,###,##0.00")
                         </div>
                     }
                 }
@@ -163,28 +183,11 @@
             <!-- Card Content - Collapse -->
             <div class="collapse show" id="collapseCardLiquido">
                 <div class="card-header bg-transparent border-success font-weight-bold text-gray-800">R$ @Model.TotalLiquido.ToString("#,###,###,##0.00")</div>
-
-
                 <div class="card-body text-success">
                     <strong>R$ @Model.TotalVencimentos.ToString("#,###,###,##0.00") - R$ @Model.TotalDescontos.ToString("#,###,###,##0.00")</strong> = R$ @Model.TotalLiquido.ToString("#,###,###,##0.00")
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-lg-6">
-
-        <!-- Default Card Example -->
-        <!-- Basic Card Example -->
-
-    </div>
-
-    <div class="col-lg-6">
-
-        <!-- Dropdown Card Example -->
-        <!-- Collapsable Card Example -->
     </div>
 </div>
 <div>
