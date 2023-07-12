@@ -46,7 +46,7 @@
 
 <div class="row">
     <!-- Collapsable Card Example TOTAL DE VENCIMENTOS -->
-    <div class="col-xl-4 col-md-6 mb-4">
+    <div class="col-xl-6 col-md-6 mb-6">
         <div class="card shadow mb-4 border-left-primary shadow">
 
             <!-- Card Header - Accordion -->
@@ -60,11 +60,11 @@
                 <div class="card-header bg-transparent border-primary font-weight-bold text-gray-800">R$ @Model.TotalVencimentos.ToString("#,###,###,##0.00")</div>
 
                 @if (Model.MatriculaDemonstrativoPagamentoEventos != null &&
-                    Model.MatriculaDemonstrativoPagamentoEventos.Where(
-                        e => e.Evento.Tipo == "V").Count() > 0)
+                Model.MatriculaDemonstrativoPagamentoEventos.Where(
+                e => e.Evento.Tipo == "V").Count() > 0)
                 {
                     @foreach (var mdpe in Model.MatriculaDemonstrativoPagamentoEventos.Where(
-                        e => e.Evento.Tipo == "V"))
+                   e => e.Evento.Tipo == "V").OrderBy(mdpe => mdpe.IdEvento))
                     {
                         <div class="card-body text-primary">
                             <strong>@mdpe.Evento.Descricao: </strong> R$ @mdpe.Valor.ToString("#,###,###,##0.00")
@@ -80,7 +80,7 @@
     </div>
 
     <!-- Collapsable Card Example TOTAL DE DESCONTOS -->
-    <div class="col-xl-4 col-md-6 mb-4">
+    <div class="col-xl-6 col-md-6 mb-6">
         <div class="card shadow mb-4 border-left-danger shadow">
 
             <!-- Card Header - Accordion -->
@@ -94,11 +94,11 @@
                 <div class="card-header bg-transparent border-danger font-weight-bold text-gray-800">R$ @Model.TotalDescontos.ToString("#,###,###,##0.00")</div>
 
                 @if (Model.MatriculaDemonstrativoPagamentoEventos != null &&
-                    Model.MatriculaDemonstrativoPagamentoEventos.Where(
-                        e => e.Evento.Tipo == "D").Count() > 0)
+                Model.MatriculaDemonstrativoPagamentoEventos.Where(
+                e => e.Evento.Tipo == "D").Count() > 0)
                 {
                     @foreach (var mdpe in Model.MatriculaDemonstrativoPagamentoEventos.Where(
-                        e => e.Evento.Tipo == "D"))
+                   e => e.Evento.Tipo == "D").OrderBy(mdpe => mdpe.IdEvento))
                     {
                         <div class="card-body text-danger">
                             <strong>@mdpe.Evento.Descricao: </strong>R$ @mdpe.Valor.ToString("#,###,###,##0.00")
@@ -113,30 +113,29 @@
         </div>
     </div>
 
-    <!-- Collapsable Card Example TOTAL LÍQUIDO -->
-    <div class="col-xl-4 col-md-6 mb-4">
+    <!-- Collapsable Card Example OUTROS TOTAIS -->
+    <div class="col-xl-6 col-md-6 mb-6">
         <div class="card shadow mb-4 border-left-warning shadow">
 
             <!-- Card Header - Accordion -->
-            <a href="#collapseCardLiquido" class="d-block card-header py-3" data-toggle="collapse"
-               role="button" aria-expanded="true" aria-controls="collapseCardLiquido">
-                <h6 class="m-0 font-weight-bold text-warning text-uppercase mb-1">Total Líquido</h6>
+            <a href="#collapseCardOutros" class="d-block card-header py-3" data-toggle="collapse"
+               role="button" aria-expanded="true" aria-controls="collapseCardOutros">
+                <h6 class="m-0 font-weight-bold text-warning text-uppercase mb-1">Contribuições Sociais</h6>
             </a>
 
             <!-- Card Content - Collapse -->
-            <div class="collapse show" id="collapseCardLiquido">
-                <div class="card-header bg-transparent border-warning font-weight-bold text-gray-800">R$ @Model.TotalLiquido.ToString("#,###,###,##0.00")</div>
-
+            <div class="collapse show" id="collapseCardOutros">
                 @if (Model.MatriculaDemonstrativoPagamentoTotalizadores != null &&
-                    Model.MatriculaDemonstrativoPagamentoTotalizadores.Where(
-                        t => t.IdTotalizador != 3 &&
-                        t.IdTotalizador != 4 &&
-                        t.IdTotalizador != 7).Count() > 0)
+                Model.MatriculaDemonstrativoPagamentoTotalizadores.Where(
+                t => t.IdTotalizador != 3 &&
+                t.IdTotalizador != 4 &&
+                t.IdTotalizador != 7).Count() > 0)
                 {
                     @foreach (var mdpt in Model.MatriculaDemonstrativoPagamentoTotalizadores.Where(
-                        t => t.IdTotalizador != 3 &&
-                        t.IdTotalizador != 4 &&
-                        t.IdTotalizador != 7))
+                   t => t.IdTotalizador != 3 &&
+                   t.IdTotalizador != 4 &&
+                   t.IdTotalizador != 7).OrderBy(
+                   mdpt => mdpt.IdTotalizador))
                     {
                         <div class="card-body text-warning">
                             <strong>@mdpt.Totalizador.Descricao: </strong>R$ @mdpt.Valor.ToString("#,###,###,##0.00")
@@ -151,48 +150,27 @@
         </div>
     </div>
 
-    @*<div class="col-xl-4 col-md-6 mb-4">
-    <div class="card shadow mb-4 border-left-danger shadow">
-    <!-- Card Header - Accordion -->
-    <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse"
-    role="button" aria-expanded="true" aria-controls="collapseCardExample">
-    <h6 class="m-0 font-weight-bold text-danger text-uppercase mb-1">Total de Descontos</h6>
-    </a>
-
-    <!-- Card Content - Collapse -->
-    <div class="collapse show" id="collapseCardDescontos">
-    <div class="card-body">
-    <div class="h5 mb-0 font-weight-bold text-gray-800">R$ 88.888,88</div>
-
-    This is a collapsable card example using Bootstrap's built in collapse
-    functionality. <strong>Click on the card header</strong> to see the card body
-    collapse and expand!
-    </div>
-    </div>
-    </div>
-    </div>*@
-
     <!-- Collapsable Card Example TOTAL LÍQUIDO -->
-    @*    <div class="col-xl-4 col-md-6 mb-4">
-    <div class="card shadow mb-4 border-left-warning shadow">
-    <!-- Card Header - Accordion -->
-    <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse"
-    role="button" aria-expanded="true" aria-controls="collapseCardExample">
-    <h6 class="m-0 font-weight-bold text-warning text-uppercase mb-1">Total Líquido</h6>
-    </a>
+    <div class="col-xl-6 col-md-6 mb-6">
+        <div class="card shadow mb-4 border-left-success shadow">
 
-    <!-- Card Content - Collapse -->
-    <div class="collapse show" id="collapseCardLiquido">
-    <div class="card-body">
-    <div class="h5 mb-0 font-weight-bold text-gray-800">R$ 77.777,77</div>
+            <!-- Card Header - Accordion -->
+            <a href="#collapseCardLiquido" class="d-block card-header py-3" data-toggle="collapse"
+               role="button" aria-expanded="true" aria-controls="collapseCardLiquido">
+                <h6 class="m-0 font-weight-bold text-success text-uppercase mb-1">Total Líquido</h6>
+            </a>
 
-    This is a collapsable card example using Bootstrap's built in collapse
-    functionality. <strong>Click on the card header</strong> to see the card body
-    collapse and expand!
+            <!-- Card Content - Collapse -->
+            <div class="collapse show" id="collapseCardLiquido">
+                <div class="card-header bg-transparent border-success font-weight-bold text-gray-800">R$ @Model.TotalLiquido.ToString("#,###,###,##0.00")</div>
+
+
+                <div class="card-body text-success">
+                    <strong>R$ @Model.TotalVencimentos.ToString("#,###,###,##0.00") - R$ @Model.TotalDescontos.ToString("#,###,###,##0.00")</strong> = R$ @Model.TotalLiquido.ToString("#,###,###,##0.00")
+                </div>
+            </div>
+        </div>
     </div>
-    </div>
-    </div>
-    </div>*@
 </div>
 
 <div class="row">
