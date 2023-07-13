@@ -18,7 +18,7 @@
 
     <div class="col-xl-3 col-md-3 mb-4">
         <label for="txtCnpj">CNPJ</label>
-        <input asp-for=Matricula.Empregador.Cnpj type="text" class="form-control" id="txtCnpj">
+        <input asp-for=Matricula.Empregador.CnpjFormatado type="text" class="form-control" id="txtCnpj">
     </div>
 
     <div class="col-xl-2 col-md-2 mb-4">
@@ -45,6 +45,21 @@
 </div>
 
 <div class="row">
+    <div class="col-xl-2 col-md-2 mb-2">
+        <label for="txtBanco">Banco</label>
+        <input asp-for=Matricula.Banco type="text" class="form-control" id="txtBanco">
+    </div>
+    <div class="col-xl-2 col-md-2 mb-2">
+        <label for="txtAgencia">Agência</label>
+        <input asp-for=Matricula.Agencia type="text" class="form-control" id="txtAgencia">
+    </div>
+    <div class="col-xl-2 col-md-2 mb-2">
+        <label for="txtSalarioNominal">Salário Nominal</label>
+        <input asp-for=Matricula.SalarioNominal type="text" class="form-control" id="txtSalarioNominal">
+    </div>
+</div>
+
+<div class="row">
     <!-- Collapsable Card Example TOTAL DE VENCIMENTOS -->
     <div class="col-xl-6 col-md-6 mb-6">
         <div class="card shadow mb-4 border-left-primary shadow">
@@ -60,12 +75,12 @@
                 <div class="card-header bg-transparent border-primary font-weight-bold text-gray-800">R$ @Model.TotalVencimentos.ToString("#,###,###,##0.00")</div>
 
                 @if (Model.MatriculaDemonstrativoPagamentoEventos != null &&
-                    Model.MatriculaDemonstrativoPagamentoEventos.Where(
-                        e => e.Evento.Tipo == "V").Count() > 0)
+                Model.MatriculaDemonstrativoPagamentoEventos.Where(
+                e => e.Evento.Tipo == "V").Count() > 0)
                 {
                     @foreach (var mdpe in Model.MatriculaDemonstrativoPagamentoEventos.Where(
-                        e => e.Evento.Tipo == "V").OrderBy(
-                            mdpe => mdpe.IdEvento))
+                   e => e.Evento.Tipo == "V").OrderBy(
+                   mdpe => mdpe.IdEvento))
                     {
                         <div class="card-body">
                             <p class="text-primary">
@@ -104,12 +119,12 @@
                 <div class="card-header bg-transparent border-danger font-weight-bold text-gray-800">R$ @Model.TotalDescontos.ToString("#,###,###,##0.00")</div>
 
                 @if (Model.MatriculaDemonstrativoPagamentoEventos != null &&
-                    Model.MatriculaDemonstrativoPagamentoEventos.Where(
-                        e => e.Evento.Tipo == "D").Count() > 0)
+                Model.MatriculaDemonstrativoPagamentoEventos.Where(
+                e => e.Evento.Tipo == "D").Count() > 0)
                 {
                     @foreach (var mdpe in Model.MatriculaDemonstrativoPagamentoEventos.Where(
-                        e => e.Evento.Tipo == "D").OrderBy(
-                            mdpe => mdpe.IdEvento))
+                   e => e.Evento.Tipo == "D").OrderBy(
+                   mdpe => mdpe.IdEvento))
                     {
                         <div class="card-body">
                             <p class="text-danger">
@@ -146,16 +161,16 @@
             <!-- Card Content - Collapse -->
             <div class="collapse show" id="collapseCardOutros">
                 @if (Model.MatriculaDemonstrativoPagamentoTotalizadores != null &&
-                    Model.MatriculaDemonstrativoPagamentoTotalizadores.Where(
-                        t => t.IdTotalizador != 3 &&
-                        t.IdTotalizador != 4 &&
-                        t.IdTotalizador != 7).Count() > 0)  // Deve ignorar nesse Card o Total de Vencimentos (3), Total de Descontos (4) e Total Líquido (7) que são mostrados no Card de Totais Liquidos.
+                Model.MatriculaDemonstrativoPagamentoTotalizadores.Where(
+                t => t.IdTotalizador != 3 &&
+                t.IdTotalizador != 4 &&
+                t.IdTotalizador != 7).Count() > 0)  // Deve ignorar nesse Card o Total de Vencimentos (3), Total de Descontos (4) e Total Líquido (7) que são mostrados no Card de Totais Liquidos.
                 {
                     @foreach (var mdpt in Model.MatriculaDemonstrativoPagamentoTotalizadores.Where(
-                        t => t.IdTotalizador != 3 &&
-                        t.IdTotalizador != 4 &&
-                        t.IdTotalizador != 7).OrderBy(
-                            mdpt => mdpt.IdTotalizador))
+                   t => t.IdTotalizador != 3 &&
+                   t.IdTotalizador != 4 &&
+                   t.IdTotalizador != 7).OrderBy(
+                   mdpt => mdpt.IdTotalizador))
                     {
                         <div class="card-body text-warning">
                             <strong>@mdpt.Totalizador.Descricao:</strong> R$ @mdpt.Valor.ToString("#,###,###,##0.00")
