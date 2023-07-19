@@ -1,11 +1,12 @@
 ﻿namespace PayCheck.Api.Controllers
 {
     using System;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using PayCheck.Business.Interfaces;
 
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class DemonstrativoPagamentoController : ControllerBase
     {
         private readonly IMatriculaDemonstrativoPagamentoBusiness _business;
@@ -17,6 +18,7 @@
             this._business = business ?? throw new ArgumentNullException(nameof(business));
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult GetDemonstrativosPagamento()
         {
@@ -39,6 +41,7 @@
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("{guid}")]
         public IActionResult GetDemonstrativoPagamento(Guid guid)
         {
@@ -62,6 +65,7 @@
             }
         }
 
+        [Authorize]
         [HttpGet("{competencia}/{matricula}")]
         public IActionResult GetDemonstrativoPagamento(string competencia, string matricula)
         {
