@@ -11,15 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.DataAccess.DTOs", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.DataAccess.Core", "submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Core\ARVTech.DataAccess.Core.csproj", "{D8E4E8B1-B96B-48E9-AE77-A90B298E278E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.Transmission.Engine", "..\ARVTech.DataAccess\submodules\ARVTech.Transmission\src\ARVTech.Transmission.Engine\ARVTech.Transmission.Engine.csproj", "{E4D6042D-43A4-4FA9-8E06-932E5E732E0F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayCheck.Infrastructure", "src\PayCheck.Infrastructure\PayCheck.Infrastructure.csproj", "{E27993C2-F6A5-4828-9501-C01580367448}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayCheck.Application", "src\PayCheck.Application\PayCheck.Application.csproj", "{2E285D18-43FF-4429-AB6E-0ED832AFCC77}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayCheck.Business", "src\PayCheck.Business\PayCheck.Business.csproj", "{A59CC949-0442-4DA3-B51D-E73467F83F8C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.Shared", "..\ARVTech.Shared\src\ARVTech.Shared.csproj", "{37CCC054-E632-471F-B0EB-940977D1B72B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.Shared", "submodules\ARVTech.Shared\src\ARVTech.Shared.csproj", "{4A669E3E-FB06-4349-B128-737D91FBBDA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,10 +41,6 @@ Global
 		{D8E4E8B1-B96B-48E9-AE77-A90B298E278E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8E4E8B1-B96B-48E9-AE77-A90B298E278E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8E4E8B1-B96B-48E9-AE77-A90B298E278E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E4D6042D-43A4-4FA9-8E06-932E5E732E0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E4D6042D-43A4-4FA9-8E06-932E5E732E0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E4D6042D-43A4-4FA9-8E06-932E5E732E0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E4D6042D-43A4-4FA9-8E06-932E5E732E0F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E27993C2-F6A5-4828-9501-C01580367448}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E27993C2-F6A5-4828-9501-C01580367448}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E27993C2-F6A5-4828-9501-C01580367448}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -59,10 +53,10 @@ Global
 		{A59CC949-0442-4DA3-B51D-E73467F83F8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A59CC949-0442-4DA3-B51D-E73467F83F8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A59CC949-0442-4DA3-B51D-E73467F83F8C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{37CCC054-E632-471F-B0EB-940977D1B72B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{37CCC054-E632-471F-B0EB-940977D1B72B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{37CCC054-E632-471F-B0EB-940977D1B72B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{37CCC054-E632-471F-B0EB-940977D1B72B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A669E3E-FB06-4349-B128-737D91FBBDA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A669E3E-FB06-4349-B128-737D91FBBDA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A669E3E-FB06-4349-B128-737D91FBBDA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A669E3E-FB06-4349-B128-737D91FBBDA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
