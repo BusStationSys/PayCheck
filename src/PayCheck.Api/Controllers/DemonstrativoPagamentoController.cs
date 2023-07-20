@@ -41,7 +41,7 @@
             }
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpGet("{guid}")]
         public IActionResult GetDemonstrativoPagamento(Guid guid)
         {
@@ -65,7 +65,7 @@
             }
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet("{competencia}/{matricula}")]
         public IActionResult GetDemonstrativoPagamento(string competencia, string matricula)
         {
