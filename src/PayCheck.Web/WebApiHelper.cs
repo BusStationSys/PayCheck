@@ -31,7 +31,7 @@
         {
             try
             {
-                // Inclui o cabeçalho Accept que será envia na requisição.
+                // Inclui o cabeçalho Accept que será enviado na requisição.
                 this._httpClient.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(
                         Common.MediaTypes));
