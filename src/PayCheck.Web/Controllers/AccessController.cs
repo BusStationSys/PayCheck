@@ -25,12 +25,12 @@ namespace PayCheck.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
-            if ((loginDto.EmailUsername == "andre" || loginDto.EmailUsername == "arvtech@arvtech.com.br") &&
-                    (loginDto.Password == "123456"))
+            if ((loginDto.CpfEmailUsername == "andre" || loginDto.CpfEmailUsername == "arvtech@arvtech.com.br") &&
+                (loginDto.Password == "123456"))
             {
                 List<Claim> claims = new List<Claim>()
                 {
-                    new Claim(ClaimTypes.NameIdentifier,loginDto.EmailUsername),
+                    new Claim(ClaimTypes.NameIdentifier,loginDto.CpfEmailUsername),
                     new Claim("OtherProperty","OtherValue"),
                 };
 

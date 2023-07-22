@@ -8,9 +8,9 @@
 
     public class UnitOfWorkSqlServerAdapter : IUnitOfWorkAdapter
     {
-        private readonly SqlConnection _connection = null;
+        private readonly SqlConnection _connection;
 
-        private SqlTransaction _transaction = null;
+        private SqlTransaction _transaction;
 
         private readonly string _connectionString;
 

@@ -18,7 +18,7 @@
             this._business = business ?? throw new ArgumentNullException(nameof(business));
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet]
         public IActionResult GetDemonstrativosPagamento()
         {

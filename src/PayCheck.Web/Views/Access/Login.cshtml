@@ -1,3 +1,5 @@
+@model ARVTech.DataAccess.DTOs.UniPayCheck.LoginDto
+
 @{
     Layout = null;
 }
@@ -31,9 +33,48 @@
                 <div class="card o-hidden border-0 shadow-lg my-5">
                     <div class="card-body p-0">
                         <div class="row">
-                            <form asp-action="Login" asp-controller="Access" method="post">
-                                <h1>Login</h1>
-                            </form>
+                            <div class="col-lg-6"></div>
+                            <div class="col-lg-6">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gray-900 mb-4">Seja bem-vindo(a)!</h1>
+                                    </div>
+                                    <form class="user" asp-action="Login" asp-controller="Access" method="post">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control form-control-user" id="txtCpfEmailNomeUsuario" aria-describedby="emailHelp" placeholder="Digite seu CPF, E-mail ou Nome de Usuário" asp-for="CpfEmailUsername" />
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" class="form-control form-control-user" id="txtSenha" placeholder="Digite sua Senha" asp-for="Password" />
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox small">
+                                                <input type="checkbox" class="custom-control-input" id="chkConectado" asp-for="KeepLoggedIn">
+                                                <label class="custom-control-label" for="chkConectado">Mantenha-me conectado</label>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-user btn-block">
+                                            Login
+                                        </button>
+                                        <hr>
+                                        <a href="index.html" class="btn btn-linkedin btn-user btn-block">
+                                            <i class="fab fa-linkedin fa-fw"></i> Login with Linkedin
+                                        </a>
+                                        <a href="index.html" class="btn btn-google btn-user btn-block">
+                                            <i class="fab fa-google fa-fw"></i> Login with Google
+                                        </a>
+                                        <a href="index.html" class="btn btn-facebook btn-user btn-block">
+                                            <i class="fab fa-facebook-f fa-fw"></i> Login with Facebook
+                                        </a>
+                                    </form>
+                                    <hr>
+                                    <div class="text-center">
+                                        <a class="small" href="forgot-password.html">Esqueci minha senha</a>
+                                    </div>
+                                    <div class="text-center">
+                                        <a class="small" href="register.html">É o seu primeiro acesso? Clique aqui</a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

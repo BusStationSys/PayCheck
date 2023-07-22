@@ -6,9 +6,19 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1 class="h3 mb-1 text-gray-800">
-    Demonstrativo de Pagamento
-</h1>
+<div class="row">
+    <h1 class="h3 mb-1 text-gray-800">
+        Demonstrativo de Pagamento
+    </h1>
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"></h1>
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-print fa-sm text-white-50"></i> Generate Report
+        </a>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-xl-7 col-md-7 mb-4">
@@ -55,8 +65,11 @@
     </div>
     <div class="col-xl-2 col-md-2 mb-2">
         <label for="txtSalarioNominal">Salário Nominal</label>
-        <input asp-for=Matricula.SalarioNominal type="text" class="form-control" id="txtSalarioNominal">
+        <input asp-for=Matricula.SalarioNominalFormatado type="text" class="form-control" id="txtSalarioNominal">
     </div>
+</div>
+
+<div class="row">
 </div>
 
 <div class="row">
@@ -207,5 +220,5 @@
 </div>
 <div>
     @*@Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |*@
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Voltar</a>
 </div>
