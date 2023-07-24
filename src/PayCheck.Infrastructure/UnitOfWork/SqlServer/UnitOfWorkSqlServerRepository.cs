@@ -9,15 +9,24 @@
     {
         public IMatriculaDemonstrativoPagamentoRepository MatriculaDemonstrativoPagamentoRepository { get; }
 
-        public UnitOfWorkSqlServerRepository(SqlConnection connection)
-        {
-            this.MatriculaDemonstrativoPagamentoRepository = new MatriculaDemonstrativoPagamentoRepository(
-                connection);
-        }
+        public IUsuarioRepository UsuarioRepository { get; }
 
-        public UnitOfWorkSqlServerRepository(SqlConnection connection, SqlTransaction transaction)
+        //public UnitOfWorkSqlServerRepository(SqlConnection connection)
+        //{
+        //    this.MatriculaDemonstrativoPagamentoRepository = new MatriculaDemonstrativoPagamentoRepository(
+        //        connection);
+
+        //    this.UsuarioRepository = new UsuarioRepository(
+        //        connection);
+        //}
+
+        public UnitOfWorkSqlServerRepository(SqlConnection connection, SqlTransaction? transaction = null)
         {
             this.MatriculaDemonstrativoPagamentoRepository = new MatriculaDemonstrativoPagamentoRepository(
+                connection,
+                transaction);
+
+            this.UsuarioRepository = new UsuarioRepository(
                 connection,
                 transaction);
         }

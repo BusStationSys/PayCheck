@@ -40,6 +40,9 @@ var unitOfWork = new UnitOfWorkSqlServer(
 builder.Services.AddScoped<IMatriculaDemonstrativoPagamentoBusiness>(
     provider => new MatriculaDemonstrativoPagamentoBusiness(unitOfWork));
 
+builder.Services.AddScoped<IUsuarioBusiness>(
+    provider => new UsuarioBusiness(unitOfWork));
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

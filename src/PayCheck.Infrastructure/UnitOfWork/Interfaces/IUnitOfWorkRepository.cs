@@ -5,5 +5,7 @@
     public interface IUnitOfWorkRepository
     {
         IMatriculaDemonstrativoPagamentoRepository MatriculaDemonstrativoPagamentoRepository { get; }
+
+        IUsuarioRepository UsuarioRepository { get; }
     }
 }

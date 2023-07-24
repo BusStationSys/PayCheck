@@ -10,7 +10,7 @@
     {
         private readonly SqlConnection _connection;
 
-        private SqlTransaction _transaction;
+        private SqlTransaction? _transaction;
 
         private readonly string _connectionString;
 
@@ -38,7 +38,7 @@
             }
         }
 
-        public IUnitOfWorkRepository Repositories { get; set; }
+        public IUnitOfWorkRepository? Repositories { get; set; }
 
         //public UnitOfWorkSqlServerAdapter(string connectionString = "")
         //{

@@ -48,25 +48,25 @@
 
         protected readonly string ParameterSymbol = "@";
 
-        protected SqlConnection _connection = null;
+        protected SqlConnection? _connection;
 
-        protected SqlTransaction _transaction = null;
+        protected SqlTransaction? _transaction;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="connection"></param>
-        protected BaseRepository(SqlConnection connection)
-        {
-            this._connection = connection;
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="connection"></param>
+        //protected BaseRepository(SqlConnection connection)
+        //{
+        //    this._connection = connection;
+        //}
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="transaction"></param>
-        protected BaseRepository(SqlConnection connection, SqlTransaction transaction)
+        protected BaseRepository(SqlConnection connection, SqlTransaction? transaction)
         {
             this._connection = connection;
             this._transaction = transaction;
@@ -111,7 +111,7 @@
         /// <param name="commandType"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected SqlCommand CreateCommand(string cmdText, CommandType commandType = CommandType.Text, SqlParameter[] parameters = null)
+        protected SqlCommand CreateCommand(string cmdText, CommandType commandType = CommandType.Text, SqlParameter[]? parameters = null)
         {
             try
             {
