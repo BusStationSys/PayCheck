@@ -20,88 +20,88 @@
         private readonly string _columnsPessoasJuridicas;
         private readonly string _columnsTotalizadores;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MatriculaRepository"/> class.
-        /// </summary>
-        /// <param name="connection"></param>
-        public MatriculaDemonstrativoPagamentoRepository(SqlConnection connection) :
-            base(connection)
-        {
-            base._connection = connection;
+        ///// <summary>
+        ///// Initializes a new instance of the <see cref="MatriculaRepository"/> class.
+        ///// </summary>
+        ///// <param name="connection"></param>
+        //public MatriculaDemonstrativoPagamentoRepository(SqlConnection connection) :
+        //    base(connection)
+        //{
+        //    base._connection = connection;
 
-            this.MapAttributeToField(
-                typeof(
-                    EventoEntity));
+        //    this.MapAttributeToField(
+        //        typeof(
+        //            EventoEntity));
 
-            this.MapAttributeToField(
-                typeof(
-                    MatriculaEntity));
+        //    this.MapAttributeToField(
+        //        typeof(
+        //            MatriculaEntity));
 
-            this.MapAttributeToField(
-                typeof(
-                    MatriculaDemonstrativoPagamentoEntity));
+        //    this.MapAttributeToField(
+        //        typeof(
+        //            MatriculaDemonstrativoPagamentoEntity));
 
-            this.MapAttributeToField(
-                typeof(
-                    MatriculaDemonstrativoPagamentoEventoEntity));
+        //    this.MapAttributeToField(
+        //        typeof(
+        //            MatriculaDemonstrativoPagamentoEventoEntity));
 
-            this.MapAttributeToField(
-                typeof(
-                    MatriculaDemonstrativoPagamentoTotalizadorEntity));
+        //    this.MapAttributeToField(
+        //        typeof(
+        //            MatriculaDemonstrativoPagamentoTotalizadorEntity));
 
-            this.MapAttributeToField(
-                typeof(
-                    PessoaFisicaEntity));
+        //    this.MapAttributeToField(
+        //        typeof(
+        //            PessoaFisicaEntity));
 
-            this.MapAttributeToField(
-                typeof(
-                    PessoaJuridicaEntity));
+        //    this.MapAttributeToField(
+        //        typeof(
+        //            PessoaJuridicaEntity));
 
-            this.MapAttributeToField(
-                typeof(
-                    TotalizadorEntity));
+        //    this.MapAttributeToField(
+        //        typeof(
+        //            TotalizadorEntity));
 
-            this._columnsEventos = base.GetAllColumnsFromTable(
-                base.TableNameEventos,
-                base.TableAliasEventos);
+        //    this._columnsEventos = base.GetAllColumnsFromTable(
+        //        base.TableNameEventos,
+        //        base.TableAliasEventos);
 
-            this._columnsMatriculas = base.GetAllColumnsFromTable(
-                base.TableNameMatriculas,
-                base.TableAliasMatriculas);
+        //    this._columnsMatriculas = base.GetAllColumnsFromTable(
+        //        base.TableNameMatriculas,
+        //        base.TableAliasMatriculas);
 
-            this._columnsMatriculasDemonstrativosPagamento = base.GetAllColumnsFromTable(
-                base.TableNameMatriculasDemonstrativosPagamento,
-                base.TableAliasMatriculasDemonstrativosPagamento);
+        //    this._columnsMatriculasDemonstrativosPagamento = base.GetAllColumnsFromTable(
+        //        base.TableNameMatriculasDemonstrativosPagamento,
+        //        base.TableAliasMatriculasDemonstrativosPagamento);
 
-            this._columnsMatriculasDemonstrativosPagamentoEventos = base.GetAllColumnsFromTable(
-                base.TableNameMatriculasDemonstrativosPagamentoEventos,
-                base.TableAliasMatriculasDemonstrativosPagamentoEventos);
+        //    this._columnsMatriculasDemonstrativosPagamentoEventos = base.GetAllColumnsFromTable(
+        //        base.TableNameMatriculasDemonstrativosPagamentoEventos,
+        //        base.TableAliasMatriculasDemonstrativosPagamentoEventos);
 
-            this._columnsMatriculasDemonstrativosPagamentoTotalizadores = base.GetAllColumnsFromTable(
-                base.TableNameMatriculasDemonstrativosPagamentoTotalizadores,
-                base.TableAliasMatriculasDemonstrativosPagamentoTotalizadores);
+        //    this._columnsMatriculasDemonstrativosPagamentoTotalizadores = base.GetAllColumnsFromTable(
+        //        base.TableNameMatriculasDemonstrativosPagamentoTotalizadores,
+        //        base.TableAliasMatriculasDemonstrativosPagamentoTotalizadores);
 
-            this._columnsPessoasFisicas = base.GetAllColumnsFromTable(
-                base.TableNamePessoasFisicas,
-                base.TableAliasPessoasFisicas,
-                "PF.FOTO");
+        //    this._columnsPessoasFisicas = base.GetAllColumnsFromTable(
+        //        base.TableNamePessoasFisicas,
+        //        base.TableAliasPessoasFisicas,
+        //        "PF.FOTO");
 
-            this._columnsPessoasJuridicas = base.GetAllColumnsFromTable(
-                base.TableNamePessoasJuridicas,
-                base.TableAliasPessoasJuridicas,
-                "PJ.LOGOTIPO");
+        //    this._columnsPessoasJuridicas = base.GetAllColumnsFromTable(
+        //        base.TableNamePessoasJuridicas,
+        //        base.TableAliasPessoasJuridicas,
+        //        "PJ.LOGOTIPO");
 
-            this._columnsTotalizadores = base.GetAllColumnsFromTable(
-                base.TableNameTotalizadores,
-                base.TableAliasTotalizadores);
-        }
+        //    this._columnsTotalizadores = base.GetAllColumnsFromTable(
+        //        base.TableNameTotalizadores,
+        //        base.TableAliasTotalizadores);
+        //}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MatriculaRepository"/> class.
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="transaction"></param>
-        public MatriculaDemonstrativoPagamentoRepository(SqlConnection connection, SqlTransaction transaction) :
+        public MatriculaDemonstrativoPagamentoRepository(SqlConnection connection, SqlTransaction? transaction) :
             base(connection, transaction)
         {
             base._connection = connection;
@@ -199,7 +199,7 @@
                 cmdText = string.Format(
                     CultureInfo.InvariantCulture,
                     cmdText,
-                    base._connection.Database,
+                    base._connection?.Database,
                     base.ParameterSymbol);
 
                 var guid = base._connection.QuerySingle<Guid>(
@@ -235,7 +235,7 @@
                 cmdText = string.Format(
                     CultureInfo.InvariantCulture,
                     cmdText,
-                    base._connection.Database,
+                    base._connection?.Database,
                     this.ParameterSymbol);
 
                 base._connection.Execute(
@@ -285,7 +285,7 @@
                 cmdText = string.Format(
                     CultureInfo.InvariantCulture,
                     cmdText,
-                    base._connection.Database,
+                    base._connection?.Database,
                     this.ParameterSymbol);
 
                 base._connection.Execute(
@@ -323,27 +323,27 @@
                                                  {this._columnsEventos},
                                                  {this._columnsMatriculasDemonstrativosPagamentoTotalizadores},
                                                  {this._columnsTotalizadores}
-                                            FROM [{this._connection.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamento}] as {base.TableAliasMatriculasDemonstrativosPagamento} WITH(NOLOCK)
+                                            FROM [{this._connection?.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamento}] as {base.TableAliasMatriculasDemonstrativosPagamento} WITH(NOLOCK)
 
-                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNameMatriculas}] as {base.TableAliasMatriculas} WITH(NOLOCK)
+                                      INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameMatriculas}] as {base.TableAliasMatriculas} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculasDemonstrativosPagamento}].[GUIDMATRICULA] = [{base.TableAliasMatriculas}].[GUID] 
 
-                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNamePessoasFisicas}] as {base.TableAliasPessoasFisicas} WITH(NOLOCK)
+                                      INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNamePessoasFisicas}] as {base.TableAliasPessoasFisicas} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculas}].[GUIDCOLABORADOR] = [{base.TableAliasPessoasFisicas}].[GUID]
 
-                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNamePessoasJuridicas}] as {base.TableAliasPessoasJuridicas} WITH(NOLOCK)
+                                      INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNamePessoasJuridicas}] as {base.TableAliasPessoasJuridicas} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculas}].[GUIDEMPREGADOR] = [{base.TableAliasPessoasJuridicas}].[GUID] 
 
-                                 LEFT OUTER JOIN [{this._connection.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamentoEventos}] as {base.TableAliasMatriculasDemonstrativosPagamentoEventos} WITH(NOLOCK)
+                                 LEFT OUTER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamentoEventos}] as {base.TableAliasMatriculasDemonstrativosPagamentoEventos} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculasDemonstrativosPagamento}].[GUID] = {base.TableAliasMatriculasDemonstrativosPagamentoEventos}.[GUIDMATRICULA_DEMONSTRATIVO_PAGAMENTO]
 
-                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNameEventos}] as {base.TableAliasEventos} WITH(NOLOCK)
+                                      INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameEventos}] as {base.TableAliasEventos} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculasDemonstrativosPagamentoEventos}].[IDEVENTO] = [{base.TableAliasEventos}].[ID]
 
-                                 LEFT OUTER JOIN [{this._connection.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamentoTotalizadores}] as {base.TableAliasMatriculasDemonstrativosPagamentoTotalizadores} WITH(NOLOCK)
+                                 LEFT OUTER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamentoTotalizadores}] as {base.TableAliasMatriculasDemonstrativosPagamentoTotalizadores} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculasDemonstrativosPagamento}].[GUID] = {base.TableAliasMatriculasDemonstrativosPagamentoTotalizadores}.[GUIDMATRICULA_DEMONSTRATIVO_PAGAMENTO]
 
-                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNameTotalizadores}] as {base.TableAliasTotalizadores} WITH(NOLOCK)
+                                      INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameTotalizadores}] as {base.TableAliasTotalizadores} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculasDemonstrativosPagamentoTotalizadores}].[IDTOTALIZADOR] = [{base.TableAliasTotalizadores}].[ID]
 
                                            WHERE UPPER([{base.TableAliasMatriculasDemonstrativosPagamento}].[GUID]) = {base.ParameterSymbol}Guid ";
@@ -450,7 +450,7 @@
                     cmdText,
                     this._columnsMatriculasDemonstrativosPagamento,
                     this._columnsMatriculas,
-                    base._connection.Database,
+                    base._connection?.Database,
                     base.TableNameMatriculasDemonstrativosPagamento,
                     base.TableAliasMatriculasDemonstrativosPagamento,
                     base.TableNameMatriculas,
@@ -501,21 +501,21 @@
                                                  {this._columnsPessoasJuridicas},
                                                  {this._columnsMatriculasDemonstrativosPagamentoEventos},
                                                  {this._columnsEventos}
-                                            FROM [{this._connection.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamento}] as {base.TableAliasMatriculasDemonstrativosPagamento} WITH(NOLOCK)
+                                            FROM [{this._connection?.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamento}] as {base.TableAliasMatriculasDemonstrativosPagamento} WITH(NOLOCK)
 
-                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNameMatriculas}] as {base.TableAliasMatriculas} WITH(NOLOCK)
+                                      INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameMatriculas}] as {base.TableAliasMatriculas} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculasDemonstrativosPagamento}].[GUIDMATRICULA] = [{base.TableAliasMatriculas}].[GUID] 
 
-                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNamePessoasFisicas}] as {base.TableAliasPessoasFisicas} WITH(NOLOCK)
+                                      INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNamePessoasFisicas}] as {base.TableAliasPessoasFisicas} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculas}].[GUIDCOLABORADOR] = [{base.TableAliasPessoasFisicas}].[GUID]
 
-                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNamePessoasJuridicas}] as {base.TableAliasPessoasJuridicas} WITH(NOLOCK)
+                                      INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNamePessoasJuridicas}] as {base.TableAliasPessoasJuridicas} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculas}].[GUIDEMPREGADOR] = [{base.TableAliasPessoasJuridicas}].[GUID] 
 
-                                 LEFT OUTER JOIN [{this._connection.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamentoEventos}] as {base.TableAliasMatriculasDemonstrativosPagamentoEventos} WITH(NOLOCK)
+                                 LEFT OUTER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamentoEventos}] as {base.TableAliasMatriculasDemonstrativosPagamentoEventos} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculasDemonstrativosPagamento}].[GUID] = {base.TableAliasMatriculasDemonstrativosPagamentoEventos}.[GUIDMATRICULA_DEMONSTRATIVO_PAGAMENTO]
 
-                                      INNER JOIN [{this._connection.Database}].[dbo].[{base.TableNameEventos}] as {base.TableAliasEventos} WITH(NOLOCK)
+                                      INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameEventos}] as {base.TableAliasEventos} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculasDemonstrativosPagamentoEventos}].[IDEVENTO] = [{base.TableAliasEventos}].[ID]
 
                                         ORDER BY [{base.TableAliasMatriculasDemonstrativosPagamento}].[COMPETENCIA] Desc,
@@ -586,7 +586,7 @@
                     cmdText,
                     this._columnsMatriculasDemonstrativosPagamento,
                     this._columnsMatriculas,
-                    base._connection.Database,
+                    base._connection?.Database,
                     base.TableNameMatriculasDemonstrativosPagamento,
                     base.TableAliasMatriculasDemonstrativosPagamento,
                     base.TableNameMatriculas,
@@ -641,7 +641,7 @@
                     cmdText,
                     this._columnsMatriculasDemonstrativosPagamento,
                     this._columnsMatriculas,
-                    base._connection.Database,
+                    base._connection?.Database,
                     base.TableNameMatriculasDemonstrativosPagamento,
                     base.TableAliasMatriculasDemonstrativosPagamento,
                     base.TableNameMatriculas,
@@ -693,7 +693,7 @@
                 cmdText = string.Format(
                     CultureInfo.InvariantCulture,
                     cmdText,
-                    base._connection.Database,
+                    base._connection?.Database,
                     this.ParameterSymbol);
 
                 base._connection.Execute(

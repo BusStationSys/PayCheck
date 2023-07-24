@@ -21,11 +21,24 @@
                 BaseAddress = this._baseAddress,
             };
 
-            using (var webApiHelper = new WebApiHelper(string.Concat(this._baseAddress, "/auth"), "arvtech", "(@rV73Ch)"))
+            using (var webApiHelper = new WebApiHelper(
+                string.Concat(
+                    this._baseAddress,
+                    "/auth"),
+                "arvtech",
+                "(@rV73Ch)"))
             {
-                string stringJson = webApiHelper.ExecutePost(true);
+                var authDto = new AuthDto
+                {
+                    Username = "arvtech",
+                    Password = "(@rV73Ch)",
+                };
 
-                var authResponse = JsonConvert.DeserializeObject<AuthResponse>(stringJson);
+                string stringJson = webApiHelper.ExecutePostAuthenticationByBasic(
+                    authDto);
+
+                var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
+                    stringJson);
 
                 this._tokenBearer = authResponse.Token;
             }

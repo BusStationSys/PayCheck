@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <Folder Include="Interfaces\Actions\" />
-    <Folder Include="Interfaces\Repository\" />
   </ItemGroup>
 
   <ItemGroup>
