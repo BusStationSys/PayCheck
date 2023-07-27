@@ -7,6 +7,7 @@
     using System;
     using ARVTech.Shared;
     using System.Net.Http;
+    using System.Web.Http;
 
     public class WebApiHelper : IDisposable
     {
@@ -137,11 +138,8 @@
                 //  Limpa o Header.
                 this._httpClient.DefaultRequestHeaders.Accept.Clear();
 
-                //this._httpClient.DefaultRequestHeaders.Authorization = new BasicAuthenticationHeaderValue(
-                //    this._username, 
-                //    this._password);
                 this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-                    "Bearer ",
+                    "Bearer",
                     this._token);
 
                 // Envio da requisição a fim de autenticar e obter o token de acesso.
@@ -251,22 +249,22 @@
                     this._requestUri,
                     jsonContent).Result;
 
-                if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
-                {
-                    // Obtém o Token Gerado.
-                    return httpResponseMessage.Content.ReadAsStringAsync().Result;
+                return httpResponseMessage.Content.ReadAsStringAsync().Result;
 
-                    ////deserializa o token e data de expiração para o objeto Token
-                    //Token token = JsonConvert.DeserializeObject<Token>(conteudo);
+                //if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                //{
+                //    // Retorna o resultado do consumo do Post.
+                //    return httpResponseMessage.Content.ReadAsStringAsync().Result;
+                //}
+                //else
+                //{
+                //    string errorMessage = httpResponseMessage.Content.ReadAsStringAsync().Result;
 
-                    //// Associar o token aos headers do objeto
-                    //// do tipo HttpClient
-                    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer ", token.AccessToken);
-                }
-                else
-                {
-                    throw new Exception(httpResponseMessage.StatusCode.ToString());
-                }
+                //    throw new HttpResponseException(
+                //        httpResponseMessage);
+
+                //    //throw new Exception(httpResponseMessage.StatusCode.ToString());
+                //}
 
                 return string.Empty;
             }

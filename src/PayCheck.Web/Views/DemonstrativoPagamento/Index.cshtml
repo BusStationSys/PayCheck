@@ -6,67 +6,69 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1 class="h3 mb-1 text-gray-800">Demonstrativos de Pagamento</h1>
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Demonstrativo de Pagamento</h1>
+    </div>
 
-@*<p>
-    <a asp-action="Create">Create New</a>
-</p>*@
+    <table class="table">
 
-<table class="table">
+        <thead>
 
-    <thead>
-
-        <tr>
-
-            @*            <th>
-
-            @Html.DisplayNameFor(model => model.Guid)
-
-            </th>*@
-
-            <th>
-                @Html.DisplayNameFor(model => model.Competencia)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Matricula.Matricula)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Matricula.Colaborador.Nome)
-            </th>
-            <th>
-
-            </th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (var item in Model)
-        {
             <tr>
-                @*                <td>
-            @Html.DisplayFor(modelItem => item.Guid)
-            </td>*@
-                <td>
-                    @item.CompetenciaFormatada
-                </td>
-                <td>
-                    @item.Matricula.Matricula
-                </td>
-                <td>
-                    @item.Matricula.Colaborador.Nome
-                </td>
-                <td>
-                    @*                    @Html.ActionLink("Edit", "Edit", new { id=item.Guid }) |
 
-                @Html.ActionLink("Details", "Details", new { id=item.Guid }) |
+                @*            <th>
 
-                @Html.ActionLink("Delete", "Delete", new { id=item.Guid })*@
+                @Html.DisplayNameFor(model => model.Guid)
 
-                    @Html.ActionLink("Detalhes", "Details", new { guid = item.Guid }, new { @class = "btn btn-warning btn-xs" })
+                </th>*@
 
-                    @*<a href="@Url.Action("your action", "your controller", new { id = item.Id }" class="btn btn-success btn-xs">Delete</a>*@
-                </td>
+                <th>
+                    @Html.DisplayNameFor(model => model.Competencia)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Matricula.Matricula)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Matricula.Colaborador.Nome)
+                </th>
+                <th>
+
+                </th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    @*                <td>
+                @Html.DisplayFor(modelItem => item.Guid)
+                </td>*@
+                    <td>
+                        @item.CompetenciaFormatada
+                    </td>
+                    <td>
+                        @item.Matricula.Matricula
+                    </td>
+                    <td>
+                        @item.Matricula.Colaborador.Nome
+                    </td>
+                    <td>
+                        @*                    @Html.ActionLink("Edit", "Edit", new { id=item.Guid }) |
+
+                    @Html.ActionLink("Details", "Details", new { id=item.Guid }) |
+
+                    @Html.ActionLink("Delete", "Delete", new { id=item.Guid })*@
+
+                        @Html.ActionLink("Detalhes", "Details", new { guid = item.Guid }, new { @class = "btn btn-warning btn-xs" })
+
+                        @*<a href="@Url.Action("your action", "your controller", new { id = item.Id }" class="btn btn-success btn-xs">Delete</a>*@
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

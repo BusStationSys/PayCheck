@@ -273,7 +273,9 @@
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                  aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
+
+                                <!--asp-controller="Users" asp-action="Index"-->
+                                <a class="dropdown-item" href="@Url.Action("Details", "Perfil",new { filterName = "guid", filterValue = "007E080E-D203-4D60-B61E-966AD6933EEF" } )">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Perfil
                                 </a>
@@ -355,7 +357,7 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
                     <a class="btn btn-primary" href="~/Home/Logout">Logout</a>
-@*                    <button type="button" value="Cancelar" class="btn btn-secondary" data-dismiss="modal" />
+                    @*                    <button type="button" value="Cancelar" class="btn btn-secondary" data-dismiss="modal" />
                     <button type="submit" value="Logout" class="btn btn-primary" asp-action="Logout" asp-controller="Home" />*@
                 </div>
             </div>

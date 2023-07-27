@@ -4,9 +4,8 @@
     using ARVTech.Shared;
     using Microsoft.AspNetCore.Mvc;
     using Newtonsoft.Json;
-    using System.Net.Http.Headers;
 
-    public class DemonstrativoPagamentoController : Controller
+    public class PerfilController : Controller
     {
         private readonly Uri _baseAddress = new(Common.UriBaseApiString);
 
@@ -14,7 +13,7 @@
 
         private readonly string _tokenBearer;
 
-        public DemonstrativoPagamentoController()
+        public PerfilController()
         {
             this._httpClient = new HttpClient
             {

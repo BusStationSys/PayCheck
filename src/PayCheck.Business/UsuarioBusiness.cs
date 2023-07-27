@@ -2,7 +2,6 @@
 {
     using System;
     using ARVTech.DataAccess.Core.Entities.UniPayCheck;
-    using ARVTech.DataAccess.DTOs.EquHos;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using AutoMapper;
     using PayCheck.Business.Interfaces;

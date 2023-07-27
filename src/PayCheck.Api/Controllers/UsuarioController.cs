@@ -6,6 +6,8 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using PayCheck.Business.Interfaces;
+    using System.Diagnostics;
+    using System.Net;
 
     [Route("api/[controller]")]
     [ApiController]
@@ -18,6 +20,12 @@
             this._business = business ?? throw new ArgumentNullException(nameof(business));
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="loginDto"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost]
         public IActionResult Authenticate([FromBody] LoginDto loginDto)
@@ -30,16 +38,26 @@
 
                 if (usuarioAutenticado is null)
                 {
-                    return NotFound(
-                        $"Usuário não encontrado para as credenciais {loginDto.CpfEmailUsername}!");
+                    return NotFound(new
+                    {
+                        Message = $"Usuário não encontrado para as credenciais {loginDto.CpfEmailUsername}!",
+                        StatusCode = HttpStatusCode.NotFound,
+                    });
                 }
 
-                return Ok(
-                    usuarioAutenticado);
+                return Ok(new
+                {
+                    usuarioAutenticado,
+                    StatusCode = HttpStatusCode.OK,
+                });
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                return BadRequest(new
+                {
+                    Message = ex.Message,
+                    StatusCode = HttpStatusCode.BadRequest,
+                });
             }
         }
     }

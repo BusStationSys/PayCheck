@@ -101,18 +101,20 @@
                         nameof(
                             password));
 
-                //  Maneira utilizada para trazer os relacionamentos 1:N.
-                string cmdText = @"      SELECT TOP 1 {0},
-                                                      {1},
-                                                      {2}
-                                           FROM [{3}].[dbo].[USUARIOS] AS U WITH(NOLOCK)
-                                     INNER JOIN [{3}].[dbo].[PESSOAS_FISICAS] as PF WITH(NOLOCK)
-                                             ON [U].[GUIDCOLABORADOR] = [PF].[GUID]
-                                     INNER JOIN [{3}].[dbo].[PESSOAS] as P WITH(NOLOCK)
-                                             ON [PF].[GUIDPESSOA] = [P].[GUID]
-                                          WHERE ( LOWER(PF.CPF) = {4}Filtro
-                                             OR LOWER(P.Email) = {4}Filtro
-                                             OR LOWER(U.USERNAME) = {4}Filtro )  ";
+                //  Maneira utilizada para trazer os relacionamentos 0:N.
+                Dictionary<Guid, UsuarioEntity> usuariosResult = new();
+
+                string cmdText = @"          SELECT {0},
+                                                    {1},
+                                                    {2}
+                                               FROM [{3}].[dbo].[USUARIOS] AS U WITH(NOLOCK)
+                                    LEFT OUTER JOIN [{3}].[dbo].[PESSOAS_FISICAS] as PF WITH(NOLOCK)
+                                                 ON [U].[GUIDCOLABORADOR] = [PF].[GUID]
+                                    LEFT OUTER JOIN [{3}].[dbo].[PESSOAS] as P WITH(NOLOCK)
+                                                 ON [PF].[GUIDPESSOA] = [P].[GUID]
+                                              WHERE ( LOWER(PF.CPF) = {4}Filtro
+                                                       OR LOWER(P.Email) = {4}Filtro
+                                                       OR LOWER(U.USERNAME) = {4}Filtro ) ";
 
                 cmdText = string.Format(
                     CultureInfo.InvariantCulture,
@@ -123,26 +125,55 @@
                     base._connection?.Database,
                     base.ParameterSymbol);
 
-                var usuarioEntity = base._connection.Query<UsuarioEntity, PessoaFisicaEntity, PessoaEntity, UsuarioEntity>(
+                base._connection.Query<UsuarioEntity, PessoaFisicaEntity, PessoaEntity, UsuarioEntity>(
                     cmdText,
                     map: (mapUsuario, mapPessoaFisica, mapPessoa) =>
                     {
-                        mapUsuario.Colaborador = mapPessoaFisica;
-                        mapUsuario.Colaborador.Pessoa = mapPessoa;
+                        if (!usuariosResult.ContainsKey(mapUsuario.Guid))
+                        {
+                            //mapUsuario.Colaborador = mapPessoaFisica;
+                            //mapUsuario.Colaborador.Pessoa = mapPessoa;
 
-                        return mapUsuario;
+                            usuariosResult.Add(
+                                mapUsuario.Guid,
+                                mapUsuario);
+                        }
+
+                        UsuarioEntity current = usuariosResult[mapUsuario.Guid];
+
+                        if (mapPessoaFisica != null && current.Colaborador != mapPessoaFisica)
+                        {
+                            current.Colaborador = mapPessoaFisica;
+
+                            if (mapPessoa != null && current.Colaborador.Pessoa != mapPessoa)
+                            {
+                                current.Colaborador.Pessoa = mapPessoa;
+                            }
+                        }
+
+                        //if (mapUsuarioCabanha != null && !current.UsuariosCabanhas.Contains(mapUsuarioCabanha))
+                        //{
+                        //    mapUsuarioCabanha.Usuario = current;
+                        //    // mapCabanha.Conta = mapConta;
+                        //    // mapCabanha.Associacao = mapAssociacao;
+
+                        //    current.UsuariosCabanhas.Add(
+                        //        mapUsuarioCabanha);
+                        //}
+
+                        return null;
                     },
                     param: new
                     {
                         Filtro = cpfEmailUsername,
                     },
                     splitOn: "GUID,GUID,GUID",
-                    transaction: this._transaction).FirstOrDefault();
+                    transaction: this._transaction);
 
-                if (usuarioEntity != null)
+                if (usuariosResult.Values.FirstOrDefault() != null)
                 {
                     return this.CheckPasswordValid(
-                        usuarioEntity.Guid,
+                        usuariosResult.Values.FirstOrDefault().Guid,
                         password);
                 }
 
@@ -262,7 +293,7 @@
                 string cmdText = @" SELECT TOP 1 Guid
                                       FROM [{0}].[dbo].USUARIOS
                                      WHERE GUID = {1}Guid
-                                       AND SENHA = {1}PasswordQuery COLLATE SQL_Latin1_General_CP1_CS_AS ";
+                                       AND PASSWORD = {1}PasswordQuery COLLATE SQL_Latin1_General_CP1_CS_AS ";
 
                 cmdText = string.Format(
                     CultureInfo.InvariantCulture,
@@ -283,10 +314,13 @@
                     return this.Get(
                         ((UsuarioEntity)usuarioEntity).Guid);
                 }
-                else
-                {
-                    throw new Exception("CPF, Email, Username e Senha não conferem, verifique.");
-                }
+
+                return null;
+
+                //else
+                //{
+                //    throw new Exception("CPF, Email, Username e Senha não conferem, verifique.");
+                //}
             }
             catch
             {

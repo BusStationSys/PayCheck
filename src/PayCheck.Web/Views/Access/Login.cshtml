@@ -28,6 +28,27 @@
 
 <body class="bg-gradient-primary">
     <div class="container">
+
+        @*<div class="alert alert-danger alert-dismissible" style="display: none;">*@
+        @*        <div class="alert alert-info alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <h4 id="">
+        <i class="icon fa fa-ban"></i>
+
+        </h4>
+        <span></span>
+        </div>*@
+
+        @*<div class="alert alert-info alert-dismissible" role="alert" style="display: none;">*@
+        @*        <div class="alert alert-info alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>
+        <i class="icon fa fa-info"></i>Atenção
+        </strong>
+        <br />
+        <span></span>
+        </div>*@
+
         <div class="row justify-content-center">
             <div class="col-xl-10 col-lg-12 col-md-9">
                 <div class="card o-hidden border-0 shadow-lg my-5">
@@ -36,6 +57,26 @@
                             <div class="col-lg-6"></div>
                             <div class="col-lg-6">
                                 <div class="p-5">
+                                    <div class="alert alert-danger alert-dismissible" style="display: none;"></div>
+                                    <div class="alert alert-warning alert-dismissible" style="display: none;"></div>
+
+                                    @if (ViewBag.ErrorMessage != null)
+                                    {
+                                        <div class="alert alert-danger alert-dismissible">
+                                            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+                                            <strong>Erro</strong>
+                                            @ViewBag.ErrorMessage
+                                        </div>
+                                    }
+                                    else if (ViewBag.ValidateMessage != null)
+                                    {
+                                        <div class="alert alert-warning alert-dismissible">
+                                            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+                                            <strong>Validação</strong>
+                                            @ViewBag.ValidateMessage
+                                        </div>
+                                    }
+
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Seja bem-vindo(a)!</h1>
                                     </div>
