@@ -4,6 +4,8 @@
 
     public interface IUsuarioBusiness
     {
-        UsuarioResponse Authenticate(string cpfEmailUsername, string password);
+        UsuarioResponse GetByUsername(string cpfEmailUsername);
+
+        UsuarioResponse CheckPasswordValid(Guid guid, string password);
     }
 }

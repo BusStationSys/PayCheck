@@ -9,9 +9,13 @@
 
     public class UsuarioBusiness : BaseBusiness, IUsuarioBusiness
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="unitOfWork"></param>
         public UsuarioBusiness(IUnitOfWork unitOfWork) :
             base(unitOfWork)
-        { 
+        {
             this._unitOfWork = unitOfWork;
 
             var mapperConfiguration = new MapperConfiguration(cfg =>
@@ -27,7 +31,48 @@
             this._mapper = new Mapper(mapperConfiguration);
         }
 
-        public UsuarioResponse Authenticate(string cpfEmailUsername, string password)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public UsuarioResponse CheckPasswordValid(Guid guid, string password)
+        {
+            var connection = this._unitOfWork.Create();
+
+            try
+            {
+                if (guid == Guid.Empty)
+                    throw new ArgumentNullException(
+                        nameof(guid));
+                else if (string.IsNullOrEmpty(password))
+                    throw new ArgumentNullException(
+                        nameof(password));
+
+                var entity = connection.Repositories.UsuarioRepository.CheckPasswordValid(
+                    guid,
+                    password);
+
+                return this._mapper.Map<UsuarioResponse>(
+                    entity);
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                connection.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cpfEmailUsername"></param>
+        /// <returns></returns>
+        public UsuarioResponse GetByUsername(string cpfEmailUsername)
         {
             var connection = this._unitOfWork.Create();
 
@@ -36,13 +81,9 @@
                 if (string.IsNullOrEmpty(cpfEmailUsername))
                     throw new ArgumentNullException(
                         nameof(cpfEmailUsername));
-                else if (string.IsNullOrEmpty(password))
-                    throw new ArgumentNullException(
-                        nameof(password));
 
-                var entity = connection.Repositories.UsuarioRepository.Authenticate(
-                    cpfEmailUsername,
-                    password);
+                var entity = connection.Repositories.UsuarioRepository.GetByUsername(
+                    cpfEmailUsername);
 
                 return this._mapper.Map<UsuarioResponse>(
                     entity);

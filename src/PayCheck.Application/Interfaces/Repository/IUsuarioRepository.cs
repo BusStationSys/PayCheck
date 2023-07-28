@@ -8,6 +8,8 @@
     /// </summary>
     public interface IUsuarioRepository : ICreateRepository<UsuarioEntity, UsuarioEntity>, IReadRepository<UsuarioEntity, Guid>, IUpdateRepository<UsuarioEntity,Guid, UsuarioEntity>, IDeleteRepository<Guid>
     {
-        UsuarioEntity Authenticate(string cpfEmailUsername, string password);
+        UsuarioEntity GetByUsername(string cpfEmailUsername);
+
+        UsuarioEntity CheckPasswordValid(Guid guid, string password);
     }
 }
