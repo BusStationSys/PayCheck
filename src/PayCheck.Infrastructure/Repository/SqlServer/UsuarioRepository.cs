@@ -53,13 +53,51 @@
         }
 
         /// <summary>
-        /// 
+        /// Creates the "Usuário" record.
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
         public UsuarioEntity Create(UsuarioEntity entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                string cmdText = @"     DECLARE @NewGuidUsuario UniqueIdentifier
+                                            SET @NewGuidUsuario = NEWID()
+
+                                    INSERT INTO [{0}].[dbo].[USUARIOS]
+                                                ([GUID],
+                                                 [GUIDCOLABORADOR],
+                                                 [USERNAME],
+                                                 [PASSWORD],
+                                                 [IDASPNETUSER],
+                                                 [DATA_PRIMEIRO_ACESSO])
+                                         VALUES (@NewGuidUsuario,
+                                                 {1}GuidColaborador,
+                                                 {1}Username,
+                                                 {1}Password,
+                                                 {1}IdAspNetUser,
+                                                 {1}DataPrimeiroAcesso)
+
+                                          SELECT @NewGuidUsuario ";
+
+                cmdText = string.Format(
+                    CultureInfo.InvariantCulture,
+                    cmdText,
+                    base._connection.Database,
+                    base.ParameterSymbol);
+
+                var guid = base._connection.QuerySingle<Guid>(
+                    sql: cmdText,
+                    param: entity,
+                    transaction: this._transaction);
+
+                return this.Get(
+                    guid);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -213,7 +251,76 @@
         /// <returns>If success, the list with all "Usuários" records. Otherwise, an exception detailing the problem.</returns>
         public IEnumerable<UsuarioEntity> GetAll()
         {
-            throw new NotImplementedException();
+            try
+            {
+                //  Maneira utilizada para trazer os relacionamentos 0:N.
+                Dictionary<Guid, UsuarioEntity> usuariosResult = new();
+
+                string cmdText = @"          SELECT {0},
+                                                    {1},
+                                                    {2}
+                                               FROM [{3}].[dbo].[USUARIOS] AS U WITH(NOLOCK)
+                                    LEFT OUTER JOIN [{3}].[dbo].[PESSOAS_FISICAS] as PF WITH(NOLOCK)
+                                                 ON [U].[GUIDCOLABORADOR] = [PF].[GUID]
+                                    LEFT OUTER JOIN [{3}].[dbo].[PESSOAS] as P WITH(NOLOCK)
+                                                 ON [PF].[GUIDPESSOA] = [P].[GUID] ";
+
+                cmdText = string.Format(
+                    CultureInfo.InvariantCulture,
+                    cmdText,
+                    this._columnsUsuarios,
+                    this._columnsPessoasFisicas,
+                    this._columnsPessoas,
+                    base._connection?.Database,
+                    base.ParameterSymbol);
+
+                base._connection.Query<UsuarioEntity, PessoaFisicaEntity, PessoaEntity, UsuarioEntity>(
+                    cmdText,
+                    map: (mapUsuario, mapPessoaFisica, mapPessoa) =>
+                    {
+                        if (!usuariosResult.ContainsKey(mapUsuario.Guid))
+                        {
+                            //mapUsuario.Colaborador = mapPessoaFisica;
+                            //mapUsuario.Colaborador.Pessoa = mapPessoa;
+
+                            usuariosResult.Add(
+                                mapUsuario.Guid,
+                                mapUsuario);
+                        }
+
+                        UsuarioEntity current = usuariosResult[mapUsuario.Guid];
+
+                        if (mapPessoaFisica != null && current.Colaborador != mapPessoaFisica)
+                        {
+                            current.Colaborador = mapPessoaFisica;
+
+                            if (mapPessoa != null && current.Colaborador.Pessoa != mapPessoa)
+                            {
+                                current.Colaborador.Pessoa = mapPessoa;
+                            }
+                        }
+
+                        //if (mapUsuarioCabanha != null && !current.UsuariosCabanhas.Contains(mapUsuarioCabanha))
+                        //{
+                        //    mapUsuarioCabanha.Usuario = current;
+                        //    // mapCabanha.Conta = mapConta;
+                        //    // mapCabanha.Associacao = mapAssociacao;
+
+                        //    current.UsuariosCabanhas.Add(
+                        //        mapUsuarioCabanha);
+                        //}
+
+                        return null;
+                    },
+                    splitOn: "GUID,GUID,GUID",
+                    transaction: this._transaction);
+
+                return usuariosResult.Values;
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -316,7 +423,32 @@
         /// <exception cref="NotImplementedException"></exception>
         public UsuarioEntity Update(Guid guid, UsuarioEntity entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                string cmdText = @" UPDATE [{0}].[dbo].[USUARIOS]
+                                       SET [GUIDCOLABORADOR] = {1}GuidColaborador,
+                                           [USERNAME] = {1}Username,
+                                           [DATA_PRIMEIRO_ACESSO] = {1}DataPrimeiroAcesso
+                                     WHERE [ID] = {1}Id ";
+
+                cmdText = string.Format(
+                    CultureInfo.InvariantCulture,
+                    cmdText,
+                    base._connection.Database,
+                    this.ParameterSymbol);
+
+                base._connection.Execute(
+                    cmdText,
+                    param: entity,
+                    transaction: this._transaction);
+
+                return this.Get(
+                    entity.Guid);
+            }
+            catch
+            {
+                throw;
+            }
         }
     }
 }

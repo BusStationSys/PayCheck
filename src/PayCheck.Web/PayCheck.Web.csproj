@@ -33,8 +33,4 @@
     <ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.DTOs\ARVTech.DataAccess.DTOs.csproj" />
     <ProjectReference Include="..\..\submodules\ARVTech.Shared\src\ARVTech.Shared.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\Access\" />
-  </ItemGroup>
 </Project>

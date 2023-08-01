@@ -29,17 +29,23 @@
         /// 
         /// </summary>
         /// <param name="loginDto"></param>
-        /// <returns></returns>
+        /// <returns><see cref="IActionResult"/></returns>
+        /// <response code="200">A busca foi realizada com sucesso.</response>
+        /// <response code="400">Não foi possível realizar a busca.</response>
+        /// <response code="404">A busca não encontrou resultados.</response>
         [Authorize]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Authenticate([FromBody] LoginDto loginDto)
         {
             try
             {
-                var usuarioAutenticado = this._business.GetByUsername(
+                var usuarioResponse = this._business.GetByUsername(
                     loginDto.CpfEmailUsername);
 
-                if (usuarioAutenticado is null)
+                if (usuarioResponse is null)
                 {
                     return NotFound(new
                     {
@@ -49,11 +55,11 @@
                 }
                 else
                 {
-                    usuarioAutenticado = this._business.CheckPasswordValid(
-                        usuarioAutenticado.Guid,
+                    usuarioResponse = this._business.CheckPasswordValid(
+                        usuarioResponse.Guid,
                         loginDto.Password);
 
-                    if (usuarioAutenticado is null)
+                    if (usuarioResponse is null)
                     {
                         return NotFound(new
                         {
@@ -61,13 +67,14 @@
                             StatusCode = HttpStatusCode.NotFound,
                         });
                     }
+                    else
+                    {
+                        usuarioResponse.StatusCode = HttpStatusCode.OK;
+                    }
                 }
 
-                return Ok(new
-                {
-                    usuarioAutenticado,
-                    StatusCode = HttpStatusCode.OK,
-                });
+                return Ok(
+                    usuarioResponse);
             }
             catch (Exception ex)
             {

@@ -1,7 +1,9 @@
 ﻿namespace PayCheck.Web.Controllers
 {
+    using System;
     using System.Net;
     using System.Security.Claims;
+    using System.Text;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared;
     using Microsoft.AspNetCore.Authentication;
@@ -47,6 +49,54 @@
             }
         }
 
+        public IActionResult LinkActivation()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LinkActivation(ActivateDto activateDto)
+        {
+            try
+            {
+                if (TempData["GuidUsuario"] != null)
+                {
+                    string guidUsuario = ((Guid)TempData["GuidUsuario"]).ToString();
+                    guidUsuario = guidUsuario.Replace(".", string.Empty);
+                    guidUsuario = guidUsuario.Replace("-", string.Empty);
+
+                    string dataAtual = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+                    var parametros = $"GUIDUsuario={guidUsuario}&DataAtual={dataAtual}";
+
+                    string key = QueryStringCryptography.Encrypt(
+                        parametros,
+                        Constants.EncryptionKey);
+
+                    string partialBaseURL = this._baseAddress.AbsoluteUri.Substring(0, this._baseAddress.AbsoluteUri.LastIndexOf("/"));
+
+                    var linkActivation = $"{partialBaseURL}/Activate.aspx?parametro={Uri.EscapeDataString(
+                        key)}";
+
+                    TempData["GuidUsuario"] = null;
+
+                    return RedirectToAction(
+                        "Index",
+                        "Home");
+                }
+                else
+                {
+                    ViewBag.ValidateMessage = "Usuário não encontrado para geração e envio do Link de Ativação.";
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = ex.Message;
+            }
+
+            return View();
+        }
+
         public IActionResult Login()
         {
             ClaimsPrincipal claimsPrincipal = HttpContext.User;
@@ -66,48 +116,43 @@
         {
             try
             {
-                var usuario = default(UsuarioResponse);
+                var usuarioResponse = default(UsuarioResponse);
 
-                bool autenticado = false;
+                string requestUri = @$"{this._httpClient.BaseAddress}/Usuario";
 
-                if ((loginDto.CpfEmailUsername == "andre" || loginDto.CpfEmailUsername == "arvtech@arvtech.com.br") &&
-                    (loginDto.Password == "123456"))
+                using (var webApiHelper = new WebApiHelper(
+                    requestUri,
+                    this._tokenBearer))
                 {
-                    autenticado = true;
-                }
-                else
-                {
-                    string requestUri = @$"{this._httpClient.BaseAddress}/Usuario";
+                    string stringJson = webApiHelper.ExecutePostAuthenticationByBearer(
+                        loginDto);
 
-                    using (var webApiHelper = new WebApiHelper(
-                        requestUri,
-                        this._tokenBearer))
-                    {
-                        string stringJson = webApiHelper.ExecutePostAuthenticationByBearer(
-                            loginDto);
-
-                        usuario = JsonConvert.DeserializeObject<UsuarioResponse>(stringJson);
-                    }
-
-                    if (usuario != null)
-                    {
-                        if (usuario.StatusCode == HttpStatusCode.OK)
-                        {
-                            autenticado = true;
-                        }
-                        else if(usuario.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            throw new Exception(usuario.Message);
-                        }
-                    }
+                    usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(stringJson);
                 }
 
-                if (autenticado)
+                if (usuarioResponse?.Guid != Guid.Empty &&
+                    usuarioResponse?.StatusCode == HttpStatusCode.OK)
                 {
-                    List<Claim> claims = new List<Claim>()
+                    if (usuarioResponse.DataPrimeiroAcesso is null ||
+                        !usuarioResponse.DataPrimeiroAcesso.HasValue)
                     {
-                        new Claim(ClaimTypes.NameIdentifier,loginDto.CpfEmailUsername),
-                        new Claim("OtherProperty","OtherValue"),
+                        TempData["GuidUsuario"] = usuarioResponse.Guid;
+
+                        return RedirectToAction(
+                            "LinkActivation",
+                            "Access");
+                    }
+
+                    var claims = new List<Claim>()
+                    {
+                        new Claim(nameof(usuarioResponse.Guid), usuarioResponse.Guid.ToString()),
+                        new Claim(ClaimTypes.NameIdentifier, usuarioResponse.Guid.ToString()),
+                        //new Claim(ClaimTypes.Name, usuarioResponse.Colaborador.Nome),
+                        new Claim(ClaimTypes.Surname, usuarioResponse.Username),
+                        //new Claim(ClaimTypes.Email, usuarioResponse.Colaborador.Pessoa.Email),
+                        //new Claim(ClaimTypes.PostalCode, usuarioResponse.Colaborador.Pessoa.Cep),
+                        //new Claim(ClaimTypes.StateOrProvince, usuarioResponse.Colaborador.Pessoa.Uf),
+                        //new Claim("OtherProperty","OtherValue"),
                     };
 
                     ClaimsIdentity claimsIdentity = new(
@@ -130,8 +175,17 @@
                         "Index",
                         "Home");
                 }
-
-                ViewBag.ValidateMessage = usuario.Message;
+                else
+                {
+                    if (usuarioResponse?.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        ViewBag.ValidateMessage = usuarioResponse?.Message;
+                    }
+                    else if (usuarioResponse?.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        throw new Exception(usuarioResponse?.Message);
+                    }
+                }
             }
             catch (Exception ex)
             {

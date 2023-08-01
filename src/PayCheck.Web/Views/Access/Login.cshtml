@@ -82,10 +82,10 @@
                                     </div>
                                     <form class="user" asp-action="Login" asp-controller="Access" method="post">
                                         <div class="form-group">
-                                            <input type="text" class="form-control form-control-user" id="txtCpfEmailNomeUsuario" aria-describedby="emailHelp" placeholder="Digite seu CPF, E-mail ou Nome de Usuário" asp-for="CpfEmailUsername" />
+                                            <input type="text" class="form-control form-control-user" id="txtCpfEmailNomeUsuario" aria-describedby="emailHelp" placeholder="Digite seu CPF, E-mail ou Nome de Usuário" asp-for="CpfEmailUsername" required />
                                         </div>
                                         <div class="form-group">
-                                            <input type="password" class="form-control form-control-user" id="txtSenha" placeholder="Digite sua Senha" asp-for="Password" />
+                                            <input type="password" class="form-control form-control-user" id="txtSenha" placeholder="Digite sua Senha" asp-for="Password" required />
                                         </div>
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox small">
@@ -112,7 +112,7 @@
                                         <a class="small" href="forgot-password.html">Esqueci minha senha</a>
                                     </div>
                                     <div class="text-center">
-                                        <a class="small" href="register.html">É o seu primeiro acesso? Clique aqui</a>
+                                        <a class="small"><strong>Primeiro acesso?</strong></a>
                                     </div>
                                 </div>
                             </div>
