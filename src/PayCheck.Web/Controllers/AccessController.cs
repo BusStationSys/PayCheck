@@ -1,11 +1,15 @@
 ﻿namespace PayCheck.Web.Controllers
 {
     using System;
+    using System.Globalization;
+    using System.Linq;
     using System.Net;
     using System.Security.Claims;
     using System.Text;
+    using System.Web;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared;
+    using ARVTech.Shared.Email;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Mvc;
@@ -19,7 +23,9 @@
 
         private readonly string _tokenBearer;
 
-        public AccessController()
+        private readonly IEmailService _emailService;
+
+        public AccessController(IEmailService emailService)
         {
             this._httpClient = new HttpClient
             {
@@ -47,47 +53,150 @@
 
                 this._tokenBearer = authResponse.Token;
             }
+
+            this._emailService = emailService;
         }
 
-        public IActionResult LinkActivation()
+        public IActionResult ChangePassword()
         {
+            try
+            {
+                if (Request.Query["parametro"].Count > 0 &&
+                    Request.Query["parametro"][0] != null)
+                {
+                    //  Pega o parâmetro criptografado.
+                    string query = Request.Query["parametro"][0].ToString();
+
+                    // Descriptografa o parâmetro.
+                    string key = QueryStringCryptography.Decrypt(
+                        query,
+                        Constants.EncryptionKey);
+
+                    // Separa as variáveis utilizadas no parâmetro.
+                    var parameters = HttpUtility.ParseQueryString(
+                        key);
+
+                    if (parameters != null && parameters.Count > 0)
+                    {
+                        //  Faz a validação dos parâmetros GuidUsuario e DataAtual.
+                        if (parameters["GuidUsuario"] is null ||
+                            !Guid.TryParse(
+                                parameters["GuidUsuario"].ToString(),
+                                out Guid guidUsuario) ||
+                            parameters["DataAtual"] is null ||
+                            !DateTime.TryParseExact(
+                                parameters["DataAtual"].ToString(),
+                                "ddMMyyyyHHmmss", 
+                                CultureInfo.InvariantCulture, 
+                                DateTimeStyles.AssumeLocal, 
+                                out DateTime dataAtual))
+                        {
+                            throw new Exception("Não foi possível obter informações importantes do link.");
+                        }
+
+                        //  Pega a diferença da data de geração do link com a data atual.
+                        TimeSpan diferencaDataLink = DateTime.Now.Subtract(dataAtual);
+
+                        //  Se a diferença da data de geração do link com a data atual for superior a 120 minutos (2 Horas), mostra a mensagem.
+                        //  Caso contrário, prossegue com o carregamento da tela para que o usuário possa atualizar a nova senha.
+                        if (diferencaDataLink.Minutes > 120)
+                        {
+                            throw new Exception("Link expirado.");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Link inválido.");
+                    }
+                }
+                else
+                {
+                    throw new Exception("Link inválido.");
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = ex.Message;
+            }
+
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> LinkActivation(ActivateDto activateDto)
+        public IActionResult ChangePassword(AlteracaoSenhaDto alteracaoSenhaDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            return RedirectToAction(
+                "Index",
+                "Home");
+        }
+
+        public IActionResult LinkActivation()
+        {
+            if (TempData.ContainsKey("GuidUsuario"))
+            {
+                return View();
+            }
+
+            ViewBag.ValidateMessage = "Usuário não encontrado para geração e envio do Link de Ativação.";
+
+            return RedirectToAction(
+                "Index",
+                "Home");
+        }
+
+        [HttpPost]
+        public IActionResult LinkActivation(ActivateDto activateDto)
         {
             try
             {
-                if (TempData["GuidUsuario"] != null)
+                if (TempData.ContainsKey("GuidUsuario"))
                 {
-                    string guidUsuario = ((Guid)TempData["GuidUsuario"]).ToString();
-                    guidUsuario = guidUsuario.Replace(".", string.Empty);
-                    guidUsuario = guidUsuario.Replace("-", string.Empty);
+                    Guid.TryParse(
+                        TempData["GuidUsuario"].ToString(),
+                        out Guid guidUsuario);
 
-                    string dataAtual = DateTime.Now.ToString("yyyyMMddHHmmss");
+                    string dataAtualString = DateTime.Now.ToString("ddMMyyyyHHmmss");
 
-                    var parametros = $"GUIDUsuario={guidUsuario}&DataAtual={dataAtual}";
+                    TempData.Remove(
+                        "GuidUsuario");
+
+                    var parametros = $"GuidUsuario={guidUsuario:N}&DataAtual={dataAtualString}";
 
                     string key = QueryStringCryptography.Encrypt(
                         parametros,
                         Constants.EncryptionKey);
 
-                    string partialBaseURL = this._baseAddress.AbsoluteUri.Substring(0, this._baseAddress.AbsoluteUri.LastIndexOf("/"));
+                    string url = $"{Request.Scheme}://{Request.Host.Value}{Request.Path.Value}";
 
-                    var linkActivation = $"{partialBaseURL}/Activate.aspx?parametro={Uri.EscapeDataString(
-                        key)}";
+                    string partialUrl = url.Substring(
+                        0,
+                        url.LastIndexOf("/"));
 
-                    TempData["GuidUsuario"] = null;
+                    var linkActivation = $"{partialUrl}/ChangePassword?parametro={Uri.EscapeDataString(key)}";
 
-                    return RedirectToAction(
-                        "Index",
-                        "Home");
+                    this._emailService.SendMail(new EmailData
+                    {
+                        Body = $"Teste {linkActivation}",
+                        ReceiverEmail = activateDto.Email,
+                        ReceiverName = "Nome",
+                        Subject = "Ativação de Conta"
+                    });
+
+                    ViewBag.SuccessMessage = $"E-mail enviado com sucesso para o endereço {activateDto.Email}.";
                 }
                 else
                 {
                     ViewBag.ValidateMessage = "Usuário não encontrado para geração e envio do Link de Ativação.";
                 }
+
+                //return RedirectToAction(
+                //    "Index",
+                //    "Home");
             }
             catch (Exception ex)
             {
@@ -136,7 +245,14 @@
                     if (usuarioResponse.DataPrimeiroAcesso is null ||
                         !usuarioResponse.DataPrimeiroAcesso.HasValue)
                     {
-                        TempData["GuidUsuario"] = usuarioResponse.Guid;
+                        if (TempData.ContainsKey("GuidUsuario"))
+                        {
+                            TempData.Remove("GuidUsuario");
+                        }
+
+                        TempData.Add(
+                            "GuidUsuario",
+                            usuarioResponse.Guid);
 
                         return RedirectToAction(
                             "LinkActivation",
