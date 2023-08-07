@@ -274,6 +274,55 @@
             }
         }
 
+        public string ExecutePutAuthenticationByBearer(object content)
+        {
+            try
+            {
+                // Inclui o cabeçalho Accept que será enviado na requisição.
+                this._httpClient.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue(
+                        Common.MediaTypes));
+
+                //  Limpa o Header.
+                this._httpClient.DefaultRequestHeaders.Accept.Clear();
+
+                this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                    "Bearer",
+                    this._token);
+
+                JsonContent jsonContent = JsonContent.Create(
+                    content);
+
+                // Envio da requisição a fim de autenticar e obter o token de acesso.
+                var httpResponseMessage = this._httpClient.PutAsync(
+                    this._requestUri,
+                    jsonContent).Result;
+
+                return httpResponseMessage.Content.ReadAsStringAsync().Result;
+
+                //if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                //{
+                //    // Retorna o resultado do consumo do Post.
+                //    return httpResponseMessage.Content.ReadAsStringAsync().Result;
+                //}
+                //else
+                //{
+                //    string errorMessage = httpResponseMessage.Content.ReadAsStringAsync().Result;
+
+                //    throw new HttpResponseException(
+                //        httpResponseMessage);
+
+                //    //throw new Exception(httpResponseMessage.StatusCode.ToString());
+                //}
+
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public string ExecutePostWithoutAuthentication()
         {
             try

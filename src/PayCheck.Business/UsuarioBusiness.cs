@@ -3,6 +3,7 @@
     using System;
     using ARVTech.DataAccess.Core.Entities.UniPayCheck;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.Shared;
     using AutoMapper;
     using PayCheck.Business.Interfaces;
     using PayCheck.Infrastructure.UnitOfWork.Interfaces;
@@ -20,7 +21,8 @@
 
             var mapperConfiguration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<UsuarioDto, UsuarioEntity>().ReverseMap();
+                cfg.CreateMap<UsuarioRequestCreateDto, UsuarioEntity>().ReverseMap();
+                cfg.CreateMap<UsuarioRequestUpdateDto, UsuarioEntity>().ReverseMap();
                 cfg.CreateMap<UsuarioResponse, UsuarioEntity>().ReverseMap();
                 cfg.CreateMap<PessoaFisicaDto, PessoaFisicaEntity>().ReverseMap();
                 cfg.CreateMap<PessoaFisicaResponse, PessoaFisicaEntity>().ReverseMap();
@@ -91,6 +93,74 @@
             }
             catch
             {
+                throw;
+            }
+            finally
+            {
+                connection.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="createDto"></param>
+        /// <param name="updateDto"></param>
+        /// <returns></returns>
+        public UsuarioResponse SaveData(UsuarioRequestCreateDto? createDto = null, UsuarioRequestUpdateDto? updateDto = null)
+        {
+            var connection = this._unitOfWork.Create();
+
+            try
+            {
+                if (createDto != null && updateDto != null)
+                    throw new InvalidOperationException($"{nameof(createDto)} e {nameof(updateDto)} não podem estar preenchidos ao mesmo tempo.");
+                else if (createDto is null && updateDto is null)
+                    throw new InvalidOperationException($"{nameof(createDto)} e {nameof(updateDto)} não podem estar vazios ao mesmo tempo.");
+                else if (updateDto != null && updateDto.Guid == Guid.Empty)
+                    throw new InvalidOperationException($"É necessário o preenchimento do {nameof(updateDto.Guid)}.");
+
+                var entity = default(
+                    UsuarioEntity);
+
+                connection.BeginTransaction();
+
+                if (updateDto != null)
+                {
+                    updateDto.Password = PasswordCryptography.GetHashMD5(
+                        updateDto.Password);
+
+                    entity = this._mapper.Map<UsuarioEntity>(
+                        updateDto);
+
+                    entity = connection.Repositories.UsuarioRepository.Update(
+                        entity.Guid,
+                        entity);
+                }
+                else if (createDto != null)
+                {
+                    createDto.Password = PasswordCryptography.GetHashMD5(
+                        createDto.Password);
+
+                    entity = this._mapper.Map<UsuarioEntity>(
+                        createDto);
+
+                    entity = connection.Repositories.UsuarioRepository.Create(
+                        entity);
+                }
+
+                connection.CommitTransaction();
+
+                return this._mapper.Map<UsuarioResponse>(
+                    entity);
+            }
+            catch
+            {
+                if (connection.Transaction != null)
+                {
+                    connection.Rollback();
+                }
+
                 throw;
             }
             finally

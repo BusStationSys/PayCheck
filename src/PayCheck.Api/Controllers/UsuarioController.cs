@@ -78,11 +78,57 @@
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.BadRequest,
-                });
+                //return BadRequest(new
+                //{
+                //    Message = ex.Message,
+                //    StatusCode = HttpStatusCode.BadRequest,
+                //});
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <param name="updateDto"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPut("{guid}")]
+        public IActionResult UpdateUsuario(Guid guid, [FromBody] UsuarioRequestUpdateDto updateDto)
+        {
+            try
+            {
+                var usuarioResponse = this._business.SaveData(
+                    updateDto: updateDto);
+
+                usuarioResponse.StatusCode = HttpStatusCode.NoContent;
+
+                return StatusCode(
+                    StatusCodes.Status204NoContent,
+                    usuarioResponse);
+
+                //return Ok(
+                //    usuarioResponse);
+
+                //return CreatedAtAction(
+                //    nameof(
+                //        this.GetAgente),
+                //    new
+                //    {
+                //        id = agenteResponseDto.CodigoAgente,
+                //    },
+                //    agenteResponseDto);
+
+                //return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    ex.Message);
             }
         }
     }

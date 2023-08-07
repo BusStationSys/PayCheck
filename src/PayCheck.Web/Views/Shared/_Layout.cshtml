@@ -266,7 +266,7 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">André Rodrigues de Vargas</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">@ViewData["NomeColaborador"]</span>
                                 <img class="img-profile rounded-circle"
                                      src="~/Theme/startbootstrap-sb-admin-2-gh-pages/img/undraw_profile.svg">
                             </a>
@@ -275,7 +275,7 @@
                                  aria-labelledby="userDropdown">
 
                                 <!--asp-controller="Users" asp-action="Index"-->
-                                <a class="dropdown-item" href="@Url.Action("Details", "Perfil",new { filterName = "guid", filterValue = "007E080E-D203-4D60-B61E-966AD6933EEF" } )">
+                                <a class="dropdown-item" href="@Url.Action("Details", "Perfil",new { filterName = "guid", filterValue = @ViewData["GuidUsuario"] } )">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Perfil
                                 </a>
@@ -348,7 +348,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Pronto para sair?</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
