@@ -31,13 +31,13 @@
         /// <param name="loginDto"></param>
         /// <returns><see cref="IActionResult"/></returns>
         /// <response code="200">A busca foi realizada com sucesso.</response>
-        /// <response code="400">Não foi possível realizar a busca.</response>
         /// <response code="404">A busca não encontrou resultados.</response>
+        /// <response code="500">Ocorre</response>
         [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Authenticate([FromBody] LoginDto loginDto)
         {
             try
@@ -78,11 +78,6 @@
             }
             catch (Exception ex)
             {
-                //return BadRequest(new
-                //{
-                //    Message = ex.Message,
-                //    StatusCode = HttpStatusCode.BadRequest,
-                //});
                 return StatusCode(
                     StatusCodes.Status500InternalServerError,
                     ex.Message);
@@ -97,6 +92,8 @@
         /// <returns></returns>
         [Authorize]
         [HttpPut("{guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateUsuario(Guid guid, [FromBody] UsuarioRequestUpdateDto updateDto)
         {
             try
@@ -106,12 +103,12 @@
 
                 usuarioResponse.StatusCode = HttpStatusCode.NoContent;
 
-                return StatusCode(
-                    StatusCodes.Status204NoContent,
-                    usuarioResponse);
-
-                //return Ok(
+                //return StatusCode(
+                //    StatusCodes.Status204NoContent,
                 //    usuarioResponse);
+
+                return Ok(
+                    usuarioResponse);
 
                 //return CreatedAtAction(
                 //    nameof(

@@ -9,6 +9,8 @@
     {
         public IMatriculaDemonstrativoPagamentoRepository MatriculaDemonstrativoPagamentoRepository { get; }
 
+        public IPessoaFisicaRepository PessoaFisicaRepository { get; }
+
         public IUsuarioRepository UsuarioRepository { get; }
 
         //public UnitOfWorkSqlServerRepository(SqlConnection connection)
@@ -23,6 +25,10 @@
         public UnitOfWorkSqlServerRepository(SqlConnection connection, SqlTransaction? transaction = null)
         {
             this.MatriculaDemonstrativoPagamentoRepository = new MatriculaDemonstrativoPagamentoRepository(
+                connection,
+                transaction);
+
+            this.PessoaFisicaRepository = new PessoaFisicaRepository(
                 connection,
                 transaction);
 

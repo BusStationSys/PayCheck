@@ -5,12 +5,20 @@
     using Microsoft.AspNetCore.Mvc;
     using PayCheck.Business.Interfaces;
 
+    /// <summary>
+    /// 
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class DemonstrativoPagamentoController : ControllerBase
     {
         private readonly IMatriculaDemonstrativoPagamentoBusiness _business;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="business"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public DemonstrativoPagamentoController(IMatriculaDemonstrativoPagamentoBusiness business)
         {
             // this._repository = repository ?? throw new ArgumentNullException(nameof(repository));
@@ -18,7 +26,11 @@
             this._business = business ?? throw new ArgumentNullException(nameof(business));
         }
 
-        //[Authorize]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [Authorize]
         [HttpGet]
         public IActionResult GetDemonstrativosPagamento()
         {
@@ -41,7 +53,12 @@
             }
         }
 
-        //[AllowAnonymous]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        [Authorize]
         [HttpGet("{guid}")]
         public IActionResult GetDemonstrativoPagamento(Guid guid)
         {
@@ -65,7 +82,13 @@
             }
         }
 
-        //[Authorize]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="competencia"></param>
+        /// <param name="matricula"></param>
+        /// <returns></returns>
+        [Authorize]
         [HttpGet("{competencia}/{matricula}")]
         public IActionResult GetDemonstrativoPagamento(string competencia, string matricula)
         {

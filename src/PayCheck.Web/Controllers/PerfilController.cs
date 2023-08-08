@@ -43,73 +43,67 @@
             }
         }
 
-        [HttpGet]
-        public IActionResult Index()
-        {
-            string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento";
+        //[HttpGet]
+        //public IActionResult Index()
+        //{
+        //    string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento";
 
-            List<MatriculaDemonstrativoPagamentoResponse>? mdps = null;
+        //    List<MatriculaDemonstrativoPagamentoResponse>? mdps = null;
 
-            //this._httpClient.DefaultRequestHeaders.Accept.Clear();
+        //    //this._httpClient.DefaultRequestHeaders.Accept.Clear();
 
-            //this._httpClient.DefaultRequestHeaders.Accept.Add(
-            //    new MediaTypeWithQualityHeaderValue(
-            //        Common.MediaTypes));
+        //    //this._httpClient.DefaultRequestHeaders.Accept.Add(
+        //    //    new MediaTypeWithQualityHeaderValue(
+        //    //        Common.MediaTypes));
 
-            //this._httpClient.DefaultRequestHeaders.Add(
-            //    "Authorization",
-            //    $"Bearer {authResponse.Token}");
+        //    //this._httpClient.DefaultRequestHeaders.Add(
+        //    //    "Authorization",
+        //    //    $"Bearer {authResponse.Token}");
 
-            //this._httpClient.DefaultRequestHeaders.Add("Accept", "*/*");
+        //    //this._httpClient.DefaultRequestHeaders.Add("Accept", "*/*");
 
-            HttpResponseMessage httpResponseMessage = this._httpClient.GetAsync(
-                requestUri).Result;
+        //    HttpResponseMessage httpResponseMessage = this._httpClient.GetAsync(
+        //        requestUri).Result;
 
-            if (httpResponseMessage.IsSuccessStatusCode)
-            {
-                string data = httpResponseMessage.Content.ReadAsStringAsync().Result;
+        //    if (httpResponseMessage.IsSuccessStatusCode)
+        //    {
+        //        string data = httpResponseMessage.Content.ReadAsStringAsync().Result;
 
-                if (!string.IsNullOrEmpty(data))
-                {
-                    mdps = JsonConvert.DeserializeObject<List<MatriculaDemonstrativoPagamentoResponse>>(data);
-                }
-            }
+        //        if (!string.IsNullOrEmpty(data))
+        //        {
+        //            mdps = JsonConvert.DeserializeObject<List<MatriculaDemonstrativoPagamentoResponse>>(data);
+        //        }
+        //    }
 
-            return View(
-                mdps);
-        }
+        //    return View(
+        //        mdps);
+        //}
 
         [HttpGet()]
         public IActionResult Details(Guid? guid)
         {
             if (guid == null)
             {
-                return NotFound();
+                //return NotFound();
+
+                return View();
             }
 
-            string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/{guid}";
+            string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/{guid}";
 
-            var mdp = default(MatriculaDemonstrativoPagamentoResponse);
+            var pf = default(PessoaFisicaResponse);
 
-            HttpResponseMessage httpResponseMessage = this._httpClient.GetAsync(
-                requestUri).Result;
-
-            if (httpResponseMessage.IsSuccessStatusCode)
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
             {
-                string data = httpResponseMessage.Content.ReadAsStringAsync().Result;
+                string stringJson = webApiHelper.ExecuteGetAuthenticationByBearer();
 
-                if (!string.IsNullOrEmpty(data))
-                {
-                    mdp = JsonConvert.DeserializeObject<MatriculaDemonstrativoPagamentoResponse>(data);
-                }
-                else
-                {
-                    return NotFound();
-                }
+                pf = JsonConvert.DeserializeObject<PessoaFisicaResponse>(stringJson);
             }
 
             return View(
-                mdp);
+                pf);
         }
     }
 }

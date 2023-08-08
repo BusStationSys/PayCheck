@@ -17,37 +17,6 @@ public class HomeController : Controller
     public HomeController(ILogger<HomeController> logger)
     {
         _logger = logger;
-
-        //if (ViewData["GuidUsuario"] is null)
-        //{
-        //    ViewData["GuidUsuario"] = TempData["GuidUsuario"];
-        //}
-
-        //if (ViewData["NomeColaborador"] is null)
-        //{
-        //    ViewData["NomeColaborador"] = TempData["NomeColaborador"];
-        //}
-
-        //ClaimsPrincipal claimsPrincipal = HttpContext.User;
-
-        //if (claimsPrincipal.Identity.IsAuthenticated)
-        //{
-
-        //}
-
-        //    ViewData["GuidUsuario"] = DateTime.Now;  //HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponse.Guid));
-
-        //TempData.Remove("GuidUsuario");
-        //TempData.Remove("GuidColaborador");
-        //TempData.Remove("NomeColaborador");
-        //TempData.Remove("Username");
-
-        //TempData["GuidUsuario"] = claimsPrincipal.Identity.Name;
-        //TempData["GuidColaborador"] = usuarioResponse.Colaborador.Guid;
-        //TempData["NomeColaborador"] = usuarioResponse.Colaborador.Nome;
-        //TempData["Username"] = usuarioResponse.Username;
-
-        //string x = TempData["GuidUsuario"].ToString();
     }
 
     public IActionResult Index()
@@ -58,9 +27,17 @@ public class HomeController : Controller
         {
             ViewData["GuidUsuario"] = HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponse.Guid)).Value;
             ViewData["Username"] = HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponse.Username)).Value;
+            ViewData["GuidColaborador"] = HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponse.Colaborador.Guid)).Value;
             ViewData["NomeColaborador"] = HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponse.Colaborador.Nome)).Value;
             ViewData["Email"] = HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponse.Email)).Value;
         }
+
+        //new Claim(nameof(usuarioResponse.Guid), usuarioResponse.Guid.ToString()),
+        //                    new Claim(ClaimTypes.Name, usuarioResponse.Colaborador.Nome),
+        //                    new Claim(nameof(usuarioResponse.Colaborador.Guid), guidColaborador),
+        //                    new Claim(nameof(usuarioResponse.Colaborador.Nome), usuarioResponse.Colaborador.Nome),
+        //                    new Claim(nameof(usuarioResponse.Username), usuarioResponse.Username),
+        //                    new Claim(nameof(usuarioResponse.Email), usuarioResponse.Email),
 
         return View();
     }

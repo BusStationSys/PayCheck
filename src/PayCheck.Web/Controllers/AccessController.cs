@@ -152,47 +152,52 @@
         {
             try
             {
+                ViewBag.ErrorMessage = null;
+                ViewBag.SuccessMessage = null;
+                ViewBag.ValidateMessage = null;
 
+                if (!ModelState.IsValid)
+                {
+                    return View();
+                }
+
+                var usuarioUpdateDto = new UsuarioRequestUpdateDto
+                {
+                    Guid = Guid.Parse(TempData["ChangePasswordGuidUsuario"].ToString()),
+                    GuidColaborador = Guid.Parse(TempData["ChangePasswordGuidColaborador"].ToString()),
+                    Email = TempData["ChangePasswordEmail"].ToString(),
+                    DataPrimeiroAcesso = DateTimeOffset.UtcNow,
+                    Password = alteracaoSenhaDto.Password,
+                    ConfirmPassword = alteracaoSenhaDto.ConfirmPassword,
+                    Username = TempData["ChangePasswordUsername"].ToString(),
+                };
+
+                var usuarioResponse = default(UsuarioResponse);
+
+                string requestUri = @$"{this._httpClient.BaseAddress}/Usuario/{usuarioUpdateDto.Guid:N}";
+
+                using (var webApiHelper = new WebApiHelper(
+                    requestUri,
+                    this._tokenBearer))
+                {
+                    string stringJson = webApiHelper.ExecutePutAuthenticationByBearer(
+                        usuarioUpdateDto);
+
+                    usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(stringJson);
+                }
+
+                ViewBag.SuccessMessage = $"Senha alterada para o usuário {usuarioResponse.Username}.";
+
+                //return RedirectToAction(
+                //    "Index",
+                //    "Home");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                ViewBag.ErrorMessage = ex.Message;
             }
 
-            if (!ModelState.IsValid)
-            {
-                return View();
-            }
-
-            var usuarioUpdateDto = new UsuarioRequestUpdateDto
-            {
-                Guid = Guid.Parse(TempData["ChangePasswordGuidUsuario"].ToString()),
-                GuidColaborador = Guid.Parse(TempData["ChangePasswordGuidColaborador"].ToString()),
-                Email = TempData["ChangePasswordEmail"].ToString(),
-                DataPrimeiroAcesso = DateTimeOffset.UtcNow,
-                Password = alteracaoSenhaDto.Password,
-                ConfirmPassword = alteracaoSenhaDto.ConfirmPassword,
-                Username = TempData["ChangePasswordUsername"].ToString(),
-            };
-
-            var usuarioResponse = default(UsuarioResponse);
-
-            string requestUri = @$"{this._httpClient.BaseAddress}/Usuario/{usuarioUpdateDto.Guid:N}";
-
-            using (var webApiHelper = new WebApiHelper(
-                requestUri,
-                this._tokenBearer))
-            {
-                string stringJson = webApiHelper.ExecutePutAuthenticationByBearer(
-                    usuarioUpdateDto);
-
-                usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(stringJson);
-            }
-
-            return RedirectToAction(
-                "Index",
-                "Home");
+            return View();
         }
 
         public IActionResult LinkActivation()
@@ -225,6 +230,10 @@
         {
             try
             {
+                ViewBag.ErrorMessage = null;
+                ViewBag.SuccessMessage = null;
+                ViewBag.ValidateMessage = null;
+
                 if (TempData.ContainsKey("GuidUsuario"))
                 {
                     Guid.TryParse(
@@ -295,7 +304,7 @@ A Equipe de Suporte PayCheck®.";
                         Subject = "Ativação de Conta"
                     });
 
-                    ViewBag.SuccessMessage = $"E-mail enviado com sucesso para o endereço {activateDto.Email}.";
+                    ViewBag.SuccessMessage = $"E-mail enviado para o endereço {activateDto.Email}.";
                 }
                 else
                 {
@@ -311,7 +320,8 @@ A Equipe de Suporte PayCheck®.";
                 ViewBag.ErrorMessage = ex.Message;
             }
 
-            return View("Login");
+            // return View("Login");
+            return View();
         }
 
         public IActionResult Login()
@@ -369,17 +379,30 @@ A Equipe de Suporte PayCheck®.";
                     }
                     else
                     {
-                        var claims = new List<Claim>()
-                    {
-                        new Claim(ClaimTypes.NameIdentifier, usuarioResponse.Guid.ToString()),
-                        new Claim(nameof(usuarioResponse.Guid), usuarioResponse.Guid.ToString()),
-                        new Claim(ClaimTypes.Name, usuarioResponse.Colaborador.Nome),
-                        new Claim(nameof(usuarioResponse.Colaborador.Nome), usuarioResponse.Colaborador.Nome),
-                        new Claim(nameof(usuarioResponse.Username), usuarioResponse.Username),
-                        new Claim(nameof(usuarioResponse.Email), usuarioResponse.Email),
-                        new Claim(ClaimTypes.Email, usuarioResponse.Email),
-                        //new Claim("OtherProperty","OtherValue"),
-                    };
+                        string guidColaborador = string.Empty;
+                        string nomeColaborador = string.Empty;
+
+                        if (usuarioResponse.GuidColaborador != null &&
+                            usuarioResponse.GuidColaborador.HasValue &&
+                            usuarioResponse.GuidColaborador.Value != Guid.Empty)
+                        {
+                            guidColaborador = usuarioResponse.Colaborador.Guid.ToString();
+                            nomeColaborador = usuarioResponse.Colaborador.Nome;
+                        }
+
+                        var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.NameIdentifier, usuarioResponse.Guid.ToString()),
+                            new Claim(ClaimTypes.Name, usuarioResponse.Colaborador.Nome),
+                            new Claim(ClaimTypes.Email, usuarioResponse.Email),
+                            new Claim(nameof(usuarioResponse.Guid), usuarioResponse.Guid.ToString()),
+                            new Claim(nameof(usuarioResponse.Colaborador.Guid), guidColaborador),
+                            new Claim(nameof(usuarioResponse.Colaborador.Nome), nomeColaborador),
+                            new Claim(nameof(usuarioResponse.Username), usuarioResponse.Username),
+                            new Claim(nameof(usuarioResponse.Email), usuarioResponse.Email),
+                            //new Claim("OtherProperty","OtherValue"),
+                        };
+
                         ClaimsIdentity claimsIdentity = new(
                             claims,
                             CookieAuthenticationDefaults.AuthenticationScheme);

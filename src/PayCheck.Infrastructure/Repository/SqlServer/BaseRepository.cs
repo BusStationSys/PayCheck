@@ -161,7 +161,7 @@
         /// <returns></returns>
         protected SqlParameter[] GetDataParameters<T>(T entity) where T : class
         {
-            IList<SqlParameter> dataParameters = null;
+            var dataParameters = default(IList<SqlParameter>);
 
             foreach (var property in entity.GetType().GetProperties())
             {
@@ -192,7 +192,7 @@
                 dataParameters.Add(item);
             }
 
-            return dataParameters.ToArray();
+            return dataParameters?.ToArray();
         }
 
         /// <summary>

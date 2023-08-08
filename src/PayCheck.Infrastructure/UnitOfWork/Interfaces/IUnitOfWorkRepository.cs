@@ -6,6 +6,8 @@
     {
         IMatriculaDemonstrativoPagamentoRepository MatriculaDemonstrativoPagamentoRepository { get; }
 
+        IPessoaFisicaRepository PessoaFisicaRepository { get; }
+
         IUsuarioRepository UsuarioRepository { get; }
     }
 }

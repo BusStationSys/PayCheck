@@ -274,11 +274,11 @@
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                  aria-labelledby="userDropdown">
 
-                                <!--asp-controller="Users" asp-action="Index"-->
-                                <a class="dropdown-item" href="@Url.Action("Details", "Perfil",new { filterName = "guid", filterValue = @ViewData["GuidUsuario"] } )">
+                                <a class="dropdown-item" asp-controller="Perfil" asp-action="Details" asp-route-guid=@ViewData["GuidColaborador"]>
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Perfil
                                 </a>
+
                                 <a class="dropdown-item" href="#">
                                     <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Configurações

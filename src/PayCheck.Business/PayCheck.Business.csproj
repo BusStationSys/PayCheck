@@ -34,7 +34,6 @@
     <Compile Remove="MatriculaDemonstrativoPagamentoEventoBusiness.cs" />
     <Compile Remove="MatriculaDemonstrativoPagamentoTotalizadorBusiness.cs" />
     <Compile Remove="MatriculaEspelhoPontoBusiness.cs" />
-    <Compile Remove="PessoaFisicaBusiness.cs" />
     <Compile Remove="PessoaJuridicaBusiness.cs" />
     <Compile Remove="PessoaService.cs" />
     <Compile Remove="UniPayCheck\EventoBusiness.cs" />

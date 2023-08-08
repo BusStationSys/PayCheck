@@ -40,6 +40,9 @@ var unitOfWork = new UnitOfWorkSqlServer(
 builder.Services.AddScoped<IMatriculaDemonstrativoPagamentoBusiness>(
     provider => new MatriculaDemonstrativoPagamentoBusiness(unitOfWork));
 
+builder.Services.AddScoped<IPessoaFisicaBusiness>(
+    provider => new PessoaFisicaBusiness(unitOfWork));
+
 builder.Services.AddScoped<IUsuarioBusiness>(
     provider => new UsuarioBusiness(unitOfWork));
 

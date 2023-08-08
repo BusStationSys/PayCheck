@@ -70,7 +70,7 @@
 
                 return string.Empty;
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
