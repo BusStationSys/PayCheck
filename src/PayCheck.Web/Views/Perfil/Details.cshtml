@@ -18,48 +18,48 @@
 
     <div class="row">
         <div class="col-xl-7 col-md-7 mb-4">
-            <label for="txtRazaoSocial">Razão Social</label>
-            <input asp-for=@Model.Nome type="text" class="form-control" id="txtNome">
+            <label for="txtNome">Nome</label>
+            <input asp-for=@Model.Nome type="text" readonly class="form-control" id="txtNome">
         </div>
 
         <div class="col-xl-3 col-md-3 mb-4">
             <label for="txtCpf">CPF</label>
-            <input asp-for=@Model.CpfFormatado type="text" class="form-control" id="txtCpf">
+            <input asp-for=@Model.CpfFormatado type="text" readonly class="form-control" id="txtCpf">
         </div>
 
         <div class="col-xl-2 col-md-2 mb-4">
             <label for="txtDataNascimento">Data Nascimento</label>
-            <input asp-for=@Model.DataNascimentoFormatada type="text" class="form-control" id="txtDataNascimento">
+            <input asp-for=@Model.DataNascimentoFormatada type="text" readonly class="form-control" id="txtDataNascimento">
         </div>
     </div>
 
     <div class="row">
         <div class="col-xl-3 col-md-3 mb-4">
             <label for="txtEndereco">Endereço</label>
-            <input asp-for=@Model.Endereco type="text" class="form-control" id="txtEndereco">
+            <input asp-for=@Model.Endereco type="text" readonly class="form-control" id="txtEndereco">
         </div>
         <div class="col-xl-3 col-md-3 mb-4">
             <label for="txtCpf">Número</label>
-            <input asp-for=@Model.Numero type="text" class="form-control" id="txtNumero">
+            <input asp-for=@Model.Numero type="text" readonly class="form-control" id="txtNumero">
         </div>
         <div class="col-xl-3 col-md-3 mb-4">
             <label for="txtSerieCtps">Bairro</label>
-            <input asp-for=@Model.Bairro type="text" class="form-control" id="txtBairro">
+            <input asp-for=@Model.Bairro type="text" readonly class="form-control" id="txtBairro">
         </div>
     </div>
 
     <div class="row">
         <div class="col-xl-3 col-md-3 mb-4">
             <label for="txtNumeroCtps">CTPS</label>
-            <input asp-for=@Model.NumeroCtps type="text" class="form-control" id="txtNumeroCtps">
+            <input asp-for=@Model.NumeroCtps type="text" readonly class="form-control" id="txtNumeroCtps">
         </div>
         <div class="col-xl-3 col-md-3 mb-4">
             <label for="txtSerieCtps">Série</label>
-            <input asp-for=@Model.SerieCtps type="text" class="form-control" id="txtSerieCtps">
+            <input asp-for=@Model.SerieCtps type="text" readonly class="form-control" id="txtSerieCtps">
         </div>
         <div class="col-xl-3 col-md-3 mb-4">
             <label for="txtUfCtps">UF</label>
-            <input asp-for=@Model.UfCtps type="text" class="form-control" id="UfCtps">
+            <input asp-for=@Model.UfCtps type="text" readonly class="form-control" id="UfCtps">
         </div>
     </div>
 
@@ -67,6 +67,12 @@
     </div>
 
     <div>
-        <a asp-action="Index" asp-controller="Home">Voltar</a>
+        @*@Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |*@
+        <a class="btn btn-secondary btn-icon-split" asp-action="Index" asp-controller="Home">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-left"></i>
+            </span>
+            <span class="text">Voltar</span>
+        </a>
     </div>
 </div>

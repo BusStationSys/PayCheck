@@ -19,54 +19,74 @@
     <div class="row">
         <div class="col-xl-7 col-md-7 mb-4">
             <label for="txtRazaoSocial">Razão Social</label>
-            <input asp-for=Matricula.Empregador.RazaoSocial type="text" class="form-control" id="txtRazaoSocial">
+            <input asp-for=Matricula.Empregador.RazaoSocial type="text" readonly class="form-control" id="txtRazaoSocial">
         </div>
 
         <div class="col-xl-3 col-md-3 mb-4">
             <label for="txtCnpj">CNPJ</label>
-            <input asp-for=Matricula.Empregador.CnpjFormatado type="text" class="form-control" id="txtCnpj">
+            <input asp-for=Matricula.Empregador.CnpjFormatado type="text" readonly class="form-control" id="txtCnpj">
         </div>
 
         <div class="col-xl-2 col-md-2 mb-4">
             <label for="txtCompetencia">Competência</label>
-            <input asp-for=CompetenciaFormatada type="text" class="form-control" id="txtCompetencia">
+            <input asp-for=CompetenciaFormatada type="text" readonly class="form-control" id="txtCompetencia">
         </div>
     </div>
 
     <div class="row">
         <div class="col-xl-3 col-md-4 mb-4">
             <label for="txtMatricula">Matrícula</label>
-            <input asp-for=Matricula.Matricula type="text" class="form-control" id="txtMatricula">
+            <input asp-for=Matricula.Matricula type="text" readonly class="form-control" id="txtMatricula">
         </div>
 
         <div class="col-xl-7 col-md-6 mb-4">
             <label for="txtNome">Nome</label>
-            <input asp-for=Matricula.Colaborador.Nome type="text" class="form-control" id="txtNome">
+            <input asp-for=Matricula.Colaborador.Nome type="text" readonly class="form-control" id="txtNome">
         </div>
 
         <div class="col-xl-2 col-md-2 mb-4">
             <label for="txtDataAdmissao">Data Admissão</label>
-            <input asp-for=Matricula.DataAdmissao type="date" class="form-control" id="txtDataAdmissao">
+            <input asp-for=Matricula.DataAdmissao type="date" readonly class="form-control" id="txtDataAdmissao">
         </div>
     </div>
 
     <div class="row">
         <div class="col-xl-2 col-md-2 mb-2">
             <label for="txtBanco">Banco</label>
-            <input asp-for=Matricula.Banco type="text" class="form-control" id="txtBanco">
+            <input asp-for=Matricula.Banco type="text" readonly class="form-control" id="txtBanco">
         </div>
         <div class="col-xl-2 col-md-2 mb-2">
             <label for="txtAgencia">Agência</label>
-            <input asp-for=Matricula.Agencia type="text" class="form-control" id="txtAgencia">
+            <input asp-for=Matricula.Agencia type="text" readonly class="form-control" id="txtAgencia">
         </div>
-        <div class="col-xl-2 col-md-2 mb-2">
+        <div class="col-xl-3 col-md-3 mb-3">
+            <label for="txtConta">Conta</label>
+            <input asp-for=Matricula.Conta type="text" readonly class="form-control" id="txtConta">
+        </div>
+        <div class="col-xl-3 col-md-3 mb-3">
             <label for="txtSalarioNominal">Salário Nominal</label>
-            <input asp-for=Matricula.SalarioNominalFormatado type="text" class="form-control" id="txtSalarioNominal">
+            <input asp-for=Matricula.SalarioNominalFormatado type="text" readonly class="form-control" id="txtSalarioNominal">
+        </div>
+        <div class="col-xl-1 col-md-1 mb-1">
+            <label for="txtFaixaIR">IR</label>
+            <input type="text" readonly class="form-control" id="txtFaixaIR">
+        </div>
+
+        <div class="col-xl-1 col-md-1 mb-1">
+            <label for="txtFaixaSF">SF</label>
+            <input type="text" readonly class="form-control" id="txtFaixaSF">
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-xl-12 col-md-12 mb-12">
+            <label for="txtCargo">Cargo</label>
+            <input type="text" readonly class="form-control" id="txtCargo">
+        </div>
+
+    </div>
+
     <div class="row mb-3">
-        
     </div>
 
     <div class="row">

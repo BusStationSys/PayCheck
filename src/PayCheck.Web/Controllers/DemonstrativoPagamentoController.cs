@@ -4,7 +4,6 @@
     using ARVTech.Shared;
     using Microsoft.AspNetCore.Mvc;
     using Newtonsoft.Json;
-    using System.Net.Http.Headers;
 
     public class DemonstrativoPagamentoController : Controller
     {
@@ -51,29 +50,13 @@
 
             List<MatriculaDemonstrativoPagamentoResponse>? mdps = null;
 
-            //this._httpClient.DefaultRequestHeaders.Accept.Clear();
-
-            //this._httpClient.DefaultRequestHeaders.Accept.Add(
-            //    new MediaTypeWithQualityHeaderValue(
-            //        Common.MediaTypes));
-
-            //this._httpClient.DefaultRequestHeaders.Add(
-            //    "Authorization",
-            //    $"Bearer {authResponse.Token}");
-
-            //this._httpClient.DefaultRequestHeaders.Add("Accept", "*/*");
-
-            HttpResponseMessage httpResponseMessage = this._httpClient.GetAsync(
-                requestUri).Result;
-
-            if (httpResponseMessage.IsSuccessStatusCode)
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
             {
-                string data = httpResponseMessage.Content.ReadAsStringAsync().Result;
+                string stringJson = webApiHelper.ExecuteGetAuthenticationByBearer();
 
-                if (!string.IsNullOrEmpty(data))
-                {
-                    mdps = JsonConvert.DeserializeObject<List<MatriculaDemonstrativoPagamentoResponse>>(data);
-                }
+                mdps = JsonConvert.DeserializeObject<List<MatriculaDemonstrativoPagamentoResponse>>(stringJson);
             }
 
             return View(
@@ -92,21 +75,13 @@
 
             var mdp = default(MatriculaDemonstrativoPagamentoResponse);
 
-            HttpResponseMessage httpResponseMessage = this._httpClient.GetAsync(
-                requestUri).Result;
-
-            if (httpResponseMessage.IsSuccessStatusCode)
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
             {
-                string data = httpResponseMessage.Content.ReadAsStringAsync().Result;
+                string stringJson = webApiHelper.ExecuteGetAuthenticationByBearer();
 
-                if (!string.IsNullOrEmpty(data))
-                {
-                    mdp = JsonConvert.DeserializeObject<MatriculaDemonstrativoPagamentoResponse>(data);
-                }
-                else
-                {
-                    return NotFound();
-                }
+                mdp = JsonConvert.DeserializeObject<MatriculaDemonstrativoPagamentoResponse>(stringJson);
             }
 
             return View(
