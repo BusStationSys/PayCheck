@@ -379,6 +379,7 @@ A Equipe de Suporte PayCheck®.";
                     }
                     else
                     {
+                        string emailUsuario = string.Empty;
                         string guidColaborador = string.Empty;
                         string nomeColaborador = string.Empty;
 
@@ -386,20 +387,39 @@ A Equipe de Suporte PayCheck®.";
                             usuarioResponse.GuidColaborador.HasValue &&
                             usuarioResponse.GuidColaborador.Value != Guid.Empty)
                         {
+                            emailUsuario = usuarioResponse.Email;
                             guidColaborador = usuarioResponse.Colaborador.Guid.ToString();
                             nomeColaborador = usuarioResponse.Colaborador.Nome;
+                        }
+                        else
+                        {
+                            nomeColaborador = usuarioResponse.Username;
                         }
 
                         var claims = new List<Claim>
                         {
                             new Claim(ClaimTypes.NameIdentifier, usuarioResponse.Guid.ToString()),
-                            new Claim(ClaimTypes.Name, usuarioResponse.Colaborador.Nome),
-                            new Claim(ClaimTypes.Email, usuarioResponse.Email),
-                            new Claim(nameof(usuarioResponse.Guid), usuarioResponse.Guid.ToString()),
-                            new Claim(nameof(usuarioResponse.Colaborador.Guid), guidColaborador),
-                            new Claim(nameof(usuarioResponse.Colaborador.Nome), nomeColaborador),
-                            new Claim(nameof(usuarioResponse.Username), usuarioResponse.Username),
-                            new Claim(nameof(usuarioResponse.Email), usuarioResponse.Email),
+                            new Claim(ClaimTypes.Name, nomeColaborador),
+                            new Claim(ClaimTypes.Email, emailUsuario),
+
+                            new Claim(
+                                $"{nameof(UsuarioResponse.Guid)}Usuario",
+                                usuarioResponse.Guid.ToString()),
+
+                            new Claim(
+                                $"{nameof(UsuarioResponse.Colaborador.Guid)}Colaborador",
+                                guidColaborador),
+
+                            new Claim(
+                                $"{nameof(UsuarioResponse.Colaborador.Nome)}Colaborador",
+                                nomeColaborador),
+
+                            new Claim(nameof(UsuarioResponse.Username), usuarioResponse.Username),
+
+                            new Claim(
+                                $"{nameof(UsuarioResponse.Email)}Usuario",
+                                emailUsuario),
+
                             //new Claim("OtherProperty","OtherValue"),
                         };
 

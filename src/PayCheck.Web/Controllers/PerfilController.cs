@@ -43,50 +43,13 @@
             }
         }
 
-        //[HttpGet]
-        //public IActionResult Index()
-        //{
-        //    string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento";
-
-        //    List<MatriculaDemonstrativoPagamentoResponse>? mdps = null;
-
-        //    //this._httpClient.DefaultRequestHeaders.Accept.Clear();
-
-        //    //this._httpClient.DefaultRequestHeaders.Accept.Add(
-        //    //    new MediaTypeWithQualityHeaderValue(
-        //    //        Common.MediaTypes));
-
-        //    //this._httpClient.DefaultRequestHeaders.Add(
-        //    //    "Authorization",
-        //    //    $"Bearer {authResponse.Token}");
-
-        //    //this._httpClient.DefaultRequestHeaders.Add("Accept", "*/*");
-
-        //    HttpResponseMessage httpResponseMessage = this._httpClient.GetAsync(
-        //        requestUri).Result;
-
-        //    if (httpResponseMessage.IsSuccessStatusCode)
-        //    {
-        //        string data = httpResponseMessage.Content.ReadAsStringAsync().Result;
-
-        //        if (!string.IsNullOrEmpty(data))
-        //        {
-        //            mdps = JsonConvert.DeserializeObject<List<MatriculaDemonstrativoPagamentoResponse>>(data);
-        //        }
-        //    }
-
-        //    return View(
-        //        mdps);
-        //}
-
         [HttpGet()]
         public IActionResult Details(Guid? guid)
         {
-            if (guid == null)
+            if (guid == null)   // Se não encontrar os Dados do Colaborador ou é porque não existe o registro ou é porque está logado como UserMain.
             {
                 //return NotFound();
-
-                return View();
+                return RedirectToAction("Index", "Home");   // Em não existindo o registro, redireciona para a página inicial.
             }
 
             string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/{guid}";

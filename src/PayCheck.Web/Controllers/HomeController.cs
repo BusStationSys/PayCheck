@@ -25,19 +25,16 @@ public class HomeController : Controller
 
         if (claimsPrincipal.Identity.IsAuthenticated)
         {
-            ViewData["GuidUsuario"] = HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponse.Guid)).Value;
-            ViewData["Username"] = HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponse.Username)).Value;
-            ViewData["GuidColaborador"] = HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponse.Colaborador.Guid)).Value;
-            ViewData["NomeColaborador"] = HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponse.Colaborador.Nome)).Value;
-            ViewData["Email"] = HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponse.Email)).Value;
-        }
+            ViewData["GuidUsuario"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponse.Guid)}Usuario").Value;
 
-        //new Claim(nameof(usuarioResponse.Guid), usuarioResponse.Guid.ToString()),
-        //                    new Claim(ClaimTypes.Name, usuarioResponse.Colaborador.Nome),
-        //                    new Claim(nameof(usuarioResponse.Colaborador.Guid), guidColaborador),
-        //                    new Claim(nameof(usuarioResponse.Colaborador.Nome), usuarioResponse.Colaborador.Nome),
-        //                    new Claim(nameof(usuarioResponse.Username), usuarioResponse.Username),
-        //                    new Claim(nameof(usuarioResponse.Email), usuarioResponse.Email),
+            ViewData["Username"] = HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponse.Username)).Value;
+
+            ViewData["GuidColaborador"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponse.Colaborador.Guid)}Colaborador").Value;
+
+            ViewData["NomeColaborador"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponse.Colaborador.Nome)}Colaborador").Value;
+
+            ViewData["EmailUsuario"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponse.Email)}Usuario").Value;
+        }
 
         return View();
     }
