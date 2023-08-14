@@ -202,6 +202,28 @@
         /// <summary>
         /// 
         /// </summary>
+        /// <returns></returns>
+        public IEnumerable<MatriculaDemonstrativoPagamentoResponse> GetByGuidColaborador(Guid guidColaborador)
+        {
+            try
+            {
+                using (var connection = this._unitOfWork.Create())
+                {
+                    var entity = connection.Repositories.MatriculaDemonstrativoPagamentoRepository.GetByGuidColaborador(
+                        guidColaborador);
+
+                    return this._mapper.Map<IEnumerable<MatriculaDemonstrativoPagamentoResponse>>(entity);
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
         public MatriculaDemonstrativoPagamentoDto SaveData(MatriculaDemonstrativoPagamentoDto dto)

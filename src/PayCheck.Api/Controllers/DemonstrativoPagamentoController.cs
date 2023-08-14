@@ -85,6 +85,35 @@
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="guidColaborador"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("getDemonstrativoPagamentoByGuidColaborador/{guidColaborador}")]
+        public IActionResult GetDemonstrativoPagamentoByGuidColaborador(Guid guidColaborador)
+        {
+            try
+            {
+                var dp = this._business.GetByGuidColaborador(
+                    guidColaborador);
+
+                if (dp is null)
+                {
+                    return NotFound(
+                        $"Demonstrativo de Pagamento {guidColaborador} não encontrado!");
+                }
+
+                return Ok(
+                    dp);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="competencia"></param>
         /// <param name="matricula"></param>
         /// <returns></returns>

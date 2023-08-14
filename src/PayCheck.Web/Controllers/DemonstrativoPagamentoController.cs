@@ -46,7 +46,20 @@
         [HttpGet]
         public IActionResult Index()
         {
+            var guidColaborador = default(Guid?);
+
+            if (TempData.Peek("GuidColaborador") != null &&
+                !string.IsNullOrEmpty(
+                    TempData.Peek("GuidColaborador").ToString()))
+            {
+                guidColaborador = Guid.Parse(
+                    TempData.Peek("GuidColaborador").ToString());
+            }
+
             string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento";
+
+            if (guidColaborador != null)
+                requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/getDemonstrativoPagamentoByGuidColaborador/{guidColaborador}";
 
             List<MatriculaDemonstrativoPagamentoResponse>? mdps = null;
 

@@ -11,5 +11,7 @@
         IEnumerable<MatriculaDemonstrativoPagamentoResponse> Get(string competencia, string matricula);
 
         IEnumerable<MatriculaDemonstrativoPagamentoResponse> GetAll();
+
+        IEnumerable<MatriculaDemonstrativoPagamentoResponse> GetByGuidColaborador(Guid guidColaborador);
     }
 }
