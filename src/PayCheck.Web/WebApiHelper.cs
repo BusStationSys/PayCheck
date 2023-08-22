@@ -22,7 +22,7 @@
 
         public WebApiHelper(string requestUri, string username, string password)
         {
-            _httpClient = new HttpClient();
+            this._httpClient = new HttpClient();
 
             this._requestUri = requestUri;
 
@@ -32,7 +32,7 @@
 
         public WebApiHelper(string requestUri, string token)
         {
-            _httpClient = new HttpClient();
+            this._httpClient = new HttpClient();
 
             this._requestUri = requestUri;
 
@@ -224,6 +224,21 @@
                 throw;
             }
         }
+
+/*
+                this._httpClient.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue(
+                        this._mediaTypes));
+
+                //new MediaTypeWithQualityHeaderValue(
+                //    "text/plain"));
+
+                this._httpClient.DefaultRequestHeaders.Add(
+                    "Authorization",
+                    $@"Basic {Common.GetTokenBase64Encode(
+                        this._username,
+                        this._password)}");
+*/
 
         public string ExecutePostAuthenticationByBearer(object content)
         {

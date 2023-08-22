@@ -7,7 +7,8 @@
 
     public class DemonstrativoPagamentoController : Controller
     {
-        private readonly Uri _baseAddress = new(Common.UriBaseApiString);
+        private readonly Uri _baseAddress = new(
+            Common.UriBaseApiString);
 
         private readonly HttpClient _httpClient;
 
