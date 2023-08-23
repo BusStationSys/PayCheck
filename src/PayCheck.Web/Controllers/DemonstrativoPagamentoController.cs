@@ -14,6 +14,9 @@
 
         private readonly string _tokenBearer;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DemonstrativoPagamentoController()
         {
             this._httpClient = new HttpClient

@@ -41,7 +41,7 @@
                 if (dps is null || dps.Count() == 0)
                 {
                     return NotFound(
-                        $"Demonstrativos de Pagamento não encontrado!");
+                        $"Demonstrativos de Pagamento não encontrados!");
                 }
 
                 return Ok(

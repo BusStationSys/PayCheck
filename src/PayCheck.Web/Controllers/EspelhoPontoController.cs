@@ -47,7 +47,34 @@
         [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            var guidColaborador = default(Guid?);
+
+            if (TempData.Peek("GuidColaborador") != null &&
+                !string.IsNullOrEmpty(
+                    TempData.Peek("GuidColaborador").ToString()))
+            {
+                guidColaborador = Guid.Parse(
+                    TempData.Peek("GuidColaborador").ToString());
+            }
+
+            string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto";
+
+            if (guidColaborador != null)
+                requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/getDemonstrativoPagamentoByGuidColaborador/{guidColaborador}";
+
+            List<MatriculaEspelhoPontoResponse>? eps = null;
+
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
+            {
+                string stringJson = webApiHelper.ExecuteGetAuthenticationByBearer();
+
+                eps = JsonConvert.DeserializeObject<List<MatriculaEspelhoPontoResponse>>(stringJson);
+            }
+
+            return View(
+                eps);
         }
 
         [HttpGet()]
