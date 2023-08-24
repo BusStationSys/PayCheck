@@ -52,5 +52,34 @@
                 throw;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("{guid}")]
+        public IActionResult GetEspelhoPonto(Guid guid)
+        {
+            try
+            {
+                var ep = this._business.Get(
+                    guid);
+
+                if (ep is null)
+                {
+                    return NotFound(
+                        $"Espelho de Ponto {guid} não encontrado!");
+                }
+
+                return Ok(
+                    ep);
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

@@ -10,7 +10,7 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Espelho de Pagamento</h1>
+        <h1 class="h3 mb-0 text-gray-800">Espelho de Ponto</h1>
     </div>
 
     <table class="table">
@@ -69,7 +69,7 @@
 
                     @Html.ActionLink("Delete", "Delete", new { id=item.Guid })*@
 
-                        @Html.ActionLink("Detalhes", "Details", new { guid = item.Guid }, new { @class = "btn btn-warning btn-xs" })
+                        @Html.ActionLink("Detalhes", "Details", new { guid = item.Guid }, new { @class = "btn btn-success btn-xs" })
 
                         @*<a href="@Url.Action("your action", "your controller", new { id = item.Id }" class="btn btn-success btn-xs">Delete</a>*@
                     </td>

@@ -85,7 +85,21 @@
                 return NotFound();
             }
 
-            return null;
+            string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/{guid}";
+
+            var ep = default(MatriculaEspelhoPontoResponse);
+
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
+            {
+                string stringJson = webApiHelper.ExecuteGetAuthenticationByBearer();
+
+                ep = JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponse>(stringJson);
+            }
+
+            return View(
+                ep); ;
         }
     }
 }
