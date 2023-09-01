@@ -113,7 +113,7 @@
                         {
                             <div class="card-body">
                                 <p class="text-primary">
-                                    <strong>@mdpe.Evento.Descricao:</strong> R$ @mdpe.Valor.ToString("#,###,###,##0.00")
+                                    <strong>@mdpe.Evento.Descricao:</strong> R$ @mdpe.ValorFormatado
                                 </p>
 
                                 @if (mdpe.Referencia is not null)
@@ -157,7 +157,7 @@
                         {
                             <div class="card-body">
                                 <p class="text-danger">
-                                    <strong>@mdpe.Evento.Descricao:</strong> R$ @mdpe.Valor.ToString("#,###,###,##0.00")
+                                    <strong>@mdpe.Evento.Descricao:</strong> R$ @mdpe.ValorFormatado
                                 </p>
 
                                 @if (mdpe.Referencia is not null)

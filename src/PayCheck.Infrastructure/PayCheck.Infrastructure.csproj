@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Core\ARVTech.DataAccess.Core.csproj" />
-    <ProjectReference Include="..\..\submodules\ARVTech.Shared\src\ARVTech.Shared.csproj" />
+    <ProjectReference Include="..\..\submodules\ARVTech.DataAccess\submodules\ARVTech.Shared\src\ARVTech.Shared.csproj" />
     <ProjectReference Include="..\PayCheck.Application\PayCheck.Application.csproj" />
   </ItemGroup>
 

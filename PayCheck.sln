@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayCheck.Application", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayCheck.Business", "src\PayCheck.Business\PayCheck.Business.csproj", "{A59CC949-0442-4DA3-B51D-E73467F83F8C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.Shared", "submodules\ARVTech.Shared\src\ARVTech.Shared.csproj", "{4A669E3E-FB06-4349-B128-737D91FBBDA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.Shared", "submodules\ARVTech.DataAccess\submodules\ARVTech.Shared\src\ARVTech.Shared.csproj", "{DE7CDD7C-9784-4E6B-97F5-82929DFEDF77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,10 +53,10 @@ Global
 		{A59CC949-0442-4DA3-B51D-E73467F83F8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A59CC949-0442-4DA3-B51D-E73467F83F8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A59CC949-0442-4DA3-B51D-E73467F83F8C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A669E3E-FB06-4349-B128-737D91FBBDA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A669E3E-FB06-4349-B128-737D91FBBDA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A669E3E-FB06-4349-B128-737D91FBBDA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A669E3E-FB06-4349-B128-737D91FBBDA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE7CDD7C-9784-4E6B-97F5-82929DFEDF77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE7CDD7C-9784-4E6B-97F5-82929DFEDF77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE7CDD7C-9784-4E6B-97F5-82929DFEDF77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE7CDD7C-9784-4E6B-97F5-82929DFEDF77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
