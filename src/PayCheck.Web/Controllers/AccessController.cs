@@ -43,11 +43,18 @@
                     Password = "(@rV73Ch)",
                 };
 
-                string stringJson = webApiHelper.ExecutePostAuthenticationByBasic(
-                    authDto);
+                string authDtoJson = JsonConvert.SerializeObject(authDto,
+                    Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                    });
+
+                authDtoJson = webApiHelper.ExecutePostAuthenticationByBasic(
+                    authDtoJson);
 
                 var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
-                    stringJson);
+                    authDtoJson);
 
                 this._tokenBearer = authResponse.Token;
             }
@@ -351,10 +358,23 @@ A Equipe de Suporte PayCheck®.";
                     requestUri,
                     this._tokenBearer))
                 {
-                    string stringJson = webApiHelper.ExecutePostAuthenticationByBearer(
-                        loginDto);
+                    string loginDtoJson = JsonConvert.SerializeObject(loginDto,
+                        Formatting.None,
+                        new JsonSerializerSettings
+                        {
+                            NullValueHandling = NullValueHandling.Ignore,
+                        });
 
-                    usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(stringJson);
+                    loginDtoJson = webApiHelper.ExecutePostAuthenticationByBearer(
+                        loginDtoJson);
+
+                    usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(
+                        loginDtoJson);
+
+                    //string stringJson = webApiHelper.ExecutePostAuthenticationByBearer(
+                    //    loginDto);
+
+                    //usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(stringJson);
                 }
 
                 if (usuarioResponse?.Guid != Guid.Empty &&

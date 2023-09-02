@@ -33,11 +33,24 @@
                     Password = "(@rV73Ch)",
                 };
 
-                string stringJson = webApiHelper.ExecutePostAuthenticationByBasic(
-                    authDto);
+                string authDtoJson = JsonConvert.SerializeObject(authDto,
+                    Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                    });
+
+                authDtoJson = webApiHelper.ExecutePostAuthenticationByBasic(
+                    authDtoJson);
 
                 var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
-                    stringJson);
+                    authDtoJson);
+
+                //string stringJson = webApiHelper.ExecutePostAuthenticationByBasic(
+                //    authDto);
+
+                //var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
+                //    stringJson);
 
                 this._tokenBearer = authResponse.Token;
             }

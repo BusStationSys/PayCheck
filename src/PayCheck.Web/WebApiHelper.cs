@@ -18,6 +18,8 @@
         private readonly string _password;
         private readonly string _token;
 
+        public readonly string _mediaTypes = @"application/json";
+
         private bool _disposedValue = false;
 
         public WebApiHelper(string requestUri, string username, string password)
@@ -76,218 +78,452 @@
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string ExecuteGetAuthenticationByBasic()
         {
             try
             {
-                // Inclui o cabeçalho Accept que será enviado na requisição.
-                this._httpClient.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(
-                        Common.MediaTypes));
-
-                //  Limpa o Header.
-                this._httpClient.DefaultRequestHeaders.Accept.Clear();
-
-                this._httpClient.DefaultRequestHeaders.Authorization = new BasicAuthenticationHeaderValue(
-                    this._username,
-                    this._password);
-
-                // Envio da requisição a fim de autenticar e obter o token de acesso.
-                var httpResponseMessage = this._httpClient.GetAsync(
-                    this._requestUri).Result;
-
-                if (httpResponseMessage.IsSuccessStatusCode)
+                using (var httpRequestMessage = new HttpRequestMessage(
+                    HttpMethod.Get,
+                    this._requestUri))
                 {
-                    return httpResponseMessage.Content.ReadAsStringAsync().Result;
+                    httpRequestMessage.Headers.Clear();
+
+                    httpRequestMessage.Headers.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue(
+                            this._mediaTypes));
+
+                    httpRequestMessage.Headers.Add(
+                        "Authorization",
+                        $"Basic {Common.GetTokenBase64Encode(this._username, this._password)}");
+
+                    //        this._httpClient.DefaultRequestHeaders.Authorization = new BasicAuthenticationHeaderValue(
+                    //            this._username,
+                    //            this._password);
+
+                    //httpRequestMessage.Headers.Authorization = new BasicAuthenticationHeaderValue(
+                    //    this._username,
+                    //    this._password);
+
+                    httpRequestMessage.Headers.Add(
+                        "Accept",
+                        "*/*");
+
+                    using (var httpResponseMessage = this._httpClient.SendAsync(
+                        httpRequestMessage).Result)
+                    {
+                        try
+                        {
+                            httpResponseMessage.EnsureSuccessStatusCode();
+                        }
+                        catch
+                        {
+                            throw new Exception(
+                                string.Concat(
+                                    Convert.ToInt16(
+                                        httpResponseMessage.StatusCode),
+                                    " ",
+                                    httpResponseMessage.ReasonPhrase));
+                        }
+
+                        return httpResponseMessage.Content.ReadAsStringAsync().Result;
+                    }
                 }
-
-                //if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
-                //{
-                //    // Obtém o Token Gerado.
-                //    return httpResponseMessage.Content.ReadAsStringAsync().Result;
-
-                //    ////deserializa o token e data de expiração para o objeto Token
-                //    //Token token = JsonConvert.DeserializeObject<Token>(conteudo);
-
-                //    //// Associar o token aos headers do objeto
-                //    //// do tipo HttpClient
-                //    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
-                //}
-                //else
-                //{
-                //    throw new Exception(httpResponseMessage.StatusCode.ToString());
-                //}
-
-                return string.Empty;
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string ExecuteGetAuthenticationByBearer()
         {
             try
             {
-                // Inclui o cabeçalho Accept que será enviado na requisição.
-                this._httpClient.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(
-                        Common.MediaTypes));
-
-                //  Limpa o Header.
-                this._httpClient.DefaultRequestHeaders.Accept.Clear();
-
-                this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-                    "Bearer",
-                    this._token);
-
-                // Envio da requisição a fim de autenticar e obter o token de acesso.
-                var httpResponseMessage = this._httpClient.GetAsync(
-                    this._requestUri).Result;
-
-                if (httpResponseMessage.IsSuccessStatusCode)
+                using (var httpRequestMessage = new HttpRequestMessage(
+                    HttpMethod.Get,
+                    this._requestUri))
                 {
-                    return httpResponseMessage.Content.ReadAsStringAsync().Result;
+                    httpRequestMessage.Headers.Clear();
+
+                    httpRequestMessage.Headers.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue(
+                            this._mediaTypes));
+
+                    httpRequestMessage.Headers.Add(
+                        "Accept",
+                        "*/*");
+
+                    httpRequestMessage.Headers.Add(
+                        "Authorization",
+                        $"Bearer {this._token}");
+
+                    using (var httpResponseMessage = this._httpClient.SendAsync(
+                        httpRequestMessage).Result)
+                    {
+                        try
+                        {
+                            httpResponseMessage.EnsureSuccessStatusCode();
+                        }
+                        catch
+                        {
+                            throw new Exception(
+                                string.Concat(
+                                    Convert.ToInt16(
+                                        httpResponseMessage.StatusCode),
+                                    " ",
+                                    httpResponseMessage.ReasonPhrase));
+                        }
+
+                        return httpResponseMessage.Content.ReadAsStringAsync().Result;
+                    }
                 }
-
-                //if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
-                //{
-                //    // Obtém o Token Gerado.
-                //    return httpResponseMessage.Content.ReadAsStringAsync().Result;
-
-                //    ////deserializa o token e data de expiração para o objeto Token
-                //    //Token token = JsonConvert.DeserializeObject<Token>(conteudo);
-
-                //    //// Associar o token aos headers do objeto
-                //    //// do tipo HttpClient
-                //    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
-                //}
-                //else
-                //{
-                //    throw new Exception(httpResponseMessage.StatusCode.ToString());
-                //}
-
-                return string.Empty;
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
         }
 
-        public string ExecutePostAuthenticationByBasic(object content)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        public string ExecutePostAuthenticationByBasic(string content)
         {
             try
             {
-                // Inclui o cabeçalho Accept que será enviado na requisição.
-                this._httpClient.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(
-                        Common.MediaTypes));
-
-                //  Limpa o Header.
-                this._httpClient.DefaultRequestHeaders.Accept.Clear();
-
-                this._httpClient.DefaultRequestHeaders.Authorization = new BasicAuthenticationHeaderValue(
-                    this._username,
-                    this._password);
-
-                JsonContent jsonContent = JsonContent.Create(
-                    content);
-
-                // Envio da requisição a fim de autenticar e obter o token de acesso.
-                var httpResponseMessage = this._httpClient.PostAsync(
-                    this._requestUri,
-                    jsonContent).Result;
-
-                if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+                using (var httpRequestMessage = new HttpRequestMessage(
+                    HttpMethod.Post,
+                    this._requestUri))
                 {
-                    // Obtém o Token Gerado.
+                    httpRequestMessage.Headers.Clear();
+
+                    httpRequestMessage.Headers.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue(
+                            this._mediaTypes));
+
+                    httpRequestMessage.Headers.Add(
+                        "Authorization",
+                        $"Basic {Common.GetTokenBase64Encode(this._username, this._password)}");
+
+                    httpRequestMessage.Headers.Add(
+                        "Accept",
+                        "*/*");
+
+                    var stringContent = new StringContent(
+                        content,
+                        Encoding.UTF8,
+                        this._mediaTypes);
+
+                    httpRequestMessage.Content = stringContent;
+
+                    var httpResponseMessage = this._httpClient.SendAsync(
+                        httpRequestMessage).Result;
+
+                    try
+                    {
+                        httpResponseMessage.EnsureSuccessStatusCode();
+                    }
+                    catch
+                    {
+                        throw new Exception(
+                            string.Concat(
+                                Convert.ToInt16(
+                                    httpResponseMessage.StatusCode),
+                                " ",
+                                httpResponseMessage.ReasonPhrase));
+                    }
+
                     return httpResponseMessage.Content.ReadAsStringAsync().Result;
-
-                    ////deserializa o token e data de expiração para o objeto Token
-                    //Token token = JsonConvert.DeserializeObject<Token>(conteudo);
-
-                    //// Associar o token aos headers do objeto
-                    //// do tipo HttpClient
-                    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer ", token.AccessToken);
                 }
-                else
-                {
-                    throw new Exception(httpResponseMessage.StatusCode.ToString());
-                }
-
-                return string.Empty;
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
         }
 
-/*
-                this._httpClient.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(
-                        this._mediaTypes));
-
-                //new MediaTypeWithQualityHeaderValue(
-                //    "text/plain"));
-
-                this._httpClient.DefaultRequestHeaders.Add(
-                    "Authorization",
-                    $@"Basic {Common.GetTokenBase64Encode(
-                        this._username,
-                        this._password)}");
-*/
-
-        public string ExecutePostAuthenticationByBearer(object content)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        public string ExecutePostAuthenticationByBearer(string content)
         {
             try
             {
-                // Inclui o cabeçalho Accept que será enviado na requisição.
-                this._httpClient.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(
-                        Common.MediaTypes));
+                using (var httpRequestMessage = new HttpRequestMessage(
+                    HttpMethod.Post,
+                    this._requestUri))
+                {
+                    httpRequestMessage.Headers.Clear();
 
-                //  Limpa o Header.
-                this._httpClient.DefaultRequestHeaders.Accept.Clear();
+                    httpRequestMessage.Headers.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue(
+                            this._mediaTypes));
 
-                this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-                    "Bearer",
-                    this._token);
+                    httpRequestMessage.Headers.Add(
+                        "Authorization",
+                        $"Bearer {this._token}");
 
-                JsonContent jsonContent = JsonContent.Create(
-                    content);
+                    httpRequestMessage.Headers.Add(
+                        "Accept",
+                        "*/*");
 
-                // Envio da requisição a fim de autenticar e obter o token de acesso.
-                var httpResponseMessage = this._httpClient.PostAsync(
-                    this._requestUri,
-                    jsonContent).Result;
+                    var stringContent = new StringContent(
+                        content,
+                        Encoding.UTF8,
+                        this._mediaTypes);
 
-                return httpResponseMessage.Content.ReadAsStringAsync().Result;
+                    httpRequestMessage.Content = stringContent;
 
-                //if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
-                //{
-                //    // Retorna o resultado do consumo do Post.
-                //    return httpResponseMessage.Content.ReadAsStringAsync().Result;
-                //}
-                //else
-                //{
-                //    string errorMessage = httpResponseMessage.Content.ReadAsStringAsync().Result;
+                    var httpResponseMessage = this._httpClient.SendAsync(
+                        httpRequestMessage).Result;
 
-                //    throw new HttpResponseException(
-                //        httpResponseMessage);
+                    try
+                    {
+                        httpResponseMessage.EnsureSuccessStatusCode();
+                    }
+                    catch
+                    {
+                        throw new Exception(
+                            string.Concat(
+                                Convert.ToInt16(
+                                    httpResponseMessage.StatusCode),
+                                " ",
+                                httpResponseMessage.ReasonPhrase));
+                    }
 
-                //    //throw new Exception(httpResponseMessage.StatusCode.ToString());
-                //}
-
-                return string.Empty;
+                    return httpResponseMessage.Content.ReadAsStringAsync().Result;
+                }
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
         }
+
+        //public string ExecuteGetAuthenticationByBasic()
+        //{
+        //    try
+        //    {
+        //        // Inclui o cabeçalho Accept que será enviado na requisição.
+        //        this._httpClient.DefaultRequestHeaders.Accept.Add(
+        //            new MediaTypeWithQualityHeaderValue(
+        //                Common.MediaTypes));
+
+        //        //  Limpa o Header.
+        //        this._httpClient.DefaultRequestHeaders.Accept.Clear();
+
+        //        this._httpClient.DefaultRequestHeaders.Authorization = new BasicAuthenticationHeaderValue(
+        //            this._username,
+        //            this._password);
+
+        //        // Envio da requisição a fim de autenticar e obter o token de acesso.
+        //        var httpResponseMessage = this._httpClient.GetAsync(
+        //            this._requestUri).Result;
+
+        //        if (httpResponseMessage.IsSuccessStatusCode)
+        //        {
+        //            return httpResponseMessage.Content.ReadAsStringAsync().Result;
+        //        }
+
+        //        //if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+        //        //{
+        //        //    // Obtém o Token Gerado.
+        //        //    return httpResponseMessage.Content.ReadAsStringAsync().Result;
+
+        //        //    ////deserializa o token e data de expiração para o objeto Token
+        //        //    //Token token = JsonConvert.DeserializeObject<Token>(conteudo);
+
+        //        //    //// Associar o token aos headers do objeto
+        //        //    //// do tipo HttpClient
+        //        //    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
+        //        //}
+        //        //else
+        //        //{
+        //        //    throw new Exception(httpResponseMessage.StatusCode.ToString());
+        //        //}
+
+        //        return string.Empty;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw;
+        //    }
+        //}
+
+        //public string ExecuteGetAuthenticationByBearer()
+        //{
+        //    try
+        //    {
+        //        // Inclui o cabeçalho Accept que será enviado na requisição.
+        //        this._httpClient.DefaultRequestHeaders.Accept.Add(
+        //            new MediaTypeWithQualityHeaderValue(
+        //                Common.MediaTypes));
+
+        //        //  Limpa o Header.
+        //        this._httpClient.DefaultRequestHeaders.Accept.Clear();
+
+        //        this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+        //            "Bearer",
+        //            this._token);
+
+        //        // Envio da requisição a fim de autenticar e obter o token de acesso.
+        //        var httpResponseMessage = this._httpClient.GetAsync(
+        //            this._requestUri).Result;
+
+        //        if (httpResponseMessage.IsSuccessStatusCode)
+        //        {
+        //            return httpResponseMessage.Content.ReadAsStringAsync().Result;
+        //        }
+
+        //        //if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+        //        //{
+        //        //    // Obtém o Token Gerado.
+        //        //    return httpResponseMessage.Content.ReadAsStringAsync().Result;
+
+        //        //    ////deserializa o token e data de expiração para o objeto Token
+        //        //    //Token token = JsonConvert.DeserializeObject<Token>(conteudo);
+
+        //        //    //// Associar o token aos headers do objeto
+        //        //    //// do tipo HttpClient
+        //        //    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
+        //        //}
+        //        //else
+        //        //{
+        //        //    throw new Exception(httpResponseMessage.StatusCode.ToString());
+        //        //}
+
+        //        return string.Empty;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw;
+        //    }
+        //}
+
+        //public string ExecutePostAuthenticationByBasic(object content)
+        //{
+        //    try
+        //    {
+        //        // Inclui o cabeçalho Accept que será enviado na requisição.
+        //        this._httpClient.DefaultRequestHeaders.Accept.Add(
+        //            new MediaTypeWithQualityHeaderValue(
+        //                this._mediaTypes));
+
+        //        //  Limpa o Header.
+        //        this._httpClient.DefaultRequestHeaders.Accept.Clear();
+
+        //        this._httpClient.DefaultRequestHeaders.Authorization = new BasicAuthenticationHeaderValue(
+        //            this._username,
+        //            this._password);
+
+        //        JsonContent jsonContent = JsonContent.Create(
+        //            content);
+
+        //        // Envio da requisição a fim de autenticar e obter o token de acesso.
+        //        var httpResponseMessage = this._httpClient.PostAsync(
+        //            this._requestUri,
+        //            jsonContent).Result;
+
+        //        if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+        //        {
+        //            // Obtém o Token Gerado.
+        //            return httpResponseMessage.Content.ReadAsStringAsync().Result;
+
+        //            ////deserializa o token e data de expiração para o objeto Token
+        //            //Token token = JsonConvert.DeserializeObject<Token>(conteudo);
+
+        //            //// Associar o token aos headers do objeto
+        //            //// do tipo HttpClient
+        //            //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer ", token.AccessToken);
+        //        }
+        //        else
+        //        {
+        //            throw new Exception(httpResponseMessage.StatusCode.ToString());
+        //        }
+
+        //        return string.Empty;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw;
+        //    }
+        //}
+
+        /*
+                        this._httpClient.DefaultRequestHeaders.Accept.Add(
+                            new MediaTypeWithQualityHeaderValue(
+                                this._mediaTypes));
+
+                        //new MediaTypeWithQualityHeaderValue(
+                        //    "text/plain"));
+
+                        this._httpClient.DefaultRequestHeaders.Add(
+                            "Authorization",
+                            $@"Basic {Common.GetTokenBase64Encode(
+                                this._username,
+                                this._password)}");
+        */
+
+        //public string ExecutePostAuthenticationByBearer(object content)
+        //{
+        //    try
+        //    {
+        //        // Inclui o cabeçalho Accept que será enviado na requisição.
+        //        this._httpClient.DefaultRequestHeaders.Accept.Add(
+        //            new MediaTypeWithQualityHeaderValue(
+        //                this._mediaTypes));
+
+        //        //  Limpa o Header.
+        //        this._httpClient.DefaultRequestHeaders.Accept.Clear();
+
+        //        this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+        //            "Bearer",
+        //            this._token);
+
+        //        JsonContent jsonContent = JsonContent.Create(
+        //            content);
+
+        //        // Envio da requisição a fim de autenticar e obter o token de acesso.
+        //        var httpResponseMessage = this._httpClient.PostAsync(
+        //            this._requestUri,
+        //            jsonContent).Result;
+
+        //        return httpResponseMessage.Content.ReadAsStringAsync().Result;
+
+        //        //if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
+        //        //{
+        //        //    // Retorna o resultado do consumo do Post.
+        //        //    return httpResponseMessage.Content.ReadAsStringAsync().Result;
+        //        //}
+        //        //else
+        //        //{
+        //        //    string errorMessage = httpResponseMessage.Content.ReadAsStringAsync().Result;
+
+        //        //    throw new HttpResponseException(
+        //        //        httpResponseMessage);
+
+        //        //    //throw new Exception(httpResponseMessage.StatusCode.ToString());
+        //        //}
+
+        //        return string.Empty;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw;
+        //    }
+        //}
 
         public string ExecutePutAuthenticationByBearer(object content)
         {
@@ -296,7 +532,7 @@
                 // Inclui o cabeçalho Accept que será enviado na requisição.
                 this._httpClient.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(
-                        Common.MediaTypes));
+                        this._mediaTypes));
 
                 //  Limpa o Header.
                 this._httpClient.DefaultRequestHeaders.Accept.Clear();
@@ -345,7 +581,7 @@
                 // Inclui o cabeçalho Accept que será enviado na requisição.
                 this._httpClient.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(
-                        Common.MediaTypes));
+                        this._mediaTypes));
 
                 //  Limpa o Header.
                 this._httpClient.DefaultRequestHeaders.Accept.Clear();
