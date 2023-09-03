@@ -37,12 +37,6 @@
                     Password = "(@rV73Ch)",
                 };
 
-                //string stringJson = webApiHelper.ExecutePostAuthenticationByBasic(
-                //    authDto);
-
-                //var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
-                //    stringJson);
-
                 string authDtoJson = JsonConvert.SerializeObject(authDto,
                     Formatting.None,
                     new JsonSerializerSettings
@@ -84,9 +78,10 @@
                 requestUri,
                 this._tokenBearer))
             {
-                string stringJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+                string matriculasDemonstrativosPagamentoResponseJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-                mdps = JsonConvert.DeserializeObject<List<MatriculaDemonstrativoPagamentoResponse>>(stringJson);
+                mdps = JsonConvert.DeserializeObject<List<MatriculaDemonstrativoPagamentoResponse>>(
+                    matriculasDemonstrativosPagamentoResponseJson);
             }
 
             return View(

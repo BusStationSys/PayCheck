@@ -46,12 +46,6 @@
                 var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
                     authDtoJson);
 
-                //string stringJson = webApiHelper.ExecutePostAuthenticationByBasic(
-                //    authDto);
-
-                //var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
-                //    stringJson);
-
                 this._tokenBearer = authResponse.Token;
             }
         }
@@ -73,9 +67,10 @@
                 requestUri,
                 this._tokenBearer))
             {
-                string stringJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+                string pessoaFisicaJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-                pf = JsonConvert.DeserializeObject<PessoaFisicaResponse>(stringJson);
+                pf = JsonConvert.DeserializeObject<PessoaFisicaResponse>(
+                    pessoaFisicaJson);
             }
 
             return View(

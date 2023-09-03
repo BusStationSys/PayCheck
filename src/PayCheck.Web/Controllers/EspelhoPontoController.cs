@@ -47,12 +47,6 @@
                 var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
                     authDtoJson);
 
-                //string stringJson = webApiHelper.ExecutePostAuthenticationByBasic(
-                //    authDto);
-
-                //var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
-                //    stringJson);
-
                 this._tokenBearer = authResponse.Token;
             }
         }

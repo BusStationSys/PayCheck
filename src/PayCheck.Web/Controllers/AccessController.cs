@@ -379,11 +379,6 @@ A Equipe de Suporte PayCheck®.";
 
                     usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(
                         loginDtoJson);
-
-                    //string stringJson = webApiHelper.ExecutePostAuthenticationByBearer(
-                    //    loginDto);
-
-                    //usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(stringJson);
                 }
 
                 if (usuarioResponse?.Guid != Guid.Empty &&
