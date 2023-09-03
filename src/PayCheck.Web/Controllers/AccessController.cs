@@ -50,7 +50,7 @@
                         NullValueHandling = NullValueHandling.Ignore,
                     });
 
-                authDtoJson = webApiHelper.ExecutePostAuthenticationByBasic(
+                authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
                     authDtoJson);
 
                 var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
@@ -187,10 +187,24 @@
                     requestUri,
                     this._tokenBearer))
                 {
-                    string stringJson = webApiHelper.ExecutePutAuthenticationByBearer(
-                        usuarioUpdateDto);
+                    string usuarioUpdateDtoJson = JsonConvert.SerializeObject(
+                        usuarioUpdateDto,
+                        Formatting.None,
+                        new JsonSerializerSettings
+                        {
+                            NullValueHandling = NullValueHandling.Ignore,
+                        });
 
-                    usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(stringJson);
+                    usuarioUpdateDtoJson = webApiHelper.ExecutePutWithAuthenticationByBearer(
+                        usuarioUpdateDtoJson);
+
+                    usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(
+                        usuarioUpdateDtoJson);
+
+                    //string stringJson = webApiHelper.ExecutePutWithAuthenticationByBearer(
+                    //    usuarioUpdateDto);
+
+                    //usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(stringJson);
                 }
 
                 ViewBag.SuccessMessage = $"Senha alterada para o usuário {usuarioResponse.Username}.";
@@ -365,7 +379,7 @@ A Equipe de Suporte PayCheck®.";
                             NullValueHandling = NullValueHandling.Ignore,
                         });
 
-                    loginDtoJson = webApiHelper.ExecutePostAuthenticationByBearer(
+                    loginDtoJson = webApiHelper.ExecutePostWithAuthenticationByBearer(
                         loginDtoJson);
 
                     usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(

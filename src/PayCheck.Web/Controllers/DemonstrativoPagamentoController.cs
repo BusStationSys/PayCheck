@@ -50,7 +50,7 @@
                         NullValueHandling = NullValueHandling.Ignore,
                     });
 
-                authDtoJson = webApiHelper.ExecutePostAuthenticationByBasic(
+                authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
                     authDtoJson);
 
                 var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
@@ -84,7 +84,7 @@
                 requestUri,
                 this._tokenBearer))
             {
-                string stringJson = webApiHelper.ExecuteGetAuthenticationByBearer();
+                string stringJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
                 mdps = JsonConvert.DeserializeObject<List<MatriculaDemonstrativoPagamentoResponse>>(stringJson);
             }
@@ -109,7 +109,7 @@
                 requestUri,
                 this._tokenBearer))
             {
-                string stringJson = webApiHelper.ExecuteGetAuthenticationByBearer();
+                string stringJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
                 mdp = JsonConvert.DeserializeObject<MatriculaDemonstrativoPagamentoResponse>(stringJson);
             }

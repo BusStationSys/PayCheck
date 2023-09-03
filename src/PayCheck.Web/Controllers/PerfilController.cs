@@ -40,7 +40,7 @@
                         NullValueHandling = NullValueHandling.Ignore,
                     });
 
-                authDtoJson = webApiHelper.ExecutePostAuthenticationByBasic(
+                authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
                     authDtoJson);
 
                 var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
@@ -73,7 +73,7 @@
                 requestUri,
                 this._tokenBearer))
             {
-                string stringJson = webApiHelper.ExecuteGetAuthenticationByBearer();
+                string stringJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
                 pf = JsonConvert.DeserializeObject<PessoaFisicaResponse>(stringJson);
             }
