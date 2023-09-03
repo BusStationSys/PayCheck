@@ -65,6 +65,66 @@
     <div class="row mb-3">
     </div>
 
+    <div class="row">
+        @if (Model.MatriculaEspelhoPontoMarcacoes != null &&
+        Model.MatriculaEspelhoPontoMarcacoes.Count() > 0)
+        {
+            int contador = 1;
+
+            string classColor = string.Empty;
+
+            @foreach (var item in Model.MatriculaEspelhoPontoMarcacoes.OrderBy(m => m.Data).GroupBy(m => m.Data))
+            {
+                if (contador % 3 == 1)
+                {
+                    classColor = "success";
+                }
+                else if (contador % 3 == 2)
+                {
+                    classColor = "secondary";
+                }
+                else
+                {
+                    classColor = "primary";
+
+                    contador = 0;
+                }
+
+                string id = string.Concat(
+                    "collapseCard",
+                    item.Key.ToString("yyyyMMdd"));
+
+                <div class="col-xl-4 col-md-4 mb-4">
+                    <div class="card shadow mb-4 border-left-@classColor shadow">
+                        <!-- Card Header - Accordion -->
+                        <a href="#@id" class="d-block card-header py-3" data-toggle="collapse"
+                           role="button" aria-expanded="false" aria-controls="@id">
+                            <h6 class="m-0 font-weight-bold text-@classColor text-uppercase mb-1">@item.Key.ToString("dd/MM/yyyy")</h6>
+                        </a>
+
+                        <!-- Card Content - Collapse -->
+                        <div class="collapse" id="@id">
+                            <div class="card-header bg-transparent border-@classColor font-weight-bold text-gray-800">
+                                ####
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                contador++;
+            }
+        }
+        else
+        {
+            <div class="col-xl-12 col-md-12 mb-12">
+                <div class="alert alert-warning">
+                    Não foram encontradas marcações de ponto para a Competência @Model.CompetenciaFormatada e Matrícula @Model.Matricula.
+                </div>
+            </div>
+        }
+    </div>
+
     <div>
         <a class="btn btn-secondary btn-icon-split" asp-action="Index">
             <span class="icon text-white-50">

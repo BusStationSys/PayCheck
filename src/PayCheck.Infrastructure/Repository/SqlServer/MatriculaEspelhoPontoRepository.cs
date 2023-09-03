@@ -370,11 +370,11 @@
                                       INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNamePessoasJuridicas}] as {base.TableAliasPessoasJuridicas} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculas}].[GUIDEMPREGADOR] = [{base.TableAliasPessoasJuridicas}].[GUID] 
 
-                                 LEFT OUTER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameMatriculasEspelhosPontoCalculos}] as {base.TableAliasMatriculasEspelhosPontoCalculos} WITH(NOLOCK)
-                                              ON [{base.TableAliasMatriculasEspelhosPonto}].[GUID] = {base.TableAliasMatriculasEspelhosPontoCalculos}.[GUIDMATRICULA_ESPELHO_PONTO]
-
                                  LEFT OUTER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameMatriculasEspelhosPontoMarcacoes}] as {base.TableAliasMatriculasEspelhosPontoMarcacoes} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculasEspelhosPonto}].[GUID] = {base.TableAliasMatriculasEspelhosPontoMarcacoes}.[GUIDMATRICULA_ESPELHO_PONTO]
+
+                                 LEFT OUTER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameMatriculasEspelhosPontoCalculos}] as {base.TableAliasMatriculasEspelhosPontoCalculos} WITH(NOLOCK)
+                                              ON [{base.TableAliasMatriculasEspelhosPonto}].[GUID] = {base.TableAliasMatriculasEspelhosPontoCalculos}.[GUIDMATRICULA_ESPELHO_PONTO]
 
                                  LEFT OUTER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameCalculos}] as {base.TableAliasCalculos} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculasEspelhosPontoCalculos}].[IDCALCULO] = [{base.TableAliasCalculos}].[ID]
@@ -383,8 +383,10 @@
 
                                         ORDER BY [{base.TableAliasMatriculasEspelhosPonto}].[COMPETENCIA] Desc,
                                                  [{base.TableAliasMatriculas}].[MATRICULA],
-                                                 [{base.TableAliasPessoasFisicas}].[NOME],
-                                                 [{base.TableAliasCalculos}].[ID] ";
+                                                 [{base.TableAliasPessoasFisicas}].[NOME] ";
+
+                                                 //[{base.TableAliasCalculos}].[ID],
+                                                 //[{base.TableAliasMatriculasEspelhosPontoMarcacoes}].[DATA] ";
 
                 var matriculasEspelhosPontoEntity = base._connection.Query<MatriculaEspelhoPontoEntity, MatriculaEntity, PessoaFisicaEntity, PessoaJuridicaEntity, MatriculaEspelhoPontoCalculoEntity, MatriculaEspelhoPontoMarcacaoEntity, CalculoEntity, MatriculaEspelhoPontoEntity>(
                     cmdText,
@@ -397,7 +399,7 @@
 
                             mapMatriculaEspelhoPonto.Matricula = mapMatricula;
 
-                            //mapMatriculaEspelhoPonto.MatriculaDemonstrativoPagamentoEventos = new List<MatriculaDemonstrativoPagamentoEventoEntity>();
+                            mapMatriculaEspelhoPonto.MatriculaEspelhoPontoMarcacoes = new List<MatriculaEspelhoPontoMarcacaoEntity>();
 
                             matriculasEspelhoPontoResult.Add(
                                 mapMatriculaEspelhoPonto.Guid,
@@ -405,6 +407,12 @@
                         }
 
                         MatriculaEspelhoPontoEntity current = matriculasEspelhoPontoResult[mapMatriculaEspelhoPonto.Guid];
+
+                        if (mapMatriculaEspelhoPontoMarcacoes != null && !current.MatriculaEspelhoPontoMarcacoes.Contains(mapMatriculaEspelhoPontoMarcacoes))
+                        {
+                            current.MatriculaEspelhoPontoMarcacoes.Add(
+                                mapMatriculaEspelhoPontoMarcacoes);
+                        }
 
                         //if (mapMatriculaDemonstrativoPagamentoEventos != null && !current.MatriculaDemonstrativoPagamentoEventos.Contains(mapMatriculaDemonstrativoPagamentoEventos))
                         //{
