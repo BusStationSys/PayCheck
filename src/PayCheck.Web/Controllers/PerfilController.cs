@@ -13,6 +13,10 @@
 
         private readonly string _tokenBearer;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PerfilController"/> class.
+        /// </summary>
+        /// <param name="emailService"></param>
         public PerfilController()
         {
             this._httpClient = new HttpClient

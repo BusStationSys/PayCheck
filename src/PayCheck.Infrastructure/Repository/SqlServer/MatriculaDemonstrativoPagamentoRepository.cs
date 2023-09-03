@@ -20,84 +20,8 @@
         private readonly string _columnsPessoasJuridicas;
         private readonly string _columnsTotalizadores;
 
-        ///// <summary>
-        ///// Initializes a new instance of the <see cref="MatriculaRepository"/> class.
-        ///// </summary>
-        ///// <param name="connection"></param>
-        //public MatriculaDemonstrativoPagamentoRepository(SqlConnection connection) :
-        //    base(connection)
-        //{
-        //    base._connection = connection;
-
-        //    this.MapAttributeToField(
-        //        typeof(
-        //            EventoEntity));
-
-        //    this.MapAttributeToField(
-        //        typeof(
-        //            MatriculaEntity));
-
-        //    this.MapAttributeToField(
-        //        typeof(
-        //            MatriculaDemonstrativoPagamentoEntity));
-
-        //    this.MapAttributeToField(
-        //        typeof(
-        //            MatriculaDemonstrativoPagamentoEventoEntity));
-
-        //    this.MapAttributeToField(
-        //        typeof(
-        //            MatriculaDemonstrativoPagamentoTotalizadorEntity));
-
-        //    this.MapAttributeToField(
-        //        typeof(
-        //            PessoaFisicaEntity));
-
-        //    this.MapAttributeToField(
-        //        typeof(
-        //            PessoaJuridicaEntity));
-
-        //    this.MapAttributeToField(
-        //        typeof(
-        //            TotalizadorEntity));
-
-        //    this._columnsEventos = base.GetAllColumnsFromTable(
-        //        base.TableNameEventos,
-        //        base.TableAliasEventos);
-
-        //    this._columnsMatriculas = base.GetAllColumnsFromTable(
-        //        base.TableNameMatriculas,
-        //        base.TableAliasMatriculas);
-
-        //    this._columnsMatriculasDemonstrativosPagamento = base.GetAllColumnsFromTable(
-        //        base.TableNameMatriculasDemonstrativosPagamento,
-        //        base.TableAliasMatriculasDemonstrativosPagamento);
-
-        //    this._columnsMatriculasDemonstrativosPagamentoEventos = base.GetAllColumnsFromTable(
-        //        base.TableNameMatriculasDemonstrativosPagamentoEventos,
-        //        base.TableAliasMatriculasDemonstrativosPagamentoEventos);
-
-        //    this._columnsMatriculasDemonstrativosPagamentoTotalizadores = base.GetAllColumnsFromTable(
-        //        base.TableNameMatriculasDemonstrativosPagamentoTotalizadores,
-        //        base.TableAliasMatriculasDemonstrativosPagamentoTotalizadores);
-
-        //    this._columnsPessoasFisicas = base.GetAllColumnsFromTable(
-        //        base.TableNamePessoasFisicas,
-        //        base.TableAliasPessoasFisicas,
-        //        "PF.FOTO");
-
-        //    this._columnsPessoasJuridicas = base.GetAllColumnsFromTable(
-        //        base.TableNamePessoasJuridicas,
-        //        base.TableAliasPessoasJuridicas,
-        //        "PJ.LOGOTIPO");
-
-        //    this._columnsTotalizadores = base.GetAllColumnsFromTable(
-        //        base.TableNameTotalizadores,
-        //        base.TableAliasTotalizadores);
-        //}
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="MatriculaRepository"/> class.
+        /// Initializes a new instance of the <see cref="MatriculaDemonstrativoPagamentoRepository"/> class.
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="transaction"></param>

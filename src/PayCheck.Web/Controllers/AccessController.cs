@@ -23,6 +23,10 @@
 
         private readonly IEmailService _emailService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccessController"/> class.
+        /// </summary>
+        /// <param name="emailService"></param>
         public AccessController(IEmailService emailService)
         {
             this._httpClient = new HttpClient

@@ -14,6 +14,9 @@
 
         private readonly string _tokenBearer;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EspelhoPontoController"/> class.
+        /// </summary>
         public EspelhoPontoController()
         {
             this._httpClient = new HttpClient

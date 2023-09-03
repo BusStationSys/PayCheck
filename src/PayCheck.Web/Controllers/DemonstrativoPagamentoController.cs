@@ -15,7 +15,7 @@
         private readonly string _tokenBearer;
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="DemonstrativoPagamentoController"/> class.
         /// </summary>
         public DemonstrativoPagamentoController()
         {
