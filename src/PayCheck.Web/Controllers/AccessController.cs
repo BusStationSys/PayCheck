@@ -200,11 +200,6 @@
 
                     usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(
                         usuarioUpdateDtoJson);
-
-                    //string stringJson = webApiHelper.ExecutePutWithAuthenticationByBearer(
-                    //    usuarioUpdateDto);
-
-                    //usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(stringJson);
                 }
 
                 ViewBag.SuccessMessage = $"Senha alterada para o usuário {usuarioResponse.Username}.";
