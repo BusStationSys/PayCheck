@@ -91,13 +91,12 @@
         public IActionResult Details(Guid? guid)
         {
             if (guid == null)
-            {
                 return NotFound();
-            }
 
             string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/{guid}";
 
-            var ep = default(MatriculaEspelhoPontoResponse);
+            var ep = default(
+                MatriculaEspelhoPontoResponse);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -110,6 +109,18 @@
 
             return View(
                 ep); ;
+        }
+
+        public IActionResult ConfirmarRealizacaoFrequencia(Guid guid)
+        {
+
+
+            return RedirectToAction(
+                "Details",
+                new
+                {
+                    guid = guid
+                });
         }
     }
 }

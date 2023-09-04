@@ -8,6 +8,26 @@
 
 <!-- Begin Page Content -->
 <div class="container-fluid">
+    <!-- Logout Modal-->
+    <div class="modal fade" id="confirmacaoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confirmação da realização da frequência</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Você deseja realmente confirmar a realização da frequência?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" data-dismiss="modal">Cancelar</button>
+                    <a class="btn btn-success" asp-controller="EspelhoPonto" asp-action="ConfirmarRealizacaoFrequencia" asp-route-guid=@Model.Guid>Confirmar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Espelho de Ponto</h1>
@@ -52,17 +72,7 @@
     </div>
 
     <div class="row mb-3">
-    </div>
 
-    <div class="row">
-        <div class="col-xl-12 col-md-12 mb-12">
-            <div class="alert alert-success">
-                Este Espelho de Ponto foi aceito em 29/08/2023 10:10:12, IP: 179.175.188.231.
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-3">
     </div>
 
     <div class="row">
@@ -73,46 +83,86 @@
 
             string classColor = string.Empty;
 
-            @foreach (var item in Model.MatriculaEspelhoPontoMarcacoes.OrderBy(m => m.Data).GroupBy(m => m.Data))
+            var datas = Model.MatriculaEspelhoPontoMarcacoes.OrderBy(
+            m => m.Data).GroupBy(
+            m => m.Data);
+
+            @foreach (var data in datas)
             {
-                if (contador % 3 == 1)
-                {
-                    classColor = "success";
-                }
-                else if (contador % 3 == 2)
-                {
-                    classColor = "secondary";
-                }
-                else
-                {
-                    classColor = "primary";
+                var item = Model.MatriculaEspelhoPontoMarcacoes.Where(
+                d => d.Data == data.Key).FirstOrDefault();
 
-                    contador = 0;
-                }
+                if (item != null)
+                {
+                    if (contador % 3 == 1)
+                        classColor = "success";
+                    else if (contador % 3 == 2)
+                        classColor = "secondary";
+                    else
+                    {
+                        classColor = "primary";
 
-                string id = string.Concat(
+                        contador = 0;
+                    }
+
+                    string id = string.Concat(
                     "collapseCard",
-                    item.Key.ToString("yyyyMMdd"));
+                    item.Data.ToString("yyyyMMdd"));
 
-                <div class="col-xl-4 col-md-4 mb-4">
-                    <div class="card shadow mb-4 border-left-@classColor shadow">
-                        <!-- Card Header - Accordion -->
-                        <a href="#@id" class="d-block card-header py-3" data-toggle="collapse"
-                           role="button" aria-expanded="false" aria-controls="@id">
-                            <h6 class="m-0 font-weight-bold text-@classColor text-uppercase mb-1">@item.Key.ToString("dd/MM/yyyy")</h6>
-                        </a>
+                    <div class="col-xl-4 col-md-4">
+                        <div class="card shadow mb-3 border-left-@classColor shadow">
+                            <!-- Card Header - Accordion -->
+                            <a href="#@id" class="d-block card-header py-3" data-toggle="collapse"
+                               role="button" aria-expanded="false" aria-controls="@id">
+                                <h6 class="m-0 font-weight-bold text-@classColor text-uppercase mb-1">@item.Data.ToString("dd/MM/yyyy")</h6>
 
-                        <!-- Card Content - Collapse -->
-                        <div class="collapse" id="@id">
-                            <div class="card-header bg-transparent border-@classColor font-weight-bold text-gray-800">
-                                ####
+                                <small class="text-@classColor">* @item.DiaSemana</small>
+                            </a>
+
+                            <!-- Card Content - Collapse -->
+                            <div class="collapse" id="@id">
+                                <div class="card-header bg-transparent border-@classColor font-weight-bold text-gray-800">
+                                    @item.Marcacao
+                                </div>
+
+                                <div class="card-body">
+                                    <p class="text-@classColor">
+                                        <small>
+                                            <strong>Trabalhadas</strong>: @item.HorasTrabalhadasFormatada
+                                        </small>
+                                    </p>
+                                    <p class="text-@classColor">
+                                        <small>
+                                            <strong>50%</strong>: @item.HorasExtras050Formatada
+                                        </small>
+                                    </p>
+                                    <p class="text-@classColor">
+                                        <small>
+                                            <strong>70%</strong>: @item.HorasExtras070Formatada
+                                        </small>
+                                    </p>
+                                    <p class="text-@classColor">
+                                        <small>
+                                            <strong>100%</strong>: @item.HorasExtras100Formatada
+                                        </small>
+                                    </p>
+                                    <p class="text-@classColor">
+                                        <small>
+                                            <strong>Crédito BH</strong>: @item.HorasCreditoBHFormatada
+                                        </small>
+                                    </p>
+                                    <p class="text-@classColor">
+                                        <small>
+                                            <strong>Débito BH</strong>: @item.HorasDebitoBHFormatada
+                                        </small>
+                                    </p>
+                                </div>
                             </div>
-
                         </div>
                     </div>
-                </div>
 
-                contador++;
+                    contador++;
+                }
             }
         }
         else
@@ -123,6 +173,27 @@
                 </div>
             </div>
         }
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12 col-md-12 mb-12">
+            @if (Model.DataConfirmacao != null && 
+                Model.DataConfirmacao.HasValue)
+            {
+                <div class="alert alert-success">
+                    Este Espelho de Ponto foi aceito em @Model.DataConfirmacao.Value.ToString("dd/MM/yyyy HH:mm:ss"), IP: 179.175.188.231.
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    <a class="btn btn-warning btn-block" href="#" data-toggle="modal" data-target="#confirmacaoModal">
+                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Confirmo a realização da frequência descrita acima e o recebimento do Demonstrativo de Pagamento Mensal.
+                    </a>
+                </div>
+            }
+        </div>
     </div>
 
     <div>
