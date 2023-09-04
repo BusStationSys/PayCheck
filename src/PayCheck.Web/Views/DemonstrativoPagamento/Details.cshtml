@@ -104,12 +104,12 @@
                     <div class="card-header bg-transparent border-primary font-weight-bold text-gray-800">R$ @Model.TotalVencimentos.ToString("#,###,###,##0.00")</div>
 
                     @if (Model.MatriculaDemonstrativoPagamentoEventos != null &&
-                    Model.MatriculaDemonstrativoPagamentoEventos.Where(
-                    e => e.Evento.Tipo == "V").Count() > 0)
+                        Model.MatriculaDemonstrativoPagamentoEventos.Where(
+                            e => e.Evento.Tipo == "V").Count() > 0)
                     {
                         @foreach (var mdpe in Model.MatriculaDemonstrativoPagamentoEventos.Where(
-                       e => e.Evento.Tipo == "V").OrderBy(
-                       mdpe => mdpe.IdEvento))
+                            e => e.Evento.Tipo == "V").OrderBy(
+                                mdpe => mdpe.IdEvento))
                         {
                             <div class="card-body">
                                 <p class="text-primary">
