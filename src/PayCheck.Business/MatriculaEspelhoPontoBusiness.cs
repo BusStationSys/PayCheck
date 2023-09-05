@@ -1,11 +1,11 @@
 ﻿namespace PayCheck.Business
 {
     using System;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.DataAccess.Core.Entities.UniPayCheck;
-    using PayCheck.Infrastructure.UnitOfWork.Interfaces;
+    using ARVTech.DataAccess.DTOs.UniPayCheck;
     using AutoMapper;
     using PayCheck.Business.Interfaces;
+    using PayCheck.Infrastructure.UnitOfWork.Interfaces;
 
     public class MatriculaEspelhoPontoBusiness : BaseBusiness, IMatriculaEspelhoPontoBusiness
     {
@@ -27,7 +27,8 @@
                 cfg.CreateMap<MatriculaEspelhoPontoMarcacaoResponse, MatriculaEspelhoPontoMarcacaoEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaEspelhoPontoMarcacaoDto, MatriculaEspelhoPontoMarcacaoEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaEspelhoPontoMarcacaoResponse, MatriculaEspelhoPontoEntity>().ReverseMap();
-                cfg.CreateMap<MatriculaEspelhoPontoDto, MatriculaEspelhoPontoEntity>().ReverseMap();
+                cfg.CreateMap<MatriculaEspelhoPontoRequestCreateDto, MatriculaEspelhoPontoEntity>().ReverseMap();
+                cfg.CreateMap<MatriculaEspelhoPontoRequestUpdateDto, MatriculaEspelhoPontoEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaEspelhoPontoResponse, MatriculaEspelhoPontoEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaDto, MatriculaEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaResponse, MatriculaEntity>().ReverseMap();
@@ -37,7 +38,8 @@
                 cfg.CreateMap<PessoaJuridicaResponse, PessoaJuridicaEntity>().ReverseMap();
             });
 
-            this._mapper = new Mapper(mapperConfiguration);
+            this._mapper = new Mapper(
+                mapperConfiguration);
         }
 
         /// <summary>
@@ -96,7 +98,7 @@
 
                 connection.BeginTransaction();
 
-                connection.Repositories.MatriculaEspelhoPontoRepository.DeleteEventosAndTotalizadoresByCompetenciaAndGuidMatricula(
+                connection.Repositories.MatriculaEspelhoPontoRepository.DeleteCalculosAndMarcacoesByCompetenciaAndGuidMatricula(
                     competencia,
                     guidMatricula);
 
@@ -219,6 +221,69 @@
             catch
             {
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="createDto"></param>
+        /// <param name="updateDto"></param>
+        /// <returns></returns>
+        public MatriculaEspelhoPontoResponse SaveData(MatriculaEspelhoPontoRequestCreateDto? createDto = null, MatriculaEspelhoPontoRequestUpdateDto? updateDto = null)
+        {
+            var connection = this._unitOfWork.Create();
+
+            try
+            {
+                if (createDto != null && updateDto != null)
+                    throw new InvalidOperationException($"{nameof(createDto)} e {nameof(updateDto)} não podem estar preenchidos ao mesmo tempo.");
+                else if (createDto is null && updateDto is null)
+                    throw new InvalidOperationException($"{nameof(createDto)} e {nameof(updateDto)} não podem estar vazios ao mesmo tempo.");
+                else if (updateDto != null && updateDto.Guid == Guid.Empty)
+                    throw new InvalidOperationException($"É necessário o preenchimento do {nameof(updateDto.Guid)}.");
+
+                var entity = default(
+                    MatriculaEspelhoPontoEntity);
+
+                connection.BeginTransaction();
+
+                if (updateDto != null)
+                {
+
+                    entity = this._mapper.Map<MatriculaEspelhoPontoEntity>(
+                        updateDto);
+
+                    entity = connection.Repositories.MatriculaEspelhoPontoRepository.Update(
+                        entity.Guid,
+                        entity);
+                }
+                else if (createDto != null)
+                {
+                    entity = this._mapper.Map<MatriculaEspelhoPontoEntity>(
+                        createDto);
+
+                    entity = connection.Repositories.MatriculaEspelhoPontoRepository.Create(
+                        entity);
+                }
+
+                connection.CommitTransaction();
+
+                return this._mapper.Map<MatriculaEspelhoPontoResponse>(
+                    entity);
+            }
+            catch
+            {
+                if (connection.Transaction != null)
+                {
+                    connection.Rollback();
+                }
+
+                throw;
+            }
+            finally
+            {
+                connection.Dispose();
             }
         }
     }

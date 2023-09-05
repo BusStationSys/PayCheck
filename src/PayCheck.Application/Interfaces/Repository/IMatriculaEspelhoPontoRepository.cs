@@ -9,7 +9,7 @@
     /// </summary>
     public interface IMatriculaEspelhoPontoRepository : ICreateRepository<MatriculaEspelhoPontoEntity, MatriculaEspelhoPontoEntity>, IReadRepository<MatriculaEspelhoPontoEntity, Guid>, IUpdateRepository<MatriculaEspelhoPontoEntity, Guid, MatriculaEspelhoPontoEntity>, IDeleteRepository<Guid>
     {
-        void DeleteEventosAndTotalizadoresByCompetenciaAndGuidMatricula(string competencia, Guid guidMatricula);
+        void DeleteCalculosAndMarcacoesByCompetenciaAndGuidMatricula(string competencia, Guid guidMatricula);
 
         IEnumerable<MatriculaEspelhoPontoEntity> Get(string competencia, string matricula);
 

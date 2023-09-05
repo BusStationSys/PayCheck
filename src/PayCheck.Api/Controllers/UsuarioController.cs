@@ -98,6 +98,8 @@
         {
             try
             {
+                updateDto.Guid = guid;
+
                 var usuarioResponse = this._business.SaveData(
                     updateDto: updateDto);
 

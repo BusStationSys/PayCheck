@@ -98,18 +98,18 @@
         {
             try
             {
-                string cmdText = @"     DECLARE @NewGuidMatriculaDemonstrativoPagamento UniqueIdentifier
-                                            SET @NewGuidMatriculaDemonstrativoPagamento = NEWID()
+                string cmdText = @"     DECLARE @NewGuidMatriculaEspelhoPonto UniqueIdentifier
+                                            SET @NewGuidMatriculaEspelhoPonto = NEWID()
 
-                                    INSERT INTO [{0}].[dbo].[MATRICULAS_DEMONSTRATIVOS_PAGAMENTO]
+                                    INSERT INTO [{0}].[dbo].[MATRICULAS_ESPELHOS_PONTO]
                                                 ([GUID],
                                                  [GUIDMATRICULA],
                                                  [COMPETENCIA])
-                                         VALUES (@NewGuidMatriculaDemonstrativoPagamento,
+                                         VALUES (@NewGuidMatriculaEspelhoPonto,
                                                  {1}GuidMatricula,
                                                  {1}Competencia)
 
-                                          SELECT @NewGuidMatriculaDemonstrativoPagamento ";
+                                          SELECT @NewGuidMatriculaEspelhoPonto ";
 
                 cmdText = string.Format(
                     CultureInfo.InvariantCulture,
@@ -132,9 +132,9 @@
         }
 
         /// <summary>
-        /// Deletes the "Matrícula Demonstrativo Pagamento" record.
+        /// Deletes the "Matrícula Espelho Ponto" record.
         /// </summary>
-        /// <param name="guid">Guid of "Matrícula Demonstrativo Pagamento" record.</param>
+        /// <param name="guid">Guid of "Matrícula Espelho Ponto" record.</param>
         public void Delete(Guid guid)
         {
             try
@@ -144,7 +144,7 @@
                         nameof(guid));
 
                 string cmdText = @" DELETE
-                                      FROM [{0}].[dbo].[MATRICULAS_DEMONSTRATIVOS_PAGAMENTO]
+                                      FROM [{0}].[dbo].[MATRICULAS_ESPELHOS_PONTO]
                                      WHERE [GUID] = {1}Guid ";
 
                 cmdText = string.Format(
@@ -168,11 +168,11 @@
         }
 
         /// <summary>
-        /// Deletes the "Eventos" And "Totalizadores" of "Matrícula Demonstrativo Pagamento" records by "Competência" And "Guid of Matrícula".
+        /// Deletes the "Cálculos" And "Marcações" of "Matrícula Espelho Ponto" records by "Competência" And "Guid of Matrícula".
         /// </summary>
         /// <param name="competencia">"Competência" of "Matrícula" record.</param>
         /// <param name="guidMatricula">Guid of "Matrícula" record.</param>
-        public void DeleteEventosAndTotalizadoresByCompetenciaAndGuidMatricula(string competencia, Guid guidMatricula)
+        public void DeleteCalculosAndMarcacoesByCompetenciaAndGuidMatricula(string competencia, Guid guidMatricula)
         {
             try
             {
@@ -184,14 +184,14 @@
                         nameof(guidMatricula));
 
                 string cmdText = @" DELETE
-                                      FROM [{0}].[dbo].[MATRICULAS_DEMONSTRATIVOS_PAGAMENTO_EVENTOS]
+                                      FROM [{0}].[dbo].[MATRICULAS_ESPELHOS_PONTO_CALCULOS]
                                      WHERE [GUIDMATRICULA_DEMONSTRATIVO_PAGAMENTO] IN ( SELECT [GUID]
                                                                                           FROM [{0}].[dbo].[MATRICULAS_DEMONSTRATIVOS_PAGAMENTO]
                                                                                          WHERE [COMPETENCIA] = {1}Competencia
                                                                                            AND [GUIDMATRICULA] = {1}GuidMatricula )
 
                                     DELETE
-                                      FROM [{0}].[dbo].[MATRICULAS_DEMONSTRATIVOS_PAGAMENTO_TOTALIZADORES]
+                                      FROM [{0}].[dbo].[MATRICULAS_ESPELHOS_PONTO_MARCACOES]
                                      WHERE [GUIDMATRICULA_DEMONSTRATIVO_PAGAMENTO] IN ( SELECT [GUID]
                                                                                           FROM [{0}].[dbo].[MATRICULAS_DEMONSTRATIVOS_PAGAMENTO]
                                                                                          WHERE [COMPETENCIA] = {1}Competencia
@@ -217,128 +217,6 @@
                 throw;
             }
         }
-
-        /// <summary>
-        /// Gets the "Matrícula Espelho Ponto" record.
-        /// </summary>
-        /// <param name="guid">Guid of "Matrícula Espelho Ponto" record.</param>
-        /// <returns>If success, the object with the persistent database record. Otherwise, an exception detailing the problem.</returns>
-        //public MatriculaEspelhoPontoEntity Get(Guid guid)
-        //{
-        //    try
-        //    {
-        //        //  Maneira utilizada para trazer os relacionamentos 0:N.
-        //        Dictionary<Guid, MatriculaEspelhoPontoEntity> matriculasEspelhosPontoResult = new Dictionary<Guid, MatriculaEspelhoPontoEntity>();
-
-        //        string cmdText = $@"      SELECT {this._columnsMatriculasEspelhosPonto},
-        //                                         {this._columnsMatriculas},
-        //                                         {this._columnsPessoasFisicas},
-        //                                         {this._columnsPessoasJuridicas},
-        //                                         {this._columnsMatriculasEspelhosPontoCalculos},
-        //                                         {this._columnsMatriculasEspelhosPontoMarcacoes},
-        //                                         {this._columnsCalculos}
-        //                                    FROM [{this._connection?.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamento}] as {base.TableAliasMatriculasDemonstrativosPagamento} WITH(NOLOCK)
-
-        //                              INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameMatriculas}] as {base.TableAliasMatriculas} WITH(NOLOCK)
-        //                                      ON [{base.TableAliasMatriculasDemonstrativosPagamento}].[GUIDMATRICULA] = [{base.TableAliasMatriculas}].[GUID] 
-
-        //                              INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNamePessoasFisicas}] as {base.TableAliasPessoasFisicas} WITH(NOLOCK)
-        //                                      ON [{base.TableAliasMatriculas}].[GUIDCOLABORADOR] = [{base.TableAliasPessoasFisicas}].[GUID]
-
-        //                              INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNamePessoasJuridicas}] as {base.TableAliasPessoasJuridicas} WITH(NOLOCK)
-        //                                      ON [{base.TableAliasMatriculas}].[GUIDEMPREGADOR] = [{base.TableAliasPessoasJuridicas}].[GUID] 
-
-        //                         LEFT OUTER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamentoEventos}] as {base.TableAliasMatriculasDemonstrativosPagamentoEventos} WITH(NOLOCK)
-        //                                      ON [{base.TableAliasMatriculasDemonstrativosPagamento}].[GUID] = {base.TableAliasMatriculasDemonstrativosPagamentoEventos}.[GUIDMATRICULA_DEMONSTRATIVO_PAGAMENTO]
-
-        //                              INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameEventos}] as {base.TableAliasEventos} WITH(NOLOCK)
-        //                                      ON [{base.TableAliasMatriculasDemonstrativosPagamentoEventos}].[IDEVENTO] = [{base.TableAliasEventos}].[ID]
-
-        //                         LEFT OUTER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamentoTotalizadores}] as {base.TableAliasMatriculasDemonstrativosPagamentoTotalizadores} WITH(NOLOCK)
-        //                                      ON [{base.TableAliasMatriculasDemonstrativosPagamento}].[GUID] = {base.TableAliasMatriculasDemonstrativosPagamentoTotalizadores}.[GUIDMATRICULA_DEMONSTRATIVO_PAGAMENTO]
-
-        //                              INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameTotalizadores}] as {base.TableAliasTotalizadores} WITH(NOLOCK)
-        //                                      ON [{base.TableAliasMatriculasDemonstrativosPagamentoTotalizadores}].[IDTOTALIZADOR] = [{base.TableAliasTotalizadores}].[ID]
-
-        //                                   WHERE UPPER([{base.TableAliasMatriculasDemonstrativosPagamento}].[GUID]) = {base.ParameterSymbol}Guid ";
-
-        //        base._connection.Query<MatriculaEspelhoPontoEntity>(
-        //            cmdText,
-        //            new[]
-        //            {
-        //                typeof(MatriculaEspelhoPontoEntity),
-        //                typeof(MatriculaEntity),
-        //                typeof(PessoaFisicaEntity),
-        //                typeof(PessoaJuridicaEntity),
-        //                typeof(MatriculaDemonstrativoPagamentoEventoEntity),
-        //                typeof(EventoEntity),
-        //                typeof(MatriculaDemonstrativoPagamentoTotalizadorEntity),
-        //                typeof(TotalizadorEntity),
-        //            },
-        //            obj =>
-        //            {
-        //                var matriculaEspelhoPontoEntity = (MatriculaEspelhoPontoEntity)obj[0];
-        //                var matriculaEntity = (MatriculaEntity)obj[1];
-        //                var pessoaFisicaEntity = (PessoaFisicaEntity)obj[2];
-        //                var pessoaJuridicaEntity = (PessoaJuridicaEntity)obj[3];
-        //                var matriculaDemonstrativoPagamentoEventoEntity = (MatriculaDemonstrativoPagamentoEventoEntity)obj[4];
-        //                var eventoEntity = (EventoEntity)obj[5];
-        //                var matriculaDemonstrativoPagamentoTotalizadorEntity = (MatriculaDemonstrativoPagamentoTotalizadorEntity)obj[6];
-        //                var totalizadorEntity = (TotalizadorEntity)obj[7];
-
-        //                if (!matriculasEspelhosPontoResult.ContainsKey(matriculaEspelhoPontoEntity.Guid))
-        //                {
-        //                    // matriculaEspelhoPontoEntity.MatriculaDemonstrativoPagamentoEventos = new List<MatriculaDemonstrativoPagamentoEventoEntity>();
-        //                    // matriculaEspelhoPontoEntity.MatriculaDemonstrativoPagamentoTotalizadores = new List<MatriculaDemonstrativoPagamentoTotalizadorEntity>();
-
-        //                    matriculaEntity.Colaborador = pessoaFisicaEntity;
-        //                    matriculaEntity.Empregador = pessoaJuridicaEntity;
-
-        //                    matriculaEspelhoPontoEntity.Matricula = matriculaEntity;
-
-        //                    matriculasEspelhosPontoResult.Add(
-        //                        matriculaEspelhoPontoEntity.Guid,
-        //                        matriculaEspelhoPontoEntity);
-        //                }
-
-        //                MatriculaEspelhoPontoEntity current = matriculasEspelhosPontoResult[matriculaEspelhoPontoEntity.Guid];
-
-        //                //if (matriculaDemonstrativoPagamentoEventoEntity != null &&
-        //                //    !current.MatriculaDemonstrativoPagamentoEventos.Any(
-        //                //        mdpe => mdpe.IdEvento == matriculaDemonstrativoPagamentoEventoEntity.IdEvento))
-        //                //{
-        //                //    matriculaDemonstrativoPagamentoEventoEntity.Evento = eventoEntity;
-
-        //                //    current.MatriculaDemonstrativoPagamentoEventos.Add(
-        //                //        matriculaDemonstrativoPagamentoEventoEntity);
-        //                //}
-
-        //                //if (matriculaDemonstrativoPagamentoTotalizadorEntity != null &&
-        //                //    !current.MatriculaDemonstrativoPagamentoTotalizadores.Any(
-        //                //        mdpt => mdpt.IdTotalizador == matriculaDemonstrativoPagamentoTotalizadorEntity.IdTotalizador))
-        //                //{
-        //                //    matriculaDemonstrativoPagamentoTotalizadorEntity.Totalizador = totalizadorEntity;
-
-        //                //    current.MatriculaDemonstrativoPagamentoTotalizadores.Add(
-        //                //        matriculaDemonstrativoPagamentoTotalizadorEntity);
-        //                //}
-
-        //                return null;
-        //            },
-        //            param: new
-        //            {
-        //                Guid = guid,
-        //            },
-        //            splitOn: "GUID,GUID,GUID,GUID,GUID,ID,GUID,ID",
-        //            transaction: this._transaction);
-
-        //        return matriculasEspelhosPontoResult.Values.FirstOrDefault();
-        //    }
-        //    catch
-        //    {
-        //        throw;
-        //    }
-        //}
 
         /// <summary>
         /// Gets the "Matrícula Espelho Ponto" record.
@@ -385,8 +263,8 @@
                                                  [{base.TableAliasMatriculas}].[MATRICULA],
                                                  [{base.TableAliasPessoasFisicas}].[NOME] ";
 
-                                                 //[{base.TableAliasCalculos}].[ID],
-                                                 //[{base.TableAliasMatriculasEspelhosPontoMarcacoes}].[DATA] ";
+                //[{base.TableAliasCalculos}].[ID],
+                //[{base.TableAliasMatriculasEspelhosPontoMarcacoes}].[DATA] ";
 
                 var matriculasEspelhosPontoEntity = base._connection.Query<MatriculaEspelhoPontoEntity, MatriculaEntity, PessoaFisicaEntity, PessoaJuridicaEntity, MatriculaEspelhoPontoCalculoEntity, MatriculaEspelhoPontoMarcacaoEntity, CalculoEntity, MatriculaEspelhoPontoEntity>(
                     cmdText,
@@ -604,8 +482,8 @@
                     this._columnsMatriculasEspelhosPonto,
                     this._columnsMatriculas,
                     base._connection?.Database,
-                    base.TableNameMatriculasDemonstrativosPagamento,
-                    base.TableAliasMatriculasDemonstrativosPagamento,
+                    base.TableNameMatriculasEspelhosPonto,
+                    base.TableAliasMatriculasEspelhosPonto,
                     base.TableNameMatriculas,
                     base.TableAliasMatriculas,
                     base.ParameterSymbol);
@@ -654,10 +532,10 @@
                                                  {this._columnsPessoasJuridicas},
                                                  {this._columnsMatriculasEspelhosPontoCalculos},
                                                  {this._columnsCalculos}
-                                            FROM [{this._connection?.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamento}] as {base.TableAliasMatriculasDemonstrativosPagamento} WITH(NOLOCK)
+                                            FROM [{this._connection?.Database}].[dbo].[{base.TableNameMatriculasEspelhosPonto}] as {base.TableAliasMatriculasEspelhosPonto} WITH(NOLOCK)
 
                                       INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameMatriculas}] as {base.TableAliasMatriculas} WITH(NOLOCK)
-                                              ON [{base.TableAliasMatriculasDemonstrativosPagamento}].[GUIDMATRICULA] = [{base.TableAliasMatriculas}].[GUID] 
+                                              ON [{base.TableAliasMatriculasEspelhosPonto}].[GUIDMATRICULA] = [{base.TableAliasMatriculas}].[GUID] 
 
                                       INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNamePessoasFisicas}] as {base.TableAliasPessoasFisicas} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculas}].[GUIDCOLABORADOR] = [{base.TableAliasPessoasFisicas}].[GUID]
@@ -666,21 +544,21 @@
                                               ON [{base.TableAliasMatriculas}].[GUIDEMPREGADOR] = [{base.TableAliasPessoasJuridicas}].[GUID] 
 
                                  LEFT OUTER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameMatriculasDemonstrativosPagamentoEventos}] as {base.TableAliasMatriculasDemonstrativosPagamentoEventos} WITH(NOLOCK)
-                                              ON [{base.TableAliasMatriculasDemonstrativosPagamento}].[GUID] = {base.TableAliasMatriculasDemonstrativosPagamentoEventos}.[GUIDMATRICULA_DEMONSTRATIVO_PAGAMENTO]
+                                              ON [{base.TableAliasMatriculasEspelhosPonto}].[GUID] = {base.TableAliasMatriculasDemonstrativosPagamentoEventos}.[GUIDMATRICULA_DEMONSTRATIVO_PAGAMENTO]
 
                                       INNER JOIN [{this._connection?.Database}].[dbo].[{base.TableNameEventos}] as {base.TableAliasEventos} WITH(NOLOCK)
                                               ON [{base.TableAliasMatriculasDemonstrativosPagamentoEventos}].[IDEVENTO] = [{base.TableAliasEventos}].[ID]
 
                                            WHERE [{base.TableAliasMatriculas}].[GUIDCOLABORADOR] = {base.ParameterSymbol}GuidColaborador
 
-                                        ORDER BY [{base.TableAliasMatriculasDemonstrativosPagamento}].[COMPETENCIA] Desc,
+                                        ORDER BY [{base.TableAliasMatriculasEspelhosPonto}].[COMPETENCIA] Desc,
                                                  [{base.TableAliasMatriculas}].[MATRICULA],
                                                  [{base.TableAliasPessoasFisicas}].[NOME],
                                                  [{base.TableAliasEventos}].[ID] ";
 
-                var matriculasDemonstrativosPagamentoEntity = base._connection.Query<MatriculaEspelhoPontoEntity, MatriculaEntity, PessoaFisicaEntity, PessoaJuridicaEntity, MatriculaDemonstrativoPagamentoEventoEntity, EventoEntity, MatriculaEspelhoPontoEntity>(
+                var matriculasDemonstrativosPagamentoEntity = base._connection.Query<MatriculaEspelhoPontoEntity, MatriculaEntity, PessoaFisicaEntity, PessoaJuridicaEntity, MatriculaEspelhoPontoMarcacaoEntity, MatriculaEspelhoPontoEntity>(
                     cmdText,
-                    map: (mapMatriculaEspelhoPonto, mapMatricula, mapPessoaFisica, mapPessoaJuridica, mapMatriculaDemonstrativoPagamentoEventos, mapEvento) =>
+                    map: (mapMatriculaEspelhoPonto, mapMatricula, mapPessoaFisica, mapPessoaJuridica, mapMatriculaEspelhoPontoMarcacao) =>
                     {
                         if (!matriculasEspelhosPontoResult.ContainsKey(mapMatriculaEspelhoPonto.Guid))
                         {
@@ -789,9 +667,12 @@
             {
                 entity.Guid = pk;
 
-                string cmdText = @" UPDATE [{0}].[dbo].[MATRICULAS_DEMONSTRATIVOS_PAGAMENTO]
+                string cmdText = @" UPDATE [{0}].[dbo].[MATRICULAS_ESPELHOS_PONTO]
                                        SET [GUIDMATRICULA] = {1}GuidMatricula,
-                                           [COMPETENCIA] = {1}Competencia
+                                           [COMPETENCIA] = {1}Competencia,
+                                           [DATA_ULTIMA_ALTERACAO] = GETUTCDATE(),
+                                           [DATA_CONFIRMACAO] = {1}DataConfirmacao,
+                                           [IP_CONFIRMACAO] = {1}IpConfirmacao
                                      WHERE [GUID] = {1}Guid ";
 
                 cmdText = string.Format(

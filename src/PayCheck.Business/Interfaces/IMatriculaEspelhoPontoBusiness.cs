@@ -13,5 +13,7 @@
         IEnumerable<MatriculaEspelhoPontoResponse> GetAll();
 
         IEnumerable<MatriculaEspelhoPontoResponse> GetByGuidColaborador(Guid guidColaborador);
+
+        MatriculaEspelhoPontoResponse SaveData(MatriculaEspelhoPontoRequestCreateDto? createDto = null, MatriculaEspelhoPontoRequestUpdateDto? updateDto = null);
     }
 }

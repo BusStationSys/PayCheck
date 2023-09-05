@@ -2,8 +2,11 @@
 {
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared;
+    using AutoMapper;
     using Microsoft.AspNetCore.Mvc;
     using Newtonsoft.Json;
+    using System;
+    using System.Net;
 
     public class EspelhoPontoController : Controller
     {
@@ -14,11 +17,22 @@
 
         private readonly string _tokenBearer;
 
+        private readonly Mapper _mapper;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EspelhoPontoController"/> class.
         /// </summary>
         public EspelhoPontoController()
         {
+            var mapperConfiguration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<MatriculaEspelhoPontoRequestCreateDto, MatriculaEspelhoPontoResponse>().ReverseMap();
+                cfg.CreateMap<MatriculaEspelhoPontoRequestUpdateDto, MatriculaEspelhoPontoResponse>().ReverseMap();
+            });
+
+            this._mapper = new Mapper(
+                mapperConfiguration);
+
             this._httpClient = new HttpClient
             {
                 BaseAddress = this._baseAddress,
@@ -95,7 +109,7 @@
 
             string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/{guid}";
 
-            var ep = default(
+            var matriculaEspelhoPontoResponse = default(
                 MatriculaEspelhoPontoResponse);
 
             using (var webApiHelper = new WebApiHelper(
@@ -104,22 +118,78 @@
             {
                 string stringJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-                ep = JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponse>(stringJson);
+                matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponse>(stringJson);
             }
 
             return View(
-                ep); ;
+                matriculaEspelhoPontoResponse); ;
         }
 
+        private MatriculaEspelhoPontoResponse? GetMEP(Guid guid)
+        {
+            string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/{guid}";
+
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
+            {
+                string matriculaEspelhoPontoResponseJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+
+                return JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponse>(
+                    matriculaEspelhoPontoResponseJson);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
         public IActionResult ConfirmarRealizacaoFrequencia(Guid guid)
         {
+            var ipAddress = Common.GetIP();
 
+            byte[] ipConfirmacao = null;
+
+            if (ipAddress != null && ipAddress.GetAddressBytes != null)
+                ipConfirmacao = ipAddress.GetAddressBytes();
+
+            var matriculaEspelhoPontoResponse = this.GetMEP(
+                guid);
+
+            var matriculaEspelhoPontoRequestUpdateDto = this._mapper.Map<MatriculaEspelhoPontoRequestUpdateDto>(
+                matriculaEspelhoPontoResponse);
+
+            matriculaEspelhoPontoRequestUpdateDto.Guid = guid;
+            matriculaEspelhoPontoRequestUpdateDto.DataConfirmacao = DateTimeOffset.UtcNow;
+            matriculaEspelhoPontoRequestUpdateDto.IpConfirmacao = ipConfirmacao;
+
+            string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/{matriculaEspelhoPontoRequestUpdateDto.Guid:N}";
+
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
+            {
+                string matriculaEspelhoPontoRequestUpdateDtoJson = JsonConvert.SerializeObject(
+                    matriculaEspelhoPontoRequestUpdateDto,
+                    Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                    });
+
+                matriculaEspelhoPontoRequestUpdateDtoJson = webApiHelper.ExecutePutWithAuthenticationByBearer(
+                    matriculaEspelhoPontoRequestUpdateDtoJson);
+
+                matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponse>(
+                    matriculaEspelhoPontoRequestUpdateDtoJson);
+            }
 
             return RedirectToAction(
                 "Details",
                 new
                 {
-                    guid = guid
+                    guid = matriculaEspelhoPontoResponse.Guid
                 });
         }
     }
