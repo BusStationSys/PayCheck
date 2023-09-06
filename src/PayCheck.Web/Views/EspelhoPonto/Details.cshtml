@@ -72,7 +72,6 @@
     </div>
 
     <div class="row mb-3">
-
     </div>
 
     <div class="row">
@@ -181,30 +180,31 @@
                 Model.DataConfirmacao.HasValue)
             {
                 string textAlert = string.Concat(
-                    "Este Espelho de Ponto foi aceito em ",
-                    @Model.DataConfirmacao.Value.UtcDateTime.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"));
+                "Este Espelho de Ponto foi aceito em ",
+                Model.DataConfirmacaoFormatada);
 
                 if (!string.IsNullOrEmpty(@Model.IpConfirmacaoString))
                 {
                     textAlert = string.Concat(
-                        textAlert,
-                        " no IP ",
-                        @Model.IpConfirmacaoString);
+                    textAlert,
+                    " através do IP ",
+                    @Model.IpConfirmacaoString);
                 }
 
                 textAlert = string.Concat(
-                    textAlert,
-                    ".");
+                textAlert,
+                ".");
 
-                <div class="alert alert-success">
+                <div class="alert alert-success text-center">
                     @textAlert
                 </div>
             }
             else
             {
-                <div class="alert alert-warning">
+                <div class="alert alert-warning text-center">
                     <a class="btn btn-warning btn-block" href="#" data-toggle="modal" data-target="#confirmacaoModal">
-                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                        @*<i class="fa fa-camera-retro fa-sm fa-fw mr-2 text-gray-400"></i>https://fontawesome.com/v4/icon/calendar-check-o *@
+                        <i class="fa fa-calendar-check mr-2" aria-hidden="true"></i>
                         Confirmo a realização da frequência descrita acima e o recebimento do Demonstrativo de Pagamento Mensal.
                     </a>
                 </div>
