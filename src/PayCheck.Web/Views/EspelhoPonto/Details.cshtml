@@ -180,8 +180,8 @@
                 Model.DataConfirmacao.HasValue)
             {
                 string textAlert = string.Concat(
-                "Este Espelho de Ponto foi aceito em ",
-                Model.DataConfirmacaoFormatada);
+                    "Espelho de Ponto aceito em ",
+                    Model.DataConfirmacaoFormatada);
 
                 if (!string.IsNullOrEmpty(@Model.IpConfirmacaoString))
                 {
@@ -192,8 +192,8 @@
                 }
 
                 textAlert = string.Concat(
-                textAlert,
-                ".");
+                    textAlert,
+                    ".");
 
                 <div class="alert alert-success text-center">
                     @textAlert
