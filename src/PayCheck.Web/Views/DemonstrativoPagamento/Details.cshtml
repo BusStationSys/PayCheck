@@ -235,6 +235,44 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-xl-12 col-md-12 mb-12">
+            @if (Model.DataConfirmacao != null &&
+                Model.DataConfirmacao.HasValue)
+            {
+                string textAlert = string.Concat(
+                    "Demonstrativo de Pagamento aceito em ",
+                    Model.DataConfirmacaoFormatada);
+
+                if (!string.IsNullOrEmpty(@Model.IpConfirmacaoString))
+                {
+                    textAlert = string.Concat(
+                        textAlert,
+                        " através do IP ",
+                        @Model.IpConfirmacaoString);
+                }
+
+                textAlert = string.Concat(
+                    textAlert,
+                    ".");
+
+                <div class="alert alert-success text-center">
+                    @textAlert
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning text-center">
+                    <a class="btn btn-warning btn-block" href="#" data-toggle="modal" data-target="#confirmacaoModal">
+                        @*<i class="fa fa-camera-retro fa-sm fa-fw mr-2 text-gray-400"></i>https://fontawesome.com/v4/icon/calendar-check-o *@
+                        <i class="fa fa-calendar-check mr-2" aria-hidden="true"></i>
+                        Declaro ter recebido a quantia informada acima e o Demonstrativo de Pagamento Mensal.
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
     <div>
         @*@Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |*@
         <a class="btn btn-secondary btn-icon-split" asp-action="Index">

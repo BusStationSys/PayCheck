@@ -18,7 +18,8 @@
             {
                 cfg.CreateMap<EventoDto, EventoEntity>().ReverseMap();
                 cfg.CreateMap<EventoResponse, EventoEntity>().ReverseMap();
-                cfg.CreateMap<MatriculaDemonstrativoPagamentoDto, MatriculaDemonstrativoPagamentoEntity>().ReverseMap();
+                cfg.CreateMap<MatriculaDemonstrativoPagamentoRequestCreateDto, MatriculaDemonstrativoPagamentoEntity>().ReverseMap();
+                cfg.CreateMap<MatriculaDemonstrativoPagamentoRequestUpdateDto, MatriculaDemonstrativoPagamentoEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaDemonstrativoPagamentoResponse, MatriculaDemonstrativoPagamentoEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaDemonstrativoPagamentoEventoDto, MatriculaDemonstrativoPagamentoEventoEntity>().ReverseMap();
                 cfg.CreateMap<MatriculaDemonstrativoPagamentoEventoResponse, MatriculaDemonstrativoPagamentoEventoEntity>().ReverseMap();
@@ -224,33 +225,48 @@
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="dto"></param>
+        /// <param name="createDto"></param>
+        /// <param name="updateDto"></param>
         /// <returns></returns>
-        public MatriculaDemonstrativoPagamentoDto SaveData(MatriculaDemonstrativoPagamentoDto dto)
+        public MatriculaDemonstrativoPagamentoResponse SaveData(MatriculaDemonstrativoPagamentoRequestCreateDto? createDto = null, MatriculaDemonstrativoPagamentoRequestUpdateDto? updateDto = null)
         {
             var connection = this._unitOfWork.Create();
 
             try
             {
-                var entity = this._mapper.Map<MatriculaDemonstrativoPagamentoEntity>(dto);
+                if (createDto != null && updateDto != null)
+                    throw new InvalidOperationException($"{nameof(createDto)} e {nameof(updateDto)} não podem estar preenchidos ao mesmo tempo.");
+                else if (createDto is null && updateDto is null)
+                    throw new InvalidOperationException($"{nameof(createDto)} e {nameof(updateDto)} não podem estar vazios ao mesmo tempo.");
+                else if (updateDto != null && updateDto.Guid == Guid.Empty)
+                    throw new InvalidOperationException($"É necessário o preenchimento do {nameof(updateDto.Guid)}.");
+
+                var entity = default(
+                    MatriculaDemonstrativoPagamentoEntity);
 
                 connection.BeginTransaction();
 
-                if (dto.Guid != null && dto.Guid != Guid.Empty)
+                if (updateDto != null)
                 {
+                    entity = this._mapper.Map<MatriculaDemonstrativoPagamentoEntity>(
+                        updateDto);
+
                     entity = connection.Repositories.MatriculaDemonstrativoPagamentoRepository.Update(
-                        (Guid)dto.Guid,
+                        entity.Guid,
                         entity);
                 }
-                else
+                else if (createDto != null)
                 {
+                    entity = this._mapper.Map<MatriculaDemonstrativoPagamentoEntity>(
+                        createDto);
+
                     entity = connection.Repositories.MatriculaDemonstrativoPagamentoRepository.Create(
                         entity);
                 }
 
                 connection.CommitTransaction();
 
-                return this._mapper.Map<MatriculaDemonstrativoPagamentoDto>(
+                return this._mapper.Map<MatriculaDemonstrativoPagamentoResponse>(
                     entity);
             }
             catch

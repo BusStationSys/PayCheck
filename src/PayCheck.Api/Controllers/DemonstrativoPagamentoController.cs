@@ -1,6 +1,8 @@
 ﻿namespace PayCheck.Api.Controllers
 {
     using System;
+    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using System.Net;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using PayCheck.Business.Interfaces;
@@ -139,6 +141,39 @@
             catch
             {
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <param name="updateDto"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPut("{guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult UpdateMatriculaDemonstrativoPagamento(Guid guid, [FromBody] MatriculaDemonstrativoPagamentoRequestUpdateDto updateDto)
+        {
+            try
+            {
+                updateDto.Guid = guid;
+
+                var matriculaDemonstrativoPagamentoResponse = this._business.SaveData(
+                    updateDto: updateDto);
+
+                matriculaDemonstrativoPagamentoResponse.StatusCode = HttpStatusCode.NoContent;
+
+                return Ok(
+                    matriculaDemonstrativoPagamentoResponse);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    ex.Message);
             }
         }
     }

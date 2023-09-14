@@ -13,5 +13,7 @@
         IEnumerable<MatriculaDemonstrativoPagamentoResponse> GetAll();
 
         IEnumerable<MatriculaDemonstrativoPagamentoResponse> GetByGuidColaborador(Guid guidColaborador);
+
+        MatriculaDemonstrativoPagamentoResponse SaveData(MatriculaDemonstrativoPagamentoRequestCreateDto? createDto = null, MatriculaDemonstrativoPagamentoRequestUpdateDto? updateDto = null);
     }
 }
