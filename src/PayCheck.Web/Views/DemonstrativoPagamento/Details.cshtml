@@ -1,4 +1,4 @@
-﻿@model ARVTech.DataAccess.DTOs.UniPayCheck.MatriculaDemonstrativoPagamentoResponse
+﻿@model ARVTech.DataAccess.DTOs.UniPayCheck.MatriculaDemonstrativoPagamentoResponseDto
 
 @{
     ViewData["Title"] = "Details";
@@ -8,6 +8,26 @@
 
 <!-- Begin Page Content -->
 <div class="container-fluid">
+    <!-- Logout Modal-->
+    <div class="modal fade" id="confirmacaoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Declaração dos valores recebidos</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Você deseja realmente confirmar a declaração dos valores recebidos?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" data-dismiss="modal">Cancelar</button>
+                    <a class="btn btn-success" asp-controller="DemonstrativoPagamento" asp-action="ConfirmarRecebimentoValores" asp-route-guid=@Model.Guid>Confirmar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Demonstrativo de Pagamento</h1>
