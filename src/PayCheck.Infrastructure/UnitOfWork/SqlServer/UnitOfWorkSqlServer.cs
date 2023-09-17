@@ -6,7 +6,7 @@
 
     public class UnitOfWorkSqlServer : IUnitOfWork
     {
-        private readonly IConfiguration _configuration = null;
+        private readonly IConfiguration _configuration;
 
         public UnitOfWorkSqlServer(IConfiguration configuration)
         {

@@ -1,10 +1,10 @@
 ﻿namespace PayCheck.Infrastructure.UnitOfWork.SqlServer
 {
-    using Microsoft.Extensions.Configuration;
-    using PayCheck.Infrastructure.UnitOfWork.Interfaces;
     using System;
     using System.Data;
     using System.Data.SqlClient;
+    using Microsoft.Extensions.Configuration;
+    using PayCheck.Infrastructure.UnitOfWork.Interfaces;
 
     public class UnitOfWorkSqlServerAdapter : IUnitOfWorkAdapter
     {
@@ -40,19 +40,10 @@
 
         public IUnitOfWorkRepository? Repositories { get; set; }
 
-        //public UnitOfWorkSqlServerAdapter(string connectionString = "")
-        //{
-        //    this._connectionString = connectionString;
-
-        //    this._connection = new SqlConnection(
-        //        this._connectionString);
-
-        //    this._connection.Open();
-
-        //    this.Repositories = new UnitOfWorkSqlServerRepository(
-        //        this._connection);
-        //}
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
         public UnitOfWorkSqlServerAdapter(IConfiguration configuration)
         {
             this._connectionString = configuration.GetValue<string>("ConnectionStrings:SqlServer");

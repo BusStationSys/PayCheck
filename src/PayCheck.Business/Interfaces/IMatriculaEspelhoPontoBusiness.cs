@@ -6,14 +6,14 @@
 
     public interface IMatriculaEspelhoPontoBusiness
     {
-        MatriculaEspelhoPontoResponse Get(Guid guid);
+        MatriculaEspelhoPontoResponseDto Get(Guid guid);
 
-        IEnumerable<MatriculaEspelhoPontoResponse> Get(string competencia, string matricula);
+        IEnumerable<MatriculaEspelhoPontoResponseDto> Get(string competencia, string matricula);
 
-        IEnumerable<MatriculaEspelhoPontoResponse> GetAll();
+        IEnumerable<MatriculaEspelhoPontoResponseDto> GetAll();
 
-        IEnumerable<MatriculaEspelhoPontoResponse> GetByGuidColaborador(Guid guidColaborador);
+        IEnumerable<MatriculaEspelhoPontoResponseDto> GetByGuidColaborador(Guid guidColaborador);
 
-        MatriculaEspelhoPontoResponse SaveData(MatriculaEspelhoPontoRequestCreateDto? createDto = null, MatriculaEspelhoPontoRequestUpdateDto? updateDto = null);
+        MatriculaEspelhoPontoResponseDto SaveData(MatriculaEspelhoPontoRequestCreateDto? createDto = null, MatriculaEspelhoPontoRequestUpdateDto? updateDto = null);
     }
 }

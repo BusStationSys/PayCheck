@@ -4,10 +4,10 @@
 
     public interface IUsuarioBusiness
     {
-        UsuarioResponse GetByUsername(string cpfEmailUsername);
+        UsuarioResponseDto GetByUsername(string cpfEmailUsername);
 
-        UsuarioResponse CheckPasswordValid(Guid guid, string password);
+        UsuarioResponseDto CheckPasswordValid(Guid guid, string password);
 
-        UsuarioResponse SaveData(UsuarioRequestCreateDto? createDto = null, UsuarioRequestUpdateDto? updateDto = null);
+        UsuarioResponseDto SaveData(UsuarioRequestCreateDto? createDto = null, UsuarioRequestUpdateDto? updateDto = null);
     }
 }

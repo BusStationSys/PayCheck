@@ -41,7 +41,7 @@
                 "arvtech",
                 "(@rV73Ch)"))
             {
-                var authDto = new AuthDto
+                var authDto = new AuthRequestDto
                 {
                     Username = "arvtech",
                     Password = "(@rV73Ch)",
@@ -57,7 +57,7 @@
                 authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
                     authDtoJson);
 
-                var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
+                var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
                     authDtoJson);
 
                 this._tokenBearer = authResponse.Token;
@@ -159,7 +159,7 @@
         }
 
         [HttpPost]
-        public IActionResult ChangePassword(AlteracaoSenhaDto alteracaoSenhaDto)
+        public IActionResult ChangePassword(AlteracaoSenhaRequestDto alteracaoSenhaDto)
         {
             try
             {
@@ -183,7 +183,7 @@
                     Username = TempData["ChangePasswordUsername"].ToString(),
                 };
 
-                var usuarioResponse = default(UsuarioResponse);
+                var usuarioResponse = default(UsuarioResponseDto);
 
                 string requestUri = @$"{this._httpClient.BaseAddress}/Usuario/{usuarioUpdateDto.Guid:N}";
 
@@ -202,7 +202,7 @@
                     usuarioUpdateDtoJson = webApiHelper.ExecutePutWithAuthenticationByBearer(
                         usuarioUpdateDtoJson);
 
-                    usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(
+                    usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponseDto>(
                         usuarioUpdateDtoJson);
                 }
 
@@ -246,7 +246,7 @@
         }
 
         [HttpPost]
-        public IActionResult LinkActivation(ActivateDto activateDto)
+        public IActionResult LinkActivation(ActivateRequestDto activateDto)
         {
             try
             {
@@ -359,11 +359,11 @@ A Equipe de Suporte PayCheck®.";
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginDto loginDto)
+        public async Task<IActionResult> Login(LoginRequestDto loginDto)
         {
             try
             {
-                var usuarioResponse = default(UsuarioResponse);
+                var usuarioResponse = default(UsuarioResponseDto);
 
                 string requestUri = @$"{this._httpClient.BaseAddress}/Usuario";
 
@@ -381,7 +381,7 @@ A Equipe de Suporte PayCheck®.";
                     loginDtoJson = webApiHelper.ExecutePostWithAuthenticationByBearer(
                         loginDtoJson);
 
-                    usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(
+                    usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponseDto>(
                         loginDtoJson);
                 }
 
@@ -431,21 +431,21 @@ A Equipe de Suporte PayCheck®.";
                             new Claim(ClaimTypes.Email, emailUsuario),
 
                             new Claim(
-                                $"{nameof(UsuarioResponse.Guid)}Usuario",
+                                $"{nameof(UsuarioResponseDto.Guid)}Usuario",
                                 usuarioResponse.Guid.ToString()),
 
                             new Claim(
-                                $"{nameof(UsuarioResponse.Colaborador.Guid)}Colaborador",
+                                $"{nameof(UsuarioResponseDto.Colaborador.Guid)}Colaborador",
                                 guidColaborador),
 
                             new Claim(
-                                $"{nameof(UsuarioResponse.Colaborador.Nome)}Colaborador",
+                                $"{nameof(UsuarioResponseDto.Colaborador.Nome)}Colaborador",
                                 nomeColaborador),
 
-                            new Claim(nameof(UsuarioResponse.Username), usuarioResponse.Username),
+                            new Claim(nameof(UsuarioResponseDto.Username), usuarioResponse.Username),
 
                             new Claim(
-                                $"{nameof(UsuarioResponse.Email)}Usuario",
+                                $"{nameof(UsuarioResponseDto.Email)}Usuario",
                                 emailUsuario),
 
                             //new Claim("OtherProperty","OtherValue"),

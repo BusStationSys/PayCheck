@@ -38,7 +38,7 @@
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult Authenticate([FromBody] LoginDto loginDto)
+        public IActionResult Authenticate([FromBody] LoginRequestDto loginDto)
         {
             try
             {

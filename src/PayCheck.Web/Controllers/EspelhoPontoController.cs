@@ -26,8 +26,8 @@
         {
             var mapperConfiguration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<MatriculaEspelhoPontoRequestCreateDto, MatriculaEspelhoPontoResponse>().ReverseMap();
-                cfg.CreateMap<MatriculaEspelhoPontoRequestUpdateDto, MatriculaEspelhoPontoResponse>().ReverseMap();
+                cfg.CreateMap<MatriculaEspelhoPontoRequestCreateDto, MatriculaEspelhoPontoResponseDto>().ReverseMap();
+                cfg.CreateMap<MatriculaEspelhoPontoRequestUpdateDto, MatriculaEspelhoPontoResponseDto>().ReverseMap();
             });
 
             this._mapper = new Mapper(
@@ -45,7 +45,7 @@
                 "arvtech",
                 "(@rV73Ch)"))
             {
-                var authDto = new AuthDto
+                var authDto = new AuthRequestDto
                 {
                     Username = "arvtech",
                     Password = "(@rV73Ch)",
@@ -61,7 +61,7 @@
                 authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
                     authDtoJson);
 
-                var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
+                var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
                     authDtoJson);
 
                 this._tokenBearer = authResponse.Token;
@@ -86,7 +86,7 @@
             if (guidColaborador != null)
                 requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/getDemonstrativoPagamentoByGuidColaborador/{guidColaborador}";
 
-            List<MatriculaEspelhoPontoResponse>? eps = null;
+            List<MatriculaEspelhoPontoResponseDto>? eps = null;
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -94,7 +94,7 @@
             {
                 string stringJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-                eps = JsonConvert.DeserializeObject<List<MatriculaEspelhoPontoResponse>>(stringJson);
+                eps = JsonConvert.DeserializeObject<List<MatriculaEspelhoPontoResponseDto>>(stringJson);
             }
 
             return View(
@@ -110,7 +110,7 @@
             string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/{guid}";
 
             var matriculaEspelhoPontoResponse = default(
-                MatriculaEspelhoPontoResponse);
+                MatriculaEspelhoPontoResponseDto);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -118,26 +118,11 @@
             {
                 string stringJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-                matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponse>(stringJson);
+                matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponseDto>(stringJson);
             }
 
             return View(
                 matriculaEspelhoPontoResponse); ;
-        }
-
-        private MatriculaEspelhoPontoResponse? GetMEP(Guid guid)
-        {
-            string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/{guid}";
-
-            using (var webApiHelper = new WebApiHelper(
-                requestUri,
-                this._tokenBearer))
-            {
-                string matriculaEspelhoPontoResponseJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
-
-                return JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponse>(
-                    matriculaEspelhoPontoResponseJson);
-            }
         }
 
         /// <summary>
@@ -181,7 +166,7 @@
                 matriculaEspelhoPontoRequestUpdateDtoJson = webApiHelper.ExecutePutWithAuthenticationByBearer(
                     matriculaEspelhoPontoRequestUpdateDtoJson);
 
-                matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponse>(
+                matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponseDto>(
                     matriculaEspelhoPontoRequestUpdateDtoJson);
             }
 
@@ -191,6 +176,26 @@
                 {
                     guid = matriculaEspelhoPontoResponse.Guid
                 });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        private MatriculaEspelhoPontoResponseDto? GetMEP(Guid guid)
+        {
+            string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/{guid}";
+
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
+            {
+                string matriculaEspelhoPontoResponseJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+
+                return JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponseDto>(
+                    matriculaEspelhoPontoResponseJson);
+            }
         }
     }
 }

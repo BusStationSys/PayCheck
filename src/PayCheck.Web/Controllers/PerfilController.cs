@@ -31,7 +31,7 @@
                 "arvtech",
                 "(@rV73Ch)"))
             {
-                var authDto = new AuthDto
+                var authDto = new AuthRequestDto
                 {
                     Username = "arvtech",
                     Password = "(@rV73Ch)",
@@ -47,7 +47,7 @@
                 authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
                     authDtoJson);
 
-                var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
+                var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
                     authDtoJson);
 
                 this._tokenBearer = authResponse.Token;
@@ -65,7 +65,7 @@
 
             string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/{guid}";
 
-            var pf = default(PessoaFisicaResponse);
+            var pf = default(PessoaFisicaResponseDto);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -73,7 +73,7 @@
             {
                 string pessoaFisicaJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-                pf = JsonConvert.DeserializeObject<PessoaFisicaResponse>(
+                pf = JsonConvert.DeserializeObject<PessoaFisicaResponseDto>(
                     pessoaFisicaJson);
             }
 

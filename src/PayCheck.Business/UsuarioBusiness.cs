@@ -23,11 +23,11 @@
             {
                 cfg.CreateMap<UsuarioRequestCreateDto, UsuarioEntity>().ReverseMap();
                 cfg.CreateMap<UsuarioRequestUpdateDto, UsuarioEntity>().ReverseMap();
-                cfg.CreateMap<UsuarioResponse, UsuarioEntity>().ReverseMap();
-                cfg.CreateMap<PessoaFisicaDto, PessoaFisicaEntity>().ReverseMap();
-                cfg.CreateMap<PessoaFisicaResponse, PessoaFisicaEntity>().ReverseMap();
-                cfg.CreateMap<PessoaDto, PessoaEntity>().ReverseMap();
-                cfg.CreateMap<PessoaResponse, PessoaEntity>().ReverseMap();
+                cfg.CreateMap<UsuarioResponseDto, UsuarioEntity>().ReverseMap();
+                cfg.CreateMap<PessoaFisicaRequestDto, PessoaFisicaEntity>().ReverseMap();
+                cfg.CreateMap<PessoaFisicaResponseDto, PessoaFisicaEntity>().ReverseMap();
+                cfg.CreateMap<PessoaRequestDto, PessoaEntity>().ReverseMap();
+                cfg.CreateMap<PessoaResponseDto, PessoaEntity>().ReverseMap();
             });
 
             this._mapper = new Mapper(mapperConfiguration);
@@ -39,7 +39,7 @@
         /// <param name="guid"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public UsuarioResponse CheckPasswordValid(Guid guid, string password)
+        public UsuarioResponseDto CheckPasswordValid(Guid guid, string password)
         {
             var connection = this._unitOfWork.Create();
 
@@ -56,7 +56,7 @@
                     guid,
                     password);
 
-                return this._mapper.Map<UsuarioResponse>(
+                return this._mapper.Map<UsuarioResponseDto>(
                     entity);
             }
             catch
@@ -74,7 +74,7 @@
         /// </summary>
         /// <param name="cpfEmailUsername"></param>
         /// <returns></returns>
-        public UsuarioResponse GetByUsername(string cpfEmailUsername)
+        public UsuarioResponseDto GetByUsername(string cpfEmailUsername)
         {
             var connection = this._unitOfWork.Create();
 
@@ -87,7 +87,7 @@
                 var entity = connection.Repositories.UsuarioRepository.GetByUsername(
                     cpfEmailUsername);
 
-                return this._mapper.Map<UsuarioResponse>(
+                return this._mapper.Map<UsuarioResponseDto>(
                     entity);
 
             }
@@ -107,7 +107,7 @@
         /// <param name="createDto"></param>
         /// <param name="updateDto"></param>
         /// <returns></returns>
-        public UsuarioResponse SaveData(UsuarioRequestCreateDto? createDto = null, UsuarioRequestUpdateDto? updateDto = null)
+        public UsuarioResponseDto SaveData(UsuarioRequestCreateDto? createDto = null, UsuarioRequestUpdateDto? updateDto = null)
         {
             var connection = this._unitOfWork.Create();
 
@@ -151,7 +151,7 @@
 
                 connection.CommitTransaction();
 
-                return this._mapper.Map<UsuarioResponse>(
+                return this._mapper.Map<UsuarioResponseDto>(
                     entity);
             }
             catch

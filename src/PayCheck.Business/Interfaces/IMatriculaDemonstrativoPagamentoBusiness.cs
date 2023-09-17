@@ -6,14 +6,14 @@
 
     public interface IMatriculaDemonstrativoPagamentoBusiness
     {
-        MatriculaDemonstrativoPagamentoResponse Get(Guid guid);
+        MatriculaDemonstrativoPagamentoResponseDto Get(Guid guid);
 
-        IEnumerable<MatriculaDemonstrativoPagamentoResponse> Get(string competencia, string matricula);
+        IEnumerable<MatriculaDemonstrativoPagamentoResponseDto> Get(string competencia, string matricula);
 
-        IEnumerable<MatriculaDemonstrativoPagamentoResponse> GetAll();
+        IEnumerable<MatriculaDemonstrativoPagamentoResponseDto> GetAll();
 
-        IEnumerable<MatriculaDemonstrativoPagamentoResponse> GetByGuidColaborador(Guid guidColaborador);
+        IEnumerable<MatriculaDemonstrativoPagamentoResponseDto> GetByGuidColaborador(Guid guidColaborador);
 
-        MatriculaDemonstrativoPagamentoResponse SaveData(MatriculaDemonstrativoPagamentoRequestCreateDto? createDto = null, MatriculaDemonstrativoPagamentoRequestUpdateDto? updateDto = null);
+        MatriculaDemonstrativoPagamentoResponseDto SaveData(MatriculaDemonstrativoPagamentoRequestCreateDto? createDto = null, MatriculaDemonstrativoPagamentoRequestUpdateDto? updateDto = null);
     }
 }

@@ -4,6 +4,6 @@
 
     public interface IPessoaFisicaBusiness
     {
-        PessoaFisicaResponse Get(Guid guid);
+        PessoaFisicaResponseDto Get(Guid guid);
     }
 }

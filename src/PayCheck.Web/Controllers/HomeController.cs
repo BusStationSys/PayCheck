@@ -25,15 +25,15 @@ public class HomeController : Controller
 
         if (claimsPrincipal.Identity.IsAuthenticated)
         {
-            TempData["GuidUsuario"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponse.Guid)}Usuario").Value;
+            TempData["GuidUsuario"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponseDto.Guid)}Usuario").Value;
 
-            TempData["Username"] = HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponse.Username)).Value;
+            TempData["Username"] = HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponseDto.Username)).Value;
 
-            TempData["GuidColaborador"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponse.Colaborador.Guid)}Colaborador").Value;
+            TempData["GuidColaborador"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponseDto.Colaborador.Guid)}Colaborador").Value;
 
-            TempData["NomeColaborador"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponse.Colaborador.Nome)}Colaborador").Value;
+            TempData["NomeColaborador"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponseDto.Colaborador.Nome)}Colaborador").Value;
 
-            TempData["EmailUsuario"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponse.Email)}Usuario").Value;
+            TempData["EmailUsuario"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponseDto.Email)}Usuario").Value;
 
             TempData.Keep();
         }

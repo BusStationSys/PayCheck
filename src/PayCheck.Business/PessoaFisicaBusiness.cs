@@ -20,10 +20,10 @@
 
             var mapperConfiguration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<PessoaDto, PessoaEntity>().ReverseMap();
-                cfg.CreateMap<PessoaResponse, PessoaEntity>().ReverseMap();
-                cfg.CreateMap<PessoaFisicaDto, PessoaFisicaEntity>().ReverseMap();
-                cfg.CreateMap<PessoaFisicaResponse, PessoaFisicaEntity>().ReverseMap();
+                cfg.CreateMap<PessoaRequestDto, PessoaEntity>().ReverseMap();
+                cfg.CreateMap<PessoaResponseDto, PessoaEntity>().ReverseMap();
+                cfg.CreateMap<PessoaFisicaRequestDto, PessoaFisicaEntity>().ReverseMap();
+                cfg.CreateMap<PessoaFisicaResponseDto, PessoaFisicaEntity>().ReverseMap();
             });
 
             this._mapper = new Mapper(mapperConfiguration);
@@ -34,7 +34,7 @@
         /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
-        public PessoaFisicaResponse Get(Guid guid)
+        public PessoaFisicaResponseDto Get(Guid guid)
         {
             try
             {
@@ -47,7 +47,7 @@
                     var entity = connection.Repositories.PessoaFisicaRepository.Get(
                         guid);
 
-                    return this._mapper.Map<PessoaFisicaResponse>(entity);
+                    return this._mapper.Map<PessoaFisicaResponseDto>(entity);
                 }
             }
             catch
