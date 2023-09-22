@@ -16,8 +16,6 @@
     {
         private readonly IMatriculaEspelhoPontoBusiness _business;
 
-        //private readonly Mapper _mapper;
-
         /// <summary>
         /// 
         /// </summary>

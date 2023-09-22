@@ -175,13 +175,163 @@
     </div>
 
     <div class="row">
+        @*<div class="col-xl-4 col-md-4 col-xs-12 mb-12">
+
+            <div class="card shadow mb-3 border-left-primary shadow">
+                <!-- Card Header - Accordion -->
+                <a href="#id1" class="d-block card-header py-3" data-toggle="collapse"
+                   role="button" aria-expanded="false" aria-controls="id1">
+                    <h6 class="m-0 font-weight-bold text-primary text-uppercase mb-1"></h6>
+
+                    <small class="text-primary">****</small>
+                </a>
+
+                <!-- Card Content - Collapse -->
+                <div class="collapse" id="id1">
+                    <div class="card-header bg-transparent border-primary font-weight-bold text-gray-800">
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-borderless">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.MatriculaEspelhoPontoCalculos != null &&
+                                    Model.MatriculaEspelhoPontoCalculos.Count() > 0)
+                                    {
+                                        var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
+                                        c => c.Calculo.Id >= 1 && c.Calculo.Id < 7).OrderBy(
+                                        c => c.Calculo.Id).GroupBy(
+                                        m => m.Calculo.Id);
+
+                                        foreach (var calculo in calculos)
+                                        {
+                                            <tr>
+                                                <td>@calculo.First().Calculo.Descricao</td>
+                                                <td>@calculo.First().Valor.ToString("#,###,###,##0.00")</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                                <tfoot></tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+        <div class="col-xl-4 col-md-4 col-xs-12 mb-12">
+            <div class="table-responsive">
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.MatriculaEspelhoPontoCalculos != null &&
+                        Model.MatriculaEspelhoPontoCalculos.Count() > 0)
+                        {
+                            var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
+                            c => c.Calculo.Id >= 1 && c.Calculo.Id < 7).OrderBy(
+                            c => c.Calculo.Id).GroupBy(
+                            m => m.Calculo.Id);
+
+                            foreach (var calculo in calculos)
+                            {
+                                        <tr>
+                                            <td>@calculo.First().Calculo.Descricao</td>
+                                            <td>@calculo.First().Valor.ToString("#,###,###,##0.00")</td>
+                                        </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot></tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-4 col-xs-12 mb-12">
+            @*            <h2 class="sub-header">2</h2>*@
+            <div class="table-responsive">
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.MatriculaEspelhoPontoCalculos != null &&
+                        Model.MatriculaEspelhoPontoCalculos.Count() > 0)
+                        {
+                            var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
+                            c => c.Calculo.Id >= 7 && c.Calculo.Id < 13).OrderBy(
+                            c => c.Calculo.Id).GroupBy(
+                            m => m.Calculo.Id);
+
+                            foreach (var calculo in calculos)
+                            {
+                                <tr>
+                                    <td>@calculo.First().Calculo.Descricao</td>
+                                    <td>@calculo.First().Valor.ToString("#,###,###,##0.00")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot></tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-4 col-xs-12 mb-12">
+            <div class="table-responsive">
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.MatriculaEspelhoPontoCalculos != null &&
+                        Model.MatriculaEspelhoPontoCalculos.Count() > 0)
+                        {
+                            var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
+                            c => c.Calculo.Id >= 13).OrderBy(
+                            c => c.Calculo.Id).GroupBy(
+                            m => m.Calculo.Id);
+
+                            foreach (var calculo in calculos)
+                            {
+                                <tr>
+                                    <td>@calculo.First().Calculo.Descricao</td>
+                                    <td>@calculo.First().Valor.ToString("#,###,###,##0.00")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot></tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-xl-12 col-md-12 mb-12">
-            @if (Model.DataConfirmacao != null && 
-                Model.DataConfirmacao.HasValue)
+            @if (Model.DataConfirmacao != null &&
+            Model.DataConfirmacao.HasValue)
             {
                 string textAlert = string.Concat(
-                    "Espelho de Ponto aceito em ",
-                    Model.DataConfirmacaoFormatada);
+                "Espelho de Ponto aceito em ",
+                Model.DataConfirmacaoFormatada);
 
                 if (!string.IsNullOrEmpty(@Model.IpConfirmacaoString))
                 {
@@ -192,8 +342,8 @@
                 }
 
                 textAlert = string.Concat(
-                    textAlert,
-                    ".");
+                textAlert,
+                ".");
 
                 <div class="alert alert-success text-center">
                     @textAlert

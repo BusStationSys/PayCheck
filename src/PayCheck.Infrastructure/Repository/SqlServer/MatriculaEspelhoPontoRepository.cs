@@ -268,7 +268,7 @@
 
                 var matriculasEspelhosPontoEntity = base._connection.Query<MatriculaEspelhoPontoEntity, MatriculaEntity, PessoaFisicaEntity, PessoaJuridicaEntity, MatriculaEspelhoPontoCalculoEntity, MatriculaEspelhoPontoMarcacaoEntity, CalculoEntity, MatriculaEspelhoPontoEntity>(
                     cmdText,
-                    map: (mapMatriculaEspelhoPonto, mapMatricula, mapPessoaFisica, mapPessoaJuridica, mapMatriculaEspelhoPontoCalculos, mapMatriculaEspelhoPontoMarcacoes, mapCalculos) =>
+                    map: (mapMatriculaEspelhoPonto, mapMatricula, mapPessoaFisica, mapPessoaJuridica, mapMatriculaEspelhoPontoCalculos, mapMatriculaEspelhoPontoMarcacoes, mapCalculo) =>
                     {
                         if (!matriculasEspelhoPontoResult.ContainsKey(mapMatriculaEspelhoPonto.Guid))
                         {
@@ -278,6 +278,8 @@
                             mapMatriculaEspelhoPonto.Matricula = mapMatricula;
 
                             mapMatriculaEspelhoPonto.MatriculaEspelhoPontoMarcacoes = new List<MatriculaEspelhoPontoMarcacaoEntity>();
+
+                            mapMatriculaEspelhoPonto.MatriculaEspelhoPontoCalculos = new List<MatriculaEspelhoPontoCalculoEntity>();
 
                             matriculasEspelhoPontoResult.Add(
                                 mapMatriculaEspelhoPonto.Guid,
@@ -292,13 +294,13 @@
                                 mapMatriculaEspelhoPontoMarcacoes);
                         }
 
-                        //if (mapMatriculaDemonstrativoPagamentoEventos != null && !current.MatriculaDemonstrativoPagamentoEventos.Contains(mapMatriculaDemonstrativoPagamentoEventos))
-                        //{
-                        //    mapMatriculaDemonstrativoPagamentoEventos.Evento = mapEvento;
+                        if (mapMatriculaEspelhoPontoCalculos != null && !current.MatriculaEspelhoPontoCalculos.Contains(mapMatriculaEspelhoPontoCalculos))
+                        {
+                            mapMatriculaEspelhoPontoCalculos.Calculo = mapCalculo;
 
-                        //    current.MatriculaDemonstrativoPagamentoEventos.Add(
-                        //        mapMatriculaDemonstrativoPagamentoEventos);
-                        //}
+                            current.MatriculaEspelhoPontoCalculos.Add(
+                                mapMatriculaEspelhoPontoCalculos);
+                        }
 
                         return null;
                     },
