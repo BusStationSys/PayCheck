@@ -108,57 +108,57 @@
                     "collapseCard",
                     item.Data.ToString("yyyyMMdd"));
 
-                                <div class="col-xl-4 col-md-4">
-                                    <div class="card shadow mb-3 border-left-@classColor shadow">
-                                        <!-- Card Header - Accordion -->
-                                        <a href="#@id" class="d-block card-header py-3" data-toggle="collapse"
-                                           role="button" aria-expanded="false" aria-controls="@id">
-                                            <h6 class="m-0 font-weight-bold text-@classColor text-uppercase mb-1">@item.Data.ToString("dd/MM/yyyy")</h6>
+                    <div class="col-xl-4 col-md-4">
+                        <div class="card shadow mb-3 border-left-@classColor shadow">
+                            <!-- Card Header - Accordion -->
+                            <a href="#@id" class="d-block card-header py-3" data-toggle="collapse"
+                               role="button" aria-expanded="false" aria-controls="@id">
+                                <h6 class="m-0 font-weight-bold text-@classColor text-uppercase mb-1">@item.Data.ToString("dd/MM/yyyy")</h6>
 
-                                            <small class="text-@classColor">* @item.DiaSemana</small>
-                                        </a>
+                                <small class="text-@classColor">* @item.DiaSemana</small>
+                            </a>
 
-                                        <!-- Card Content - Collapse -->
-                                        <div class="collapse" id="@id">
-                                            <div class="card-header bg-transparent border-@classColor font-weight-bold text-gray-800">
+                            <!-- Card Content - Collapse -->
+                            <div class="collapse" id="@id">
+                                <div class="card-header bg-transparent border-@classColor font-weight-bold text-gray-800">
                                     @item.Marcacao
-                                            </div>
-
-                                            <div class="card-body">
-                                                <p class="text-@classColor">
-                                                    <small>
-                                                        <strong>Trabalhadas</strong>: @item.HorasTrabalhadasFormatada
-                                                    </small>
-                                                </p>
-                                                <p class="text-@classColor">
-                                                    <small>
-                                                        <strong>50%</strong>: @item.HorasExtras050Formatada
-                                                    </small>
-                                                </p>
-                                                <p class="text-@classColor">
-                                                    <small>
-                                                        <strong>70%</strong>: @item.HorasExtras070Formatada
-                                                    </small>
-                                                </p>
-                                                <p class="text-@classColor">
-                                                    <small>
-                                                        <strong>100%</strong>: @item.HorasExtras100Formatada
-                                                    </small>
-                                                </p>
-                                                <p class="text-@classColor">
-                                                    <small>
-                                                        <strong>Crédito BH</strong>: @item.HorasCreditoBHFormatada
-                                                    </small>
-                                                </p>
-                                                <p class="text-@classColor">
-                                                    <small>
-                                                        <strong>Débito BH</strong>: @item.HorasDebitoBHFormatada
-                                                    </small>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
+
+                                <div class="card-body">
+                                    <p class="text-@classColor">
+                                        <small>
+                                            <strong>Trabalhadas</strong>: @item.HorasTrabalhadasFormatada
+                                        </small>
+                                    </p>
+                                    <p class="text-@classColor">
+                                        <small>
+                                            <strong>50%</strong>: @item.HorasExtras050Formatada
+                                        </small>
+                                    </p>
+                                    <p class="text-@classColor">
+                                        <small>
+                                            <strong>70%</strong>: @item.HorasExtras070Formatada
+                                        </small>
+                                    </p>
+                                    <p class="text-@classColor">
+                                        <small>
+                                            <strong>100%</strong>: @item.HorasExtras100Formatada
+                                        </small>
+                                    </p>
+                                    <p class="text-@classColor">
+                                        <small>
+                                            <strong>Crédito BH</strong>: @item.HorasCreditoBHFormatada
+                                        </small>
+                                    </p>
+                                    <p class="text-@classColor">
+                                        <small>
+                                            <strong>Débito BH</strong>: @item.HorasDebitoBHFormatada
+                                        </small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     contador++;
                 }
@@ -166,160 +166,126 @@
         }
         else
         {
-                <div class="col-xl-12 col-md-12 mb-12">
-                    <div class="alert alert-warning">
-                        Não foram encontradas marcações de ponto para a Competência @Model.CompetenciaFormatada e Matrícula @Model.Matricula.
-                    </div>
+            <div class="col-xl-12 col-md-12 mb-12">
+                <div class="alert alert-warning">
+                    Não foram encontradas marcações de ponto para a Competência @Model.CompetenciaFormatada e Matrícula @Model.Matricula.
                 </div>
+            </div>
         }
     </div>
 
     <div class="row">
-        @*<div class="col-xl-4 col-md-4 col-xs-12 mb-12">
+        <div class="col-xl-4 col-md-4 col-xs-12 mb-12">
+            <div class="panel">
+                <div class="table-responsive">
+                    <table class="table table-bordered border-success">
+                        <thead>
+                        </thead>
+                        <tbody>
+                            @if (Model.MatriculaEspelhoPontoCalculos != null &&
+                            Model.MatriculaEspelhoPontoCalculos.Count() > 0)
+                            {
+                                var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
+                                c => c.Calculo.Id >= 1 && c.Calculo.Id < 6).OrderBy(
+                                c => c.Calculo.Id).GroupBy(
+                                m => m.Calculo.Id);
 
-            <div class="card shadow mb-3 border-left-primary shadow">
-                <!-- Card Header - Accordion -->
-                <a href="#id1" class="d-block card-header py-3" data-toggle="collapse"
-                   role="button" aria-expanded="false" aria-controls="id1">
-                    <h6 class="m-0 font-weight-bold text-primary text-uppercase mb-1"></h6>
+                                foreach (var calculo in calculos)
+                                {
+                                    string classColor = "success";
 
-                    <small class="text-primary">****</small>
-                </a>
-
-                <!-- Card Content - Collapse -->
-                <div class="collapse" id="id1">
-                    <div class="card-header bg-transparent border-primary font-weight-bold text-gray-800">
-                    </div>
-
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-borderless">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (Model.MatriculaEspelhoPontoCalculos != null &&
-                                    Model.MatriculaEspelhoPontoCalculos.Count() > 0)
+                                    if (calculo.First().Valor < 0)
                                     {
-                                        var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
-                                        c => c.Calculo.Id >= 1 && c.Calculo.Id < 7).OrderBy(
-                                        c => c.Calculo.Id).GroupBy(
-                                        m => m.Calculo.Id);
-
-                                        foreach (var calculo in calculos)
-                                        {
-                                            <tr>
-                                                <td>@calculo.First().Calculo.Descricao</td>
-                                                <td>@calculo.First().Valor.ToString("#,###,###,##0.00")</td>
-                                            </tr>
-                                        }
+                                        classColor = "danger";
                                     }
-                                </tbody>
-                                <tfoot></tfoot>
-                            </table>
-                        </div>
-                    </div>
+
+                                    <tr>
+                                        <td><span class="badge badge-success rounded-pill d-inline">@calculo.First().Calculo.Descricao</span></td>
+                                        <td><p class="text-right text-@classColor">@calculo.First().Valor.ToString("#,###,###,##0.00")</p></td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
-        </div>*@
+        </div>
 
         <div class="col-xl-4 col-md-4 col-xs-12 mb-12">
-            <div class="table-responsive">
-                <table class="table table-borderless">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.MatriculaEspelhoPontoCalculos != null &&
-                        Model.MatriculaEspelhoPontoCalculos.Count() > 0)
-                        {
-                            var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
-                            c => c.Calculo.Id >= 1 && c.Calculo.Id < 7).OrderBy(
-                            c => c.Calculo.Id).GroupBy(
-                            m => m.Calculo.Id);
-
-                            foreach (var calculo in calculos)
+            <div class="panel">
+                <div class="table-responsive">
+                    <table class="table table-bordered border-secondary">
+                        <thead>
+                        </thead>
+                        <tbody>
+                            @if (Model.MatriculaEspelhoPontoCalculos != null &&
+                                Model.MatriculaEspelhoPontoCalculos.Count() > 0)
                             {
-                                                <tr>
-                                                    <td>@calculo.First().Calculo.Descricao</td>
-                                                    <td>@calculo.First().Valor.ToString("#,###,###,##0.00")</td>
-                                                </tr>
+                                var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
+                                    c => c.Calculo.Id >= 6 && c.Calculo.Id < 11).OrderBy(
+                                        c => c.Calculo.Id).GroupBy(
+                                            m => m.Calculo.Id);
+
+                                foreach (var calculo in calculos)
+                                {
+                                    string classColor = "secondary";
+
+                                    if (calculo.First().Valor < 0)
+                                    {
+                                        classColor = "danger";
+                                    }
+
+                                    <tr>
+                                        <td><span class="badge badge-secondary rounded-pill d-inline">@calculo.First().Calculo.Descricao</span></td>
+                                        <td><p class="text-right text-@classColor">@calculo.First().Valor.ToString("#,###,###,##0.00")</p></td>
+                                    </tr>
+                                }
                             }
-                        }
-                    </tbody>
-                    <tfoot></tfoot>
-                </table>
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </div>
 
         <div class="col-xl-4 col-md-4 col-xs-12 mb-12">
-            @*            <h2 class="sub-header">2</h2>*@
-            <div class="table-responsive">
-                <table class="table table-borderless">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.MatriculaEspelhoPontoCalculos != null &&
-                        Model.MatriculaEspelhoPontoCalculos.Count() > 0)
-                        {
-                            var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
-                            c => c.Calculo.Id >= 7 && c.Calculo.Id < 13).OrderBy(
-                            c => c.Calculo.Id).GroupBy(
-                            m => m.Calculo.Id);
-
-                            foreach (var calculo in calculos)
+            <div class="panel">
+                <div class="table-responsive">
+                    <table class="table table-bordered border-primary">
+                        <thead>
+                        </thead>
+                        <tbody>
+                            @if (Model.MatriculaEspelhoPontoCalculos != null &&
+                                Model.MatriculaEspelhoPontoCalculos.Count() > 0)
                             {
-                                        <tr>
-                                            <td>@calculo.First().Calculo.Descricao</td>
-                                            <td>@calculo.First().Valor.ToString("#,###,###,##0.00")</td>
-                                        </tr>
-                            }
-                        }
-                    </tbody>
-                    <tfoot></tfoot>
-                </table>
-            </div>
-        </div>
+                                var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
+                                    c => c.Calculo.Id >= 11).OrderBy(
+                                        c => c.Calculo.Id).GroupBy(
+                                            m => m.Calculo.Id);
 
-        <div class="col-xl-4 col-md-4 col-xs-12 mb-12">
-            <div class="table-responsive">
-                <table class="table table-borderless">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.MatriculaEspelhoPontoCalculos != null &&
-                        Model.MatriculaEspelhoPontoCalculos.Count() > 0)
-                        {
-                            var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
-                            c => c.Calculo.Id >= 13).OrderBy(
-                            c => c.Calculo.Id).GroupBy(
-                            m => m.Calculo.Id);
+                                foreach (var calculo in calculos)
+                                {
+                                    string classColor = "primary";
 
-                            foreach (var calculo in calculos)
-                            {
-                                        <tr>
-                                            <td>@calculo.First().Calculo.Descricao</td>
-                                            <td>@calculo.First().Valor.ToString("#,###,###,##0.00")</td>
-                                        </tr>
+                                    if (calculo.First().Valor < 0)
+                                    {
+                                        classColor = "danger";
+                                    }
+
+                                    <tr>
+                                        <td><span class="badge badge-primary rounded-pill d-inline">@calculo.First().Calculo.Descricao</span></td>
+                                        <td><p class="text-right text-@classColor">@calculo.First().Valor.ToString("#,###,###,##0.00")</p></td>
+                                    </tr>
+                                }
                             }
-                        }
-                    </tbody>
-                    <tfoot></tfoot>
-                </table>
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -345,19 +311,19 @@
                 textAlert,
                 ".");
 
-                    <div class="alert alert-success text-center">
+                <div class="alert alert-success text-center">
                     @textAlert
-                    </div>
+                </div>
             }
             else
             {
-                    <div class="alert alert-warning text-center">
-                        <a class="btn btn-warning btn-block" href="#" data-toggle="modal" data-target="#confirmacaoModal">
+                <div class="alert alert-warning text-center">
+                    <a class="btn btn-warning btn-block" href="#" data-toggle="modal" data-target="#confirmacaoModal">
                         @*<i class="fa fa-camera-retro fa-sm fa-fw mr-2 text-gray-400"></i>https://fontawesome.com/v4/icon/calendar-check-o *@
-                            <i class="fa fa-calendar-check mr-2" aria-hidden="true"></i>
-                            Confirmo a realização da frequência descrita acima e o recebimento do Demonstrativo de Pagamento Mensal.
-                        </a>
-                    </div>
+                        <i class="fa fa-calendar-check mr-2" aria-hidden="true"></i>
+                        Confirmo a realização da frequência descrita acima e o recebimento do Demonstrativo de Pagamento Mensal.
+                    </a>
+                </div>
             }
         </div>
     </div>
