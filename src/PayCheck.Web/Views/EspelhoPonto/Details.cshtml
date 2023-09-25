@@ -175,44 +175,6 @@
     </div>
 
     <div class="row">
-        <!--<div class="col-xl-4 col-md-4 col-xs-12 mb-12">
-            <div class="panel">
-                <div class="table-responsive">
-                    <table class="table table-bordered border-success">
-                        <thead>
-                        </thead>
-                        <tbody>
-@*                            @if (Model.MatriculaEspelhoPontoCalculos != null &&
-                            Model.MatriculaEspelhoPontoCalculos.Count() > 0)
-                            {
-                                var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
-                                c => c.Calculo.Id >= 1 && c.Calculo.Id < 6).OrderBy(
-                                c => c.Calculo.Id).GroupBy(
-                                m => m.Calculo.Id);
-
-                                foreach (var calculo in calculos)
-                                {
-                                    string classColor = "success";
-
-                                    if (calculo.First().Valor < 0)
-                                    {
-                                        classColor = "danger";
-                                    }
-
-                                    <tr>
-                                        <td><span class="badge badge-success rounded-pill d-inline">@calculo.First().Calculo.Descricao</span></td>
-                                        <td><p class="text-right text-@classColor">@calculo.First().Valor.ToString("#,###,###,##0.00")</p></td>
-                                    </tr>
-                                }
-                            }*@
-                        </tbody>
-                        <tfoot>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-        </div>-->
-
         <div class="col-xl-4 col-md-4 col-xs-12 mb-12">
             <div class="card border-success mb-3">
                 <div class="card-body">
