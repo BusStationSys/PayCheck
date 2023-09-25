@@ -175,14 +175,14 @@
     </div>
 
     <div class="row">
-        <div class="col-xl-4 col-md-4 col-xs-12 mb-12">
+        <!--<div class="col-xl-4 col-md-4 col-xs-12 mb-12">
             <div class="panel">
                 <div class="table-responsive">
                     <table class="table table-bordered border-success">
                         <thead>
                         </thead>
                         <tbody>
-                            @if (Model.MatriculaEspelhoPontoCalculos != null &&
+@*                            @if (Model.MatriculaEspelhoPontoCalculos != null &&
                             Model.MatriculaEspelhoPontoCalculos.Count() > 0)
                             {
                                 var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
@@ -204,87 +204,122 @@
                                         <td><p class="text-right text-@classColor">@calculo.First().Valor.ToString("#,###,###,##0.00")</p></td>
                                     </tr>
                                 }
-                            }
+                            }*@
                         </tbody>
                         <tfoot>
                         </tfoot>
                     </table>
                 </div>
             </div>
-        </div>
+        </div>-->
 
         <div class="col-xl-4 col-md-4 col-xs-12 mb-12">
-            <div class="panel">
-                <div class="table-responsive">
-                    <table class="table table-bordered border-secondary">
-                        <thead>
-                        </thead>
-                        <tbody>
-                            @if (Model.MatriculaEspelhoPontoCalculos != null &&
-                                Model.MatriculaEspelhoPontoCalculos.Count() > 0)
-                            {
-                                var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
-                                    c => c.Calculo.Id >= 6 && c.Calculo.Id < 11).OrderBy(
-                                        c => c.Calculo.Id).GroupBy(
-                                            m => m.Calculo.Id);
-
-                                foreach (var calculo in calculos)
-                                {
-                                    string classColor = "secondary";
-
-                                    if (calculo.First().Valor < 0)
+            <div class="card border-success mb-3">
+                <div class="card-body">
+                    <div class="panel">
+                        <div class="table-responsive">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    @if (Model.MatriculaEspelhoPontoCalculos != null &&
+                                        Model.MatriculaEspelhoPontoCalculos.Count() > 0)
                                     {
-                                        classColor = "danger";
-                                    }
+                                        var calculos = Model.MatriculaEspelhoPontoCalculos.Where(c=>
+                                            c.Calculo.Id < 6).OrderBy(
+                                                c => c.Calculo.Id).GroupBy(
+                                                    m => m.Calculo.Id);
 
-                                    <tr>
-                                        <td><span class="badge badge-secondary rounded-pill d-inline">@calculo.First().Calculo.Descricao</span></td>
-                                        <td><p class="text-right text-@classColor">@calculo.First().Valor.ToString("#,###,###,##0.00")</p></td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                        <tfoot>
-                        </tfoot>
-                    </table>
+                                        foreach (var calculo in calculos)
+                                        {
+                                            string classColor = "success";
+
+                                            if (calculo.First().Valor < 0)
+                                                classColor = "danger";
+
+                                            <tr>
+                                                <td><span class="badge badge-success rounded-pill d-inline">@calculo.First().Calculo.Descricao</span></td>
+                                                <td><p class="text-right text-@classColor">@calculo.First().Valor.ToString("#,###,###,##0.00")</p></td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                                <tfoot></tfoot>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="col-xl-4 col-md-4 col-xs-12 mb-12">
-            <div class="panel">
-                <div class="table-responsive">
-                    <table class="table table-bordered border-primary">
-                        <thead>
-                        </thead>
-                        <tbody>
-                            @if (Model.MatriculaEspelhoPontoCalculos != null &&
-                                Model.MatriculaEspelhoPontoCalculos.Count() > 0)
-                            {
-                                var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
-                                    c => c.Calculo.Id >= 11).OrderBy(
-                                        c => c.Calculo.Id).GroupBy(
-                                            m => m.Calculo.Id);
-
-                                foreach (var calculo in calculos)
-                                {
-                                    string classColor = "primary";
-
-                                    if (calculo.First().Valor < 0)
+            <div class="card border-secondary mb-3">
+                <div class="card-body">
+                    <div class="panel">
+                        <div class="table-responsive">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    @if (Model.MatriculaEspelhoPontoCalculos != null &&
+                                        Model.MatriculaEspelhoPontoCalculos.Count() > 0)
                                     {
-                                        classColor = "danger";
-                                    }
+                                        var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
+                                            c => c.Calculo.Id >= 6 && c.Calculo.Id < 11).OrderBy(
+                                                c => c.Calculo.Id).GroupBy(
+                                                    m => m.Calculo.Id);
 
-                                    <tr>
-                                        <td><span class="badge badge-primary rounded-pill d-inline">@calculo.First().Calculo.Descricao</span></td>
-                                        <td><p class="text-right text-@classColor">@calculo.First().Valor.ToString("#,###,###,##0.00")</p></td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                        <tfoot>
-                        </tfoot>
-                    </table>
+                                        foreach (var calculo in calculos)
+                                        {
+                                            string classColor = "secondary";
+
+                                            if (calculo.First().Valor < 0)
+                                                classColor = "danger";
+
+                                            <tr>
+                                                <td><span class="badge badge-secondary rounded-pill d-inline">@calculo.First().Calculo.Descricao</span></td>
+                                                <td><p class="text-right text-@classColor">@calculo.First().Valor.ToString("#,###,###,##0.00")</p></td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                                <tfoot></tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-4 col-xs-12 mb-12">
+            <div class="card border-primary mb-3">
+                <div class="card-body">
+                    <div class="panel">
+                        <div class="table-responsive">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    @if (Model.MatriculaEspelhoPontoCalculos != null &&
+                                        Model.MatriculaEspelhoPontoCalculos.Count() > 0)
+                                    {
+                                        var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
+                                            c => c.Calculo.Id >= 11).OrderBy(
+                                                c => c.Calculo.Id).GroupBy(
+                                                    m => m.Calculo.Id);
+
+                                        foreach (var calculo in calculos)
+                                        {
+                                            string classColor = "primary";
+
+                                            if (calculo.First().Valor < 0)
+                                                classColor = "danger";
+
+                                            <tr>
+                                                <td><span class="badge badge-primary rounded-pill d-inline">@calculo.First().Calculo.Descricao</span></td>
+                                                <td><p class="text-right text-@classColor">@calculo.First().Valor.ToString("#,###,###,##0.00")</p></td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                                <tfoot></tfoot>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -293,23 +328,23 @@
     <div class="row">
         <div class="col-xl-12 col-md-12 mb-12">
             @if (Model.DataConfirmacao != null &&
-            Model.DataConfirmacao.HasValue)
+                Model.DataConfirmacao.HasValue)
             {
                 string textAlert = string.Concat(
-                "Espelho de Ponto aceito em ",
-                Model.DataConfirmacaoFormatada);
+                    "Espelho de Ponto aceito em ",
+                    Model.DataConfirmacaoFormatada);
 
                 if (!string.IsNullOrEmpty(@Model.IpConfirmacaoString))
                 {
                     textAlert = string.Concat(
-                    textAlert,
-                    " através do IP ",
-                    @Model.IpConfirmacaoString);
+                        textAlert,
+                        " através do IP ",
+                        @Model.IpConfirmacaoString);
                 }
 
                 textAlert = string.Concat(
-                textAlert,
-                ".");
+                    textAlert,
+                    ".");
 
                 <div class="alert alert-success text-center">
                     @textAlert
