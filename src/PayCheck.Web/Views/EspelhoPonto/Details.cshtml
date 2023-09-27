@@ -28,12 +28,107 @@
         </div>
     </div>
 
-    <!-- Page Heading -->
+    <div class="modal fade" id="modeloClassicoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelModeloClassico"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="panel">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                    <tr>
+                                        <td class="col-2"><p><small>Matrícula</small><br />@Model.Matricula.Matricula</p></td>
+                                        <td class="col-8" colspan="2"><p><small>Nome</small><br />@Model.Matricula.Colaborador.Nome</p></td>
+                                        <td class="col-2"><p><small>Competência</small><br />@Model.CompetenciaFormatada</p></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-6" colspan="2"><p><small>Horário</small><br />Carga Horária Mensal: @Model.Matricula.CargaHoraria</p></td>
+                                        <td class="col-6" colspan="2"><p><small>Local</small><br />@Model.Matricula.DescricaoSetor</p></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="col-1"><p class="text-center"><small>Data</small></p></th>
+                                        <th class="col-1"><p class="text-center"><small>Semana</small></p></th>
+                                        <th class="col-5"><p class="text-justify"><small>Marcações</small></p></th>
+                                        <th class="col-5"><p class="text-justify"><small>Trab. Flts. H050% H070% H100% CrBH. DbBH.</small></p></th>
+                                    </tr>
+                                </thead>
+
+                                @if (Model.MatriculaEspelhoPontoMarcacoes != null &&
+                                    Model.MatriculaEspelhoPontoMarcacoes.Count() > 0)
+                                {
+                                    var datasModeloClassico = Model.MatriculaEspelhoPontoMarcacoes.OrderBy(
+                                        m => m.Data).GroupBy(
+                                            m => m.Data);
+
+                                    <tbody>
+                                        @foreach (var dataModeloClassico in datasModeloClassico)
+                                        {
+                                            var item = Model.MatriculaEspelhoPontoMarcacoes.Where(
+                                                d => d.Data == dataModeloClassico.Key).FirstOrDefault();
+
+                                            if (item != null)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <p class="text-center">
+                                                            <small>@item.Data.ToString("ddMMyyyy").Substring(0,2)</small>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-center">
+                                                            <small>@item.DiaSemana.Substring(0,3)</small>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-justify">
+                                                            <small>@item.Marcacao</small>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-justify">
+                                                            <small>@item.HorasTrabalhadasFormatada @item.HorasFaltasFormatada @item.HorasExtras050Formatada @item.HorasExtras070Formatada @item.HorasExtras100Formatada @item.HorasCreditoBHFormatada @item.HorasDebitoBHFormatada</small>
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                }
+
+                                <tfooter>
+                                </tfooter>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" data-dismiss="modal">Cancelar</button>
+                    @*<a class="btn btn-success" asp-controller="EspelhoPonto" asp-action="ConfirmarRealizacaoFrequencia" asp-route-guid=@Model.Guid>Confirmar</a>*@
+                    <a class="btn btn-primary">
+                        <i class="fas fa-print fa-sm text-white-50"></i> Imprimir
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Heading aria-hidden="true" -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Espelho de Ponto</h1>
-        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#modeloClassicoModal">
             <i class="fas fa-print fa-sm text-white-50"></i> Modelo Clássico
         </a>
+        @*        <a class="btn btn-warning btn-block" href="#" data-toggle="modal" data-target="#confirmacaoModal">
+        *<i class="fa fa-camera-retro fa-sm fa-fw mr-2 text-gray-400"></i>https://fontawesome.com/v4/icon/calendar-check-o *@
+        <!-- <i class="fa fa-calendar-check mr-2" aria-hidden="true"></i>*-->
     </div>
 
     <div class="row">
@@ -83,13 +178,13 @@
             string classColor = string.Empty;
 
             var datas = Model.MatriculaEspelhoPontoMarcacoes.OrderBy(
-            m => m.Data).GroupBy(
-            m => m.Data);
+                m => m.Data).GroupBy(
+                    m => m.Data);
 
             @foreach (var data in datas)
             {
                 var item = Model.MatriculaEspelhoPontoMarcacoes.Where(
-                d => d.Data == data.Key).FirstOrDefault();
+                    d => d.Data == data.Key).FirstOrDefault();
 
                 if (item != null)
                 {
@@ -105,8 +200,8 @@
                     }
 
                     string id = string.Concat(
-                    "collapseCard",
-                    item.Data.ToString("yyyyMMdd"));
+                        "collapseCard",
+                        item.Data.ToString("yyyyMMdd"));
 
                     <div class="col-xl-4 col-md-4">
                         <div class="card shadow mb-3 border-left-@classColor shadow">
@@ -183,12 +278,12 @@
                             <table class="table table-borderless">
                                 <tbody>
                                     @if (Model.MatriculaEspelhoPontoCalculos != null &&
-                                        Model.MatriculaEspelhoPontoCalculos.Count() > 0)
+                                    Model.MatriculaEspelhoPontoCalculos.Count() > 0)
                                     {
-                                        var calculos = Model.MatriculaEspelhoPontoCalculos.Where(c=>
-                                            c.Calculo.Id < 6).OrderBy(
-                                                c => c.Calculo.Id).GroupBy(
-                                                    m => m.Calculo.Id);
+                                        var calculos = Model.MatriculaEspelhoPontoCalculos.Where(c =>
+                                        c.Calculo.Id < 6).OrderBy(
+                                        c => c.Calculo.Id).GroupBy(
+                                        m => m.Calculo.Id);
 
                                         foreach (var calculo in calculos)
                                         {
@@ -220,12 +315,12 @@
                             <table class="table table-borderless">
                                 <tbody>
                                     @if (Model.MatriculaEspelhoPontoCalculos != null &&
-                                        Model.MatriculaEspelhoPontoCalculos.Count() > 0)
+                                    Model.MatriculaEspelhoPontoCalculos.Count() > 0)
                                     {
                                         var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
-                                            c => c.Calculo.Id >= 6 && c.Calculo.Id < 11).OrderBy(
-                                                c => c.Calculo.Id).GroupBy(
-                                                    m => m.Calculo.Id);
+                                        c => c.Calculo.Id >= 6 && c.Calculo.Id < 11).OrderBy(
+                                        c => c.Calculo.Id).GroupBy(
+                                        m => m.Calculo.Id);
 
                                         foreach (var calculo in calculos)
                                         {
@@ -257,12 +352,12 @@
                             <table class="table table-borderless">
                                 <tbody>
                                     @if (Model.MatriculaEspelhoPontoCalculos != null &&
-                                        Model.MatriculaEspelhoPontoCalculos.Count() > 0)
+                                    Model.MatriculaEspelhoPontoCalculos.Count() > 0)
                                     {
                                         var calculos = Model.MatriculaEspelhoPontoCalculos.Where(
-                                            c => c.Calculo.Id >= 11).OrderBy(
-                                                c => c.Calculo.Id).GroupBy(
-                                                    m => m.Calculo.Id);
+                                        c => c.Calculo.Id >= 11).OrderBy(
+                                        c => c.Calculo.Id).GroupBy(
+                                        m => m.Calculo.Id);
 
                                         foreach (var calculo in calculos)
                                         {
@@ -290,23 +385,23 @@
     <div class="row">
         <div class="col-xl-12 col-md-12 mb-12">
             @if (Model.DataConfirmacao != null &&
-                Model.DataConfirmacao.HasValue)
+            Model.DataConfirmacao.HasValue)
             {
                 string textAlert = string.Concat(
-                    "Espelho de Ponto aceito em ",
-                    Model.DataConfirmacaoFormatada);
+                "Espelho de Ponto aceito em ",
+                Model.DataConfirmacaoFormatada);
 
                 if (!string.IsNullOrEmpty(@Model.IpConfirmacaoString))
                 {
                     textAlert = string.Concat(
-                        textAlert,
-                        " através do IP ",
-                        @Model.IpConfirmacaoString);
+                    textAlert,
+                    " através do IP ",
+                    @Model.IpConfirmacaoString);
                 }
 
                 textAlert = string.Concat(
-                    textAlert,
-                    ".");
+                textAlert,
+                ".");
 
                 <div class="alert alert-success text-center">
                     @textAlert
