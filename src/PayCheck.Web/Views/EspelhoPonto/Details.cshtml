@@ -4,6 +4,10 @@
     ViewData["Title"] = "Details";
 
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var datas = Model.MatriculaEspelhoPontoMarcacoes.OrderBy(
+        m => m.Data).GroupBy(
+            m => m.Data);
 }
 
 <!-- Begin Page Content -->
@@ -38,72 +42,125 @@
                             <table class="table table-bordered" cellpadding="0" cellspacing="0">
                                 <tbody>
                                     <tr>
-                                        <td class="col-2"><p><small>Matrícula</small><br />@Model.Matricula.Matricula</p></td>
-                                        <td class="col-8" colspan="2"><p><small>Nome</small><br />@Model.Matricula.Colaborador.Nome</p></td>
-                                        <td class="col-2"><p><small>Competência</small><br />@Model.CompetenciaFormatada</p></td>
+                                        <td class="col-2" style="padding: 0.08rem; vertical-align:middle">
+                                            <small style="font-size: 50%">Matrícula</small><br />@Model.Matricula.Matricula
+                                        </td>
+                                        <td class="col-8" colspan="2" style="padding: 0.08rem; vertical-align:middle">
+                                            <small style="font-size: 50%">Nome</small><br />@Model.Matricula.Colaborador.Nome
+                                        </td>
+                                        <td class="col-2" style="padding: 0.08rem; vertical-align:middle">
+                                            <small style="font-size: 50%">Competência</small><br />@Model.CompetenciaFormatada
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td class="col-6" colspan="2"><p><small>Horário</small><br />Carga Horária Mensal: @Model.Matricula.CargaHoraria</p></td>
-                                        <td class="col-6" colspan="2"><p><small>Local</small><br />@Model.Matricula.DescricaoSetor</p></td>
+                                        <td class="col-6" colspan="2" style="padding: 0.08rem; vertical-align:middle">
+                                            <small style="font-size: 50%">Horário</small><br />Carga Horária Mensal: @Model.Matricula.CargaHoraria
+                                        </td>
+                                        <td class="col-6" colspan="2" style="padding: 0.08rem; vertical-align:middle">
+                                            <small style="font-size: 50%">Local</small><br />@Model.Matricula.DescricaoSetor
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
 
-                            <table class="table table-bordered">
+                            <table class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
-                                        <th class="col-1"><p class="text-center"><small>Data</small></p></th>
-                                        <th class="col-1"><p class="text-center"><small>Semana</small></p></th>
-                                        <th class="col-5"><p class="text-justify"><small>Marcações</small></p></th>
-                                        <th class="col-5"><p class="text-justify"><small>Trab. Flts. H050% H070% H100% CrBH. DbBH.</small></p></th>
+                                        <th class="col-1 text-center"><small>Data</small></th>
+                                        <th class="col-1 text-center"><small>Semana</small></th>
+                                        <th class="col-3 text-justify"><small>Marcações</small></th>
+                                        <th class="col-1 text-center"><small>Trab.</small></th>
+                                        <th class="col-1 text-center"><small>Flts.</small></th>
+                                        <th class="col-1 text-center"><small>H050%</small></th>
+                                        <th class="col-1 text-center"><small>H070%</small></th>
+                                        <th class="col-1 text-center"><small>H100%</small></th>
+                                        <th class="col-1 text-center"><small>CrBH.</small></th>
+                                        <th class="col-1 text-center"><small>DbBH.</small></th>
                                     </tr>
                                 </thead>
 
                                 @if (Model.MatriculaEspelhoPontoMarcacoes != null &&
                                     Model.MatriculaEspelhoPontoMarcacoes.Count() > 0)
                                 {
-                                    var datasModeloClassico = Model.MatriculaEspelhoPontoMarcacoes.OrderBy(
-                                        m => m.Data).GroupBy(
-                                            m => m.Data);
-
                                     <tbody>
-                                        @foreach (var dataModeloClassico in datasModeloClassico)
+                                        @foreach (var data in datas)
                                         {
                                             var item = Model.MatriculaEspelhoPontoMarcacoes.Where(
-                                                d => d.Data == dataModeloClassico.Key).FirstOrDefault();
+                                                d => d.Data == data.Key).FirstOrDefault();
 
                                             if (item != null)
                                             {
                                                 <tr>
-                                                    <td>
-                                                        <p class="text-center">
-                                                            <small>@item.Data.ToString("ddMMyyyy").Substring(0,2)</small>
-                                                        </p>
+                                                    <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                        <small>@item.Data.ToString("ddMMyyyy").Substring(0,2)</small>
                                                     </td>
-                                                    <td>
-                                                        <p class="text-center">
-                                                            <small>@item.DiaSemana.Substring(0,3)</small>
-                                                        </p>
+                                                    <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                        <small>@item.DiaSemana.Substring(0,3)</small>
                                                     </td>
-                                                    <td>
-                                                        <p class="text-justify">
-                                                            <small>@item.Marcacao</small>
-                                                        </p>
+                                                    <td class="text-justify" style="padding: 0.06rem; vertical-align:middle">
+                                                        <small>@item.Marcacao</small>
                                                     </td>
-                                                    <td>
-                                                        <p class="text-justify">
-                                                            <small>@item.HorasTrabalhadasFormatada @item.HorasFaltasFormatada @item.HorasExtras050Formatada @item.HorasExtras070Formatada @item.HorasExtras100Formatada @item.HorasCreditoBHFormatada @item.HorasDebitoBHFormatada</small>
-                                                        </p>
+                                                    <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                        <small>@item.HorasTrabalhadasString</small>
+                                                    </td>
+                                                    <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                        <small>@item.HorasFaltasString</small>
+                                                    </td>
+                                                    <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                        <small>@item.HorasExtras050String</small>
+                                                    </td>
+                                                    <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                        <small>@item.HorasExtras070String</small>
+                                                    </td>
+                                                    <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                        <small>@item.HorasExtras100String</small>
+                                                    </td>
+                                                    <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                        <small>@item.HorasCreditoBHString</small>
+                                                    </td>
+                                                    <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                        <small>@item.HorasDebitoBHString</small>
                                                     </td>
                                                 </tr>
                                             }
                                         }
                                     </tbody>
+
+                                    <tfoot>
+                                        <tr>
+                                            <th>
+                                                1
+                                            </th>
+                                            <td>
+                                                2
+                                            </td>
+                                            <td>
+                                                3
+                                            </td>
+                                            <td>
+                                                4
+                                            </td>
+                                            <td>
+                                                5
+                                            </td>
+                                            <td>
+                                                6
+                                            </td>
+                                            <td>
+                                                7
+                                            </td>
+                                            <td>
+                                                8
+                                            </td>
+                                            <td>
+                                                9
+                                            </td>
+                                            <td>
+                                                10
+                                            </td>
+                                        </tr>
+                                    </tfoot>
                                 }
-
-                                <tfooter>
-                                </tfooter>
-
                             </table>
                         </div>
                     </div>
@@ -177,10 +234,6 @@
 
             string classColor = string.Empty;
 
-            var datas = Model.MatriculaEspelhoPontoMarcacoes.OrderBy(
-                m => m.Data).GroupBy(
-                    m => m.Data);
-
             @foreach (var data in datas)
             {
                 var item = Model.MatriculaEspelhoPontoMarcacoes.Where(
@@ -223,6 +276,11 @@
                                     <p class="text-@classColor">
                                         <small>
                                             <strong>Trabalhadas</strong>: @item.HorasTrabalhadasFormatada
+                                        </small>
+                                    </p>
+                                    <p class="text-@classColor">
+                                        <small>
+                                            <strong>Faltas</strong>: @item.HorasFaltasFormatada
                                         </small>
                                     </p>
                                     <p class="text-@classColor">
