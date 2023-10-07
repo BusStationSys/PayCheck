@@ -156,7 +156,17 @@ app.UseSwaggerUI(
         c.SwaggerEndpoint(
             url: "V1/swagger.json",
             name: "PayCheck.Api V1");
+        c.RoutePrefix = string.Empty;
     });
+
+//app.UseSwagger();
+//app.UseSwaggerUI(c =>
+//{
+//    string swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "." : "..";
+
+//    c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v1/swagger.json", "PayCheck.Api");
+
+//});
 
 app.UseRouting();
 
