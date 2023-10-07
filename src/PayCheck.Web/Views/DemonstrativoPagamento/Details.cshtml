@@ -29,9 +29,223 @@
     </div>
 
     <!-- Page Heading -->
+    <div class="modal fade" id="modeloClassicoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelModeloClassico"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                @*<div class="modal-body">
+                    <table class="table" id="tblPrincipal" style="border-width:2px; border-style:solid;">
+                        <thead>
+                            <tr>
+                                <th class="col-12 text-justify" style="border:0px">AQUI VAI O LOGOTIPO</th>
+                            </tr>
+                            <tr>
+                                <th class="col-12 text-justify" style="border:0px">AQUI VAI O LOGOTIPO</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td class="col-12 text-justify" style="border:0px">
+                                    <table class="table table-bordered" cellpadding="0" cellspacing="0" style="margin-top:-1.20rem">
+                                        <tbody>
+                                            <tr>
+                                                <td class="col-2" style="padding: 0.08rem; vertical-align:middle">
+                                                    <small style="font-size: 50%">Matrícula</small><br />@Model.Matricula.Matricula
+                                                </td>
+                                                <td class="col-8" colspan="2" style="padding: 0.08rem; vertical-align:middle">
+                                                    <small style="font-size: 50%">Nome</small><br />@Model.Matricula.Colaborador.Nome
+                                                </td>
+                                                <td class="col-2" style="padding: 0.08rem; vertical-align:middle">
+                                                    <small style="font-size: 50%">Competência</small><br />@Model.CompetenciaFormatada
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col-6" colspan="2" style="padding: 0.08rem; vertical-align:middle">
+                                                    <small style="font-size: 50%">Horário</small><br /><small>Carga Horária Mensal:</small> @Model.Matricula.CargaHoraria
+                                                </td>
+                                                <td class="col-6" colspan="2" style="padding: 0.08rem; vertical-align:middle">
+                                                    <small style="font-size: 50%">Local</small><br />@Model.Matricula.DescricaoSetor
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <table class="table table-bordered table-striped" style="line-height: 0.80rem; margin-bottom:-0.05rem; margin-top:-0.40rem">
+                                        <thead>
+                                            <tr>
+                                                <th class="col-1 text-center"><small>Data</small></th>
+                                                <th class="col-1 text-center"><small>Semana</small></th>
+                                                <th class="col-3 text-justify"><small>Marcações</small></th>
+                                                <th class="col-1 text-center"><small>Trab.</small></th>
+                                                <th class="col-1 text-center"><small>Flts.</small></th>
+                                                <th class="col-1 text-center"><small>H050%</small></th>
+                                                <th class="col-1 text-center"><small>H070%</small></th>
+                                                <th class="col-1 text-center"><small>H100%</small></th>
+                                                <th class="col-1 text-center"><small>CrBH.</small></th>
+                                                <th class="col-1 text-center"><small>DbBH.</small></th>
+                                            </tr>
+                                        </thead>
+
+                                        @if (Model.MatriculaEspelhoPontoMarcacoes != null &&
+                                        Model.MatriculaEspelhoPontoMarcacoes.Count() > 0)
+                                        {
+                                            <tbody>
+                                                @foreach (var data in datas)
+                                                {
+                                                    var item = Model.MatriculaEspelhoPontoMarcacoes.Where(
+                                                    d => d.Data == data.Key).FirstOrDefault();
+
+                                                    if (item != null)
+                                                    {
+                                                        <tr>
+                                                            <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                                <small style="font-size: 75%">@item.Data.ToString("ddMMyyyy").Substring(0,2)</small>
+                                                            </td>
+                                                            <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                                <small style="font-size: 75%">@item.DiaSemana.Substring(0,3)</small>
+                                                            </td>
+                                                            <td class="text-justify" style="padding: 0.06rem; vertical-align:middle">
+                                                                <small style="font-size: 75%">@item.Marcacao</small>
+                                                            </td>
+                                                            <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                                <small style="font-size: 75%">@item.HorasTrabalhadasString</small>
+                                                            </td>
+                                                            <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                                <small style="font-size: 75%">@item.HorasFaltasString</small>
+                                                            </td>
+                                                            <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                                <small style="font-size: 75%">@item.HorasExtras050String</small>
+                                                            </td>
+                                                            <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                                <small style="font-size: 75%">@item.HorasExtras070String</small>
+                                                            </td>
+                                                            <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                                <small style="font-size: 75%">@item.HorasExtras100String</small>
+                                                            </td>
+                                                            <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                                <small style="font-size: 75%">@item.HorasCreditoBHString</small>
+                                                            </td>
+                                                            <td class="text-center" style="padding: 0.06rem; vertical-align:middle">
+                                                                <small style="font-size: 75%">@item.HorasDebitoBHString</small>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+
+                                            <tfoot>
+                                            </tfoot>
+                                        }
+                                    </table>
+
+                                    <div class="row">
+                                        <div class="col-xl-4 col-md-4 col-xs-12">
+                                            <table class="table table-bordered" style="line-height: 0.40rem; margin-bottom:-0.05rem;">
+                                                <tbody>
+                                                    @if (Model.MatriculaEspelhoPontoCalculos != null &&
+                                                    Model.MatriculaEspelhoPontoCalculos.Count() > 0)
+                                                    {
+                                                        var calculos = Model.MatriculaEspelhoPontoCalculos.Where(c =>
+                                                        c.Calculo.Id < 6).OrderBy(
+                                                        c => c.Calculo.Id).GroupBy(
+                                                        m => m.Calculo.Id);
+
+                                                        @foreach (var calculo in calculos)
+                                                        {
+                                                            <tr>
+                                                                <td class="col-9 text-right" style="border: 0px; vertical-align:middle;">
+                                                                    <small style="font-size: 60%">@calculo.First().Calculo.Descricao</small>
+                                                                </td>
+                                                                <td class="col-9 text-right" style="border: 0px; vertical-align:middle;">
+                                                                    <small style="font-size: 60%">@calculo.First().Valor.ToString("#,###,###,##0.00")</small>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="col-xl-4 col-md-4 col-xs-12">
+                                            <table class="table table-bordered" style="line-height: 0.40rem; margin-bottom:-0.05rem;">
+                                                <tbody>
+                                                    @if (Model.MatriculaEspelhoPontoCalculos != null &&
+                                                    Model.MatriculaEspelhoPontoCalculos.Count() > 0)
+                                                    {
+                                                        var calculos = Model.MatriculaEspelhoPontoCalculos.Where(c =>
+                                                        c.Calculo.Id >= 6 && c.Calculo.Id < 11).OrderBy(
+                                                        c => c.Calculo.Id).GroupBy(
+                                                        m => m.Calculo.Id);
+
+                                                        @foreach (var calculo in calculos)
+                                                        {
+                                                            <tr>
+                                                                <td class="col-9 text-right" style="border: 0px; vertical-align:middle;">
+                                                                    <small style="font-size: 60%">@calculo.First().Calculo.Descricao</small>
+                                                                </td>
+                                                                <td class="col-9 text-right" style="border: 0px; vertical-align:middle;">
+                                                                    <small style="font-size: 60%">@calculo.First().Valor.ToString("#,###,###,##0.00")</small>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="col-xl-4 col-md-4 col-xs-12">
+                                            <table class="table table-bordered" style="line-height: 0.40rem; margin-bottom:-0.05rem;">
+                                                <tbody>
+                                                    @if (Model.MatriculaEspelhoPontoCalculos != null &&
+                                                    Model.MatriculaEspelhoPontoCalculos.Count() > 0)
+                                                    {
+                                                        var calculos = Model.MatriculaEspelhoPontoCalculos.Where(c =>
+                                                        c.Calculo.Id >= 11).OrderBy(
+                                                        c => c.Calculo.Id).GroupBy(
+                                                        m => m.Calculo.Id);
+
+                                                        @foreach (var calculo in calculos)
+                                                        {
+                                                            <tr>
+                                                                <td class="col-9 text-right" style="border: 0px; vertical-align:middle;">
+                                                                    <small style="font-size: 60%">@calculo.First().Calculo.Descricao</small>
+                                                                </td>
+                                                                <td class="col-9 text-right" style="border: 0px; vertical-align:middle;">
+                                                                    <small style="font-size: 60%">@calculo.First().Valor.ToString("#,###,###,##0.00")</small>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+
+                        <tfoot>
+                            <tr></tr>
+                        </tfoot>
+                    </table>
+                </div>*@
+
+                <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" data-dismiss="modal">Cancelar</button>
+                    @*<a class="btn btn-success" asp-controller="EspelhoPonto" asp-action="ConfirmarRealizacaoFrequencia" asp-route-guid=@Model.Guid>Confirmar</a>*@
+                    <a class="btn btn-primary">
+                        <i class="fas fa-print fa-sm text-white-50"></i> Imprimir
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Heading aria-hidden="true" -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Demonstrativo de Pagamento</h1>
-        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#modeloClassicoModal">
             <i class="fas fa-print fa-sm text-white-50"></i> Modelo Clássico
         </a>
     </div>
