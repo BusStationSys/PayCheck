@@ -19,6 +19,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayCheck.Business", "src\Pa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.Shared", "submodules\ARVTech.DataAccess\submodules\ARVTech.Shared\src\ARVTech.Shared.csproj", "{DE7CDD7C-9784-4E6B-97F5-82929DFEDF77}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.DataAccess.Infrastructure", "submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Infrastructure\ARVTech.DataAccess.Infrastructure.csproj", "{8A0A2485-A3C5-4A2C-B6B2-D04B74E6BD00}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.DataAccess.Application", "submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Application\ARVTech.DataAccess.Application.csproj", "{4FB1A5BE-A99B-4EA1-B7CF-0AEA53CEA17C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.DataAccess.CQRS", "submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.CQRS\ARVTech.DataAccess.CQRS.csproj", "{08C3713B-30CF-4A98-86B2-299F7A19FA59}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.DataAccess.DbFactories", "submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.DbFactories\ARVTech.DataAccess.DbFactories.csproj", "{E97102C7-4883-40BE-9168-E93FC3579408}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +65,22 @@ Global
 		{DE7CDD7C-9784-4E6B-97F5-82929DFEDF77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE7CDD7C-9784-4E6B-97F5-82929DFEDF77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE7CDD7C-9784-4E6B-97F5-82929DFEDF77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A0A2485-A3C5-4A2C-B6B2-D04B74E6BD00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A0A2485-A3C5-4A2C-B6B2-D04B74E6BD00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A0A2485-A3C5-4A2C-B6B2-D04B74E6BD00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A0A2485-A3C5-4A2C-B6B2-D04B74E6BD00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FB1A5BE-A99B-4EA1-B7CF-0AEA53CEA17C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FB1A5BE-A99B-4EA1-B7CF-0AEA53CEA17C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FB1A5BE-A99B-4EA1-B7CF-0AEA53CEA17C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FB1A5BE-A99B-4EA1-B7CF-0AEA53CEA17C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08C3713B-30CF-4A98-86B2-299F7A19FA59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08C3713B-30CF-4A98-86B2-299F7A19FA59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08C3713B-30CF-4A98-86B2-299F7A19FA59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08C3713B-30CF-4A98-86B2-299F7A19FA59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E97102C7-4883-40BE-9168-E93FC3579408}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E97102C7-4883-40BE-9168-E93FC3579408}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E97102C7-4883-40BE-9168-E93FC3579408}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E97102C7-4883-40BE-9168-E93FC3579408}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
