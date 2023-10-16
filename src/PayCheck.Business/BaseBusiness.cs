@@ -1,7 +1,7 @@
 ﻿namespace PayCheck.Business
 {
     using System;
-    using PayCheck.Infrastructure.UnitOfWork.Interfaces;
+    using ARVTech.DataAccess.Infrastructure.UnitOfWork.Interfaces;
     using AutoMapper;
 
     public abstract class BaseBusiness : IDisposable

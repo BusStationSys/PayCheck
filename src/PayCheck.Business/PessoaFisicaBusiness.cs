@@ -1,10 +1,9 @@
 ﻿namespace PayCheck.Business
 {
     using System;
-    using System.Collections.Generic;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.DataAccess.Core.Entities.UniPayCheck;
-    using PayCheck.Infrastructure.UnitOfWork.Interfaces;
+    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Infrastructure.UnitOfWork.Interfaces;
     using AutoMapper;
     using PayCheck.Business.Interfaces;
 
@@ -44,7 +43,7 @@
 
                 using (var connection = this._unitOfWork.Create())
                 {
-                    var entity = connection.Repositories.PessoaFisicaRepository.Get(
+                    var entity = connection.RepositoriesUniPayCheck.PessoaFisicaRepository.Get(
                         guid);
 
                     return this._mapper.Map<PessoaFisicaResponseDto>(entity);

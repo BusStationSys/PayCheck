@@ -3,9 +3,9 @@
     using System;
     using ARVTech.DataAccess.Core.Entities.UniPayCheck;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Infrastructure.UnitOfWork.Interfaces;
     using AutoMapper;
     using PayCheck.Business.Interfaces;
-    using PayCheck.Infrastructure.UnitOfWork.Interfaces;
 
     public class MatriculaEspelhoPontoBusiness : BaseBusiness, IMatriculaEspelhoPontoBusiness
     {
@@ -58,7 +58,7 @@
 
                 connection.BeginTransaction();
 
-                connection.Repositories.MatriculaEspelhoPontoRepository.Delete(
+                connection.RepositoriesUniPayCheck.MatriculaEspelhoPontoRepository.Delete(
                     guid);
 
                 connection.CommitTransaction();
@@ -98,7 +98,7 @@
 
                 connection.BeginTransaction();
 
-                connection.Repositories.MatriculaEspelhoPontoRepository.DeleteCalculosAndMarcacoesByCompetenciaAndGuidMatricula(
+                connection.RepositoriesUniPayCheck.MatriculaEspelhoPontoRepository.DeleteCalculosAndMarcacoesByCompetenciaAndGuidMatricula(
                     competencia,
                     guidMatricula);
 
@@ -134,7 +134,7 @@
 
                 using (var connection = this._unitOfWork.Create())
                 {
-                    var entity = connection.Repositories.MatriculaEspelhoPontoRepository.Get(
+                    var entity = connection.RepositoriesUniPayCheck.MatriculaEspelhoPontoRepository.Get(
                         guid);
 
                     return this._mapper.Map<MatriculaEspelhoPontoResponseDto>(
@@ -168,7 +168,7 @@
 
                 using (var connection = this._unitOfWork.Create())
                 {
-                    var entity = connection.Repositories.MatriculaEspelhoPontoRepository.Get(
+                    var entity = connection.RepositoriesUniPayCheck.MatriculaEspelhoPontoRepository.Get(
                         competencia,
                         matricula);
 
@@ -191,7 +191,7 @@
             {
                 using (var connection = this._unitOfWork.Create())
                 {
-                    var entity = connection.Repositories.MatriculaEspelhoPontoRepository.GetAll();
+                    var entity = connection.RepositoriesUniPayCheck.MatriculaEspelhoPontoRepository.GetAll();
 
                     return this._mapper.Map<IEnumerable<MatriculaEspelhoPontoResponseDto>>(entity);
                 }
@@ -212,7 +212,7 @@
             {
                 using (var connection = this._unitOfWork.Create())
                 {
-                    var entity = connection.Repositories.MatriculaEspelhoPontoRepository.GetByGuidColaborador(
+                    var entity = connection.RepositoriesUniPayCheck.MatriculaEspelhoPontoRepository.GetByGuidColaborador(
                         guidColaborador);
 
                     return this._mapper.Map<IEnumerable<MatriculaEspelhoPontoResponseDto>>(entity);
@@ -254,7 +254,7 @@
                     entity = this._mapper.Map<MatriculaEspelhoPontoEntity>(
                         updateDto);
 
-                    entity = connection.Repositories.MatriculaEspelhoPontoRepository.Update(
+                    entity = connection.RepositoriesUniPayCheck.MatriculaEspelhoPontoRepository.Update(
                         entity.Guid,
                         entity);
                 }
@@ -263,7 +263,7 @@
                     entity = this._mapper.Map<MatriculaEspelhoPontoEntity>(
                         createDto);
 
-                    entity = connection.Repositories.MatriculaEspelhoPontoRepository.Create(
+                    entity = connection.RepositoriesUniPayCheck.MatriculaEspelhoPontoRepository.Create(
                         entity);
                 }
 

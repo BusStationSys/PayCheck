@@ -1,13 +1,13 @@
 using System.Data.SqlClient;
 using System.Reflection;
 using System.Text;
+using ARVTech.DataAccess.Infrastructure.UnitOfWork.SqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PayCheck.Api;
 using PayCheck.Business;
 using PayCheck.Business.Interfaces;
-using PayCheck.Infrastructure.UnitOfWork.SqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
 

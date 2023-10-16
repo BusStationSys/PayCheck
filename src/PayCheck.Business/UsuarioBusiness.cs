@@ -3,10 +3,10 @@
     using System;
     using ARVTech.DataAccess.Core.Entities.UniPayCheck;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Infrastructure.UnitOfWork.Interfaces;
     using ARVTech.Shared;
     using AutoMapper;
     using PayCheck.Business.Interfaces;
-    using PayCheck.Infrastructure.UnitOfWork.Interfaces;
 
     public class UsuarioBusiness : BaseBusiness, IUsuarioBusiness
     {
@@ -52,7 +52,7 @@
                     throw new ArgumentNullException(
                         nameof(password));
 
-                var entity = connection.Repositories.UsuarioRepository.CheckPasswordValid(
+                var entity = connection.RepositoriesUniPayCheck.UsuarioRepository.CheckPasswordValid    (
                     guid,
                     password);
 
@@ -84,7 +84,7 @@
                     throw new ArgumentNullException(
                         nameof(cpfEmailUsername));
 
-                var entity = connection.Repositories.UsuarioRepository.GetByUsername(
+                var entity = connection.RepositoriesUniPayCheck.UsuarioRepository.GetByUsername(
                     cpfEmailUsername);
 
                 return this._mapper.Map<UsuarioResponseDto>(
@@ -133,7 +133,7 @@
                     entity = this._mapper.Map<UsuarioEntity>(
                         updateDto);
 
-                    entity = connection.Repositories.UsuarioRepository.Update(
+                    entity = connection.RepositoriesUniPayCheck.UsuarioRepository.Update(
                         entity.Guid,
                         entity);
                 }
@@ -145,7 +145,7 @@
                     entity = this._mapper.Map<UsuarioEntity>(
                         createDto);
 
-                    entity = connection.Repositories.UsuarioRepository.Create(
+                    entity = connection.RepositoriesUniPayCheck.UsuarioRepository.Create(
                         entity);
                 }
 

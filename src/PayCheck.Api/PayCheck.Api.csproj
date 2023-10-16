@@ -30,8 +30,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Application\ARVTech.DataAccess.Application.csproj" />
 		<ProjectReference Include="..\PayCheck.Business\PayCheck.Business.csproj" />
-		<ProjectReference Include="..\PayCheck.Infrastructure\PayCheck.Infrastructure.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

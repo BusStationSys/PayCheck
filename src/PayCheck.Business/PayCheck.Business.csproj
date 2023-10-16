@@ -51,7 +51,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.DTOs\ARVTech.DataAccess.DTOs.csproj" />
-    <ProjectReference Include="..\PayCheck.Infrastructure\PayCheck.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Infrastructure\ARVTech.DataAccess.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

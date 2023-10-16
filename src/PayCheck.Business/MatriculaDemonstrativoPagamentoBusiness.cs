@@ -3,9 +3,9 @@
     using System;
     using ARVTech.DataAccess.Core.Entities.UniPayCheck;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Infrastructure.UnitOfWork.Interfaces;
     using AutoMapper;
     using PayCheck.Business.Interfaces;
-    using PayCheck.Infrastructure.UnitOfWork.Interfaces;
 
     public class MatriculaDemonstrativoPagamentoBusiness : BaseBusiness, IMatriculaDemonstrativoPagamentoBusiness
     {
@@ -56,7 +56,7 @@
 
                 connection.BeginTransaction();
 
-                connection.Repositories.MatriculaDemonstrativoPagamentoRepository.Delete(
+                connection.RepositoriesUniPayCheck.MatriculaDemonstrativoPagamentoRepository.Delete(
                     guid);
 
                 connection.CommitTransaction();
@@ -96,7 +96,7 @@
 
                 connection.BeginTransaction();
 
-                connection.Repositories.MatriculaDemonstrativoPagamentoRepository.DeleteEventosAndTotalizadoresByCompetenciaAndGuidMatricula(
+                connection.RepositoriesUniPayCheck.MatriculaDemonstrativoPagamentoRepository.DeleteEventosAndTotalizadoresByCompetenciaAndGuidMatricula(
                     competencia,
                     guidMatricula);
 
@@ -132,7 +132,7 @@
 
                 using (var connection = this._unitOfWork.Create())
                 {
-                    var entity = connection.Repositories.MatriculaDemonstrativoPagamentoRepository.Get(
+                    var entity = connection.RepositoriesUniPayCheck.MatriculaDemonstrativoPagamentoRepository.Get(
                         guid);
 
                     return this._mapper.Map<MatriculaDemonstrativoPagamentoResponseDto>(
@@ -166,7 +166,7 @@
 
                 using (var connection = this._unitOfWork.Create())
                 {
-                    var entity = connection.Repositories.MatriculaDemonstrativoPagamentoRepository.Get(
+                    var entity = connection.RepositoriesUniPayCheck.MatriculaDemonstrativoPagamentoRepository.Get(
                         competencia,
                         matricula);
 
@@ -189,7 +189,7 @@
             {
                 using (var connection = this._unitOfWork.Create())
                 {
-                    var entity = connection.Repositories.MatriculaDemonstrativoPagamentoRepository.GetAll();
+                    var entity = connection.RepositoriesUniPayCheck.MatriculaDemonstrativoPagamentoRepository.GetAll();
 
                     return this._mapper.Map<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>(entity);
                 }
@@ -210,7 +210,7 @@
             {
                 using (var connection = this._unitOfWork.Create())
                 {
-                    var entity = connection.Repositories.MatriculaDemonstrativoPagamentoRepository.GetByGuidColaborador(
+                    var entity = connection.RepositoriesUniPayCheck.MatriculaDemonstrativoPagamentoRepository.GetByGuidColaborador(
                         guidColaborador);
 
                     return this._mapper.Map<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>(entity);
@@ -251,7 +251,7 @@
                     entity = this._mapper.Map<MatriculaDemonstrativoPagamentoEntity>(
                         updateDto);
 
-                    entity = connection.Repositories.MatriculaDemonstrativoPagamentoRepository.Update(
+                    entity = connection.RepositoriesUniPayCheck.MatriculaDemonstrativoPagamentoRepository.Update(
                         entity.Guid,
                         entity);
                 }
@@ -260,7 +260,7 @@
                     entity = this._mapper.Map<MatriculaDemonstrativoPagamentoEntity>(
                         createDto);
 
-                    entity = connection.Repositories.MatriculaDemonstrativoPagamentoRepository.Create(
+                    entity = connection.RepositoriesUniPayCheck.MatriculaDemonstrativoPagamentoRepository.Create(
                         entity);
                 }
 
