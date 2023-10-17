@@ -52,7 +52,7 @@
                     throw new ArgumentNullException(
                         nameof(password));
 
-                var entity = connection.RepositoriesUniPayCheck.UsuarioRepository.CheckPasswordValid    (
+                var entity = connection.RepositoriesUniPayCheck.UsuarioRepository.CheckPasswordValid(
                     guid,
                     password);
 
@@ -89,7 +89,6 @@
 
                 return this._mapper.Map<UsuarioResponseDto>(
                     entity);
-
             }
             catch
             {
