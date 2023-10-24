@@ -11,6 +11,7 @@
     /// 
     /// </summary>
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class DemonstrativoPagamentoController : ControllerBase
     {
@@ -32,7 +33,6 @@
         /// 
         /// </summary>
         /// <returns></returns>
-        [Authorize]
         [HttpGet]
         public IActionResult GetDemonstrativosPagamento()
         {
@@ -60,7 +60,7 @@
         /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         [HttpGet("{guid}")]
         public IActionResult GetDemonstrativoPagamento(Guid guid)
         {
@@ -89,7 +89,7 @@
         /// </summary>
         /// <param name="guidColaborador"></param>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         [HttpGet("getDemonstrativoPagamentoByGuidColaborador/{guidColaborador}")]
         public IActionResult GetDemonstrativoPagamentoByGuidColaborador(Guid guidColaborador)
         {
@@ -119,7 +119,7 @@
         /// <param name="competencia"></param>
         /// <param name="matricula"></param>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         [HttpGet("{competencia}/{matricula}")]
         public IActionResult GetDemonstrativoPagamento(string competencia, string matricula)
         {
@@ -150,7 +150,7 @@
         /// <param name="guid"></param>
         /// <param name="updateDto"></param>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         [HttpPut("{guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

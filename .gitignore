@@ -452,3 +452,7 @@ $RECYCLE.BIN/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+/src/PayCheck.Api/appsettings.Dev.json
+/src/PayCheck.Api/appsettings.Stg.json
+/src/PayCheck.Web/appsettings.Dev.json
+/src/PayCheck.Web/appsettings.Stg.json

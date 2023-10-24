@@ -5,7 +5,6 @@
     using System.Text;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
     using Microsoft.IdentityModel.Tokens;
@@ -18,17 +17,18 @@
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly AppSettings _appSettings;
+        private readonly Authentication _authentication;
+
+        //  private readonly SignInManager<IdentityUser> _signInManager;
+        //  private readonly UserManager<IdentityUser> _userManager;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="appSettings"></param>
-        public AuthController(IOptions<AppSettings> appSettings)
+        /// <param name="authentication"></param>
+        public AuthController(IOptions<Authentication> authentication)
         {
-            this._appSettings = appSettings.Value;
+            this._authentication = authentication.Value;
         }
 
         /// <summary>
@@ -39,8 +39,8 @@
         [HttpPost]
         public async Task<ActionResult> Login([FromBody] AuthRequestDto authDto)
         {
-            if (authDto.Username != this._appSettings.Username ||
-                authDto.Password != this._appSettings.Password)
+            if (authDto.Username != this._authentication.Username ||
+                authDto.Password != this._authentication.Password)
             {
                 return BadRequest(
                     "Username ou Password inválidos!");
@@ -67,14 +67,14 @@
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var key = Encoding.ASCII.GetBytes(
-                this._appSettings.Secret);
+                this._authentication.Secret);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Audience = this._appSettings.Audience,
+                Audience = this._authentication.Audience,
                 Expires = DateTime.UtcNow.AddMinutes(
-                    this._appSettings.ExpiresInMinutes),
-                Issuer = this._appSettings.Issuer,
+                    this._authentication.ExpiresInMinutes),
+                Issuer = this._authentication.Issuer,
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(
                         key),

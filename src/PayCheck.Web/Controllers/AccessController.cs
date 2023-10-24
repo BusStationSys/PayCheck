@@ -11,24 +11,33 @@
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
 
     public class AccessController : Controller
     {
-        private readonly Uri _baseAddress = new(Common.UriBaseApiString);
-
-        private readonly HttpClient _httpClient;
-
         private readonly string _tokenBearer;
 
         private readonly IEmailService _emailService;
+
+        private readonly ExternalApis _externalApis;
+
+        private readonly HttpClient _httpClient;
+
+        private readonly Uri _baseAddress;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccessController"/> class.
         /// </summary>
         /// <param name="emailService"></param>
-        public AccessController(IEmailService emailService)
+        /// <param name="externalApis"></param>
+        public AccessController(IEmailService emailService, IOptions<ExternalApis> externalApis)
         {
+            this._externalApis = externalApis.Value;
+
+            this._baseAddress = new(
+                this._externalApis.PayCheck);
+
             this._httpClient = new HttpClient
             {
                 BaseAddress = this._baseAddress,

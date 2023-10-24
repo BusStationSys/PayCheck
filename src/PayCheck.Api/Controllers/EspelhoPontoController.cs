@@ -12,6 +12,7 @@
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class EspelhoPontoController : ControllerBase
     {
         private readonly IMatriculaEspelhoPontoBusiness _business;
@@ -39,7 +40,6 @@
         /// 
         /// </summary>
         /// <returns></returns>
-        [Authorize]
         [HttpGet]
         public IActionResult GetEspelhosPonto()
         {
@@ -67,7 +67,6 @@
         /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
-        [Authorize]
         [HttpGet("{guid}")]
         public IActionResult GetEspelhoPonto(Guid guid)
         {
@@ -97,11 +96,14 @@
         /// <param name="guid"></param>
         /// <param name="updateDto"></param>
         /// <returns></returns>
-        [Authorize]
         [HttpPut("{guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        ////[ProducesResponseType(StatusCodes.Status200OK)]
+        ////[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        ////[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        ////[ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult UpdateMatriculaEspelhoPonto(Guid guid, [FromBody] MatriculaEspelhoPontoRequestUpdateDto updateDto)
         {
             try
@@ -165,58 +167,5 @@
                     ex.Message);
             }
         }
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="guid"></param>
-        ///// <param name="updateDto"></param>
-        ///// <returns></returns>
-        //[Authorize]
-        //[HttpPut("updatePassword/{guid}")]
-        ////[HttpGet("getGruposByNumeroRemessa/{numeroRemessa}")]
-        ////[HttpGet("getByNumeroRemessa/{numeroRemessa}")]
-        //[ProducesResponseType(StatusCodes.Status204NoContent)]
-        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-
-        ////[ProducesResponseType(StatusCodes.Status200OK)]
-        ////[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        ////[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        ////[ProducesResponseType(StatusCodes.Status404NotFound)]
-
-        //public IActionResult UpdatePassword(Guid guid, [FromBody] UsuarioRequestUpdateDto updateDto)
-        //{
-        //    try
-        //    {
-        //        var usuarioResponse = this._business.SaveData(
-        //            updateDto: updateDto);
-
-        //        usuarioResponse.StatusCode = HttpStatusCode.NoContent;
-
-        //        //return StatusCode(
-        //        //    StatusCodes.Status204NoContent,
-        //        //    usuarioResponse);
-
-        //        return Ok(
-        //            usuarioResponse);
-
-        //        //return CreatedAtAction(
-        //        //    nameof(
-        //        //        this.GetAgente),
-        //        //    new
-        //        //    {
-        //        //        id = agenteResponseDto.CodigoAgente,
-        //        //    },
-        //        //    agenteResponseDto);
-
-        //        //return NoContent();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(
-        //            StatusCodes.Status500InternalServerError,
-        //            ex.Message);
-        //    }
-        //}
     }
 }

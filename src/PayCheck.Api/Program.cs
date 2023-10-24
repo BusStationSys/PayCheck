@@ -55,11 +55,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 //  JWT
-var appSettingsSection = builder.Configuration.GetSection("Authentication");    //  Section AppSettings/Authentication.
-builder.Services.Configure<AppSettings>(appSettingsSection);
+var appSettingsAuthenticationSection = builder.Configuration.GetSection("Authentication");    //  Section AppSettings/Authentication.
+builder.Services.Configure<Authentication>(appSettingsAuthenticationSection);
 
-var appSettings = appSettingsSection.Get<AppSettings>();
-var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+var appSettingsAuthentication = appSettingsAuthenticationSection.Get<Authentication>();
+var key = Encoding.ASCII.GetBytes(appSettingsAuthentication.Secret);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -75,8 +75,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidAudience = appSettings.Audience,
-        ValidIssuer = appSettings.Issuer,
+        ValidAudience = appSettingsAuthentication.Audience,
+        ValidIssuer = appSettingsAuthentication.Issuer,
     };
 });
 

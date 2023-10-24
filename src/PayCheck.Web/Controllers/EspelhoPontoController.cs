@@ -1,29 +1,36 @@
 ﻿namespace PayCheck.Web.Controllers
 {
+    using System;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared;
     using AutoMapper;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
-    using System;
-    using System.Net;
 
     public class EspelhoPontoController : Controller
     {
-        private readonly Uri _baseAddress = new(
-            Common.UriBaseApiString);
+        private readonly string _tokenBearer;
+
+        private readonly ExternalApis _externalApis;
 
         private readonly HttpClient _httpClient;
 
-        private readonly string _tokenBearer;
-
         private readonly Mapper _mapper;
+
+        private readonly Uri _baseAddress;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EspelhoPontoController"/> class.
         /// </summary>
-        public EspelhoPontoController()
+        /// <param name="externalApis"></param>
+        public EspelhoPontoController(IOptions<ExternalApis> externalApis)
         {
+            this._externalApis = externalApis.Value;
+
+            this._baseAddress = new(
+                this._externalApis.PayCheck);
+
             var mapperConfiguration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<MatriculaEspelhoPontoRequestCreateDto, MatriculaEspelhoPontoResponseDto>().ReverseMap();

@@ -1,5 +1,17 @@
 ﻿namespace PayCheck.Web
 {
+    public class AppSettings
+    {
+        public MailSettings MailSettings { get; set; }
+
+        public ExternalApis ExternalApis { get; set; }
+    }
+
+    public class ExternalApis
+    {
+        public string PayCheck { get; set; }
+    }
+
     public class MailSettings
     {
         public string Server { get; set; }

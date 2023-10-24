@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <BaseOutputPath>bin\</BaseOutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

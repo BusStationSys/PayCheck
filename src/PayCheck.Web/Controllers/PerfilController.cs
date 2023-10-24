@@ -1,24 +1,31 @@
 ﻿namespace PayCheck.Web.Controllers
 {
     using ARVTech.DataAccess.DTOs.UniPayCheck;
-    using ARVTech.Shared;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
 
     public class PerfilController : Controller
     {
-        private readonly Uri _baseAddress = new(Common.UriBaseApiString);
+        private readonly string _tokenBearer;
+
+        private readonly ExternalApis _externalApis;
 
         private readonly HttpClient _httpClient;
 
-        private readonly string _tokenBearer;
+        private readonly Uri _baseAddress;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PerfilController"/> class.
         /// </summary>
-        /// <param name="emailService"></param>
-        public PerfilController()
+        /// <param name="externalApis"></param>
+        public PerfilController(IOptions<ExternalApis> externalApis)
         {
+            this._externalApis = externalApis.Value;
+
+            this._baseAddress = new(
+                this._externalApis.PayCheck);
+
             this._httpClient = new HttpClient
             {
                 BaseAddress = this._baseAddress,

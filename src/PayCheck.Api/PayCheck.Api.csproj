@@ -18,11 +18,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Content Remove="appsettings.Dev.json" />
-	  <Content Remove="appsettings.Stg.json" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.9" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.7" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
@@ -35,6 +30,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Content Update="appsettings.Dev.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="appsettings.Dev.Stg.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="appsettings.Stg.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	  <Content Update="appsettings.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>

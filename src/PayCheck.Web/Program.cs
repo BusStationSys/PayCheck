@@ -2,15 +2,19 @@ using ARVTech.Shared.Email;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.DependencyInjection;
 using PayCheck.Web;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//  ExternalApis.
+var appSettingsExternalApisSection = builder.Configuration.GetSection("ExternalApis");      //  Section AppSettings/ExternalApis.
+builder.Services.Configure<ExternalApis>(appSettingsExternalApisSection);
+
 //  Mail Settings.
-var mailSettingsSection = builder.Configuration.GetSection("MailSettings");    //  Section AppSettings/MailSettings.
+var mailSettingsSection = builder.Configuration.GetSection("MailSettings");                 //  Section AppSettings/MailSettings.
 builder.Services.Configure<MailSettings>(mailSettingsSection);
 
 var mailSettings = mailSettingsSection.Get<MailSettings>();
-//var key = Encoding.ASCII.GetBytes(appSettings.Secret);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -31,6 +35,9 @@ builder.Services.AddTransient<IEmailService>(
         mailSettings.SenderEmail,
         mailSettings.Username,
         mailSettings.Password));
+
+//builder.Services.AddSingleton<IConfiguration>(
+//    builder.Configuration);
 
 var app = builder.Build();
 

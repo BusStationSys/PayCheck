@@ -2,26 +2,34 @@
 {
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared;
+    using ARVTech.Shared.Extensions;
     using AutoMapper;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
 
     public class DemonstrativoPagamentoController : Controller
     {
-        private readonly Uri _baseAddress = new(
-            Common.UriBaseApiString);
+        private readonly string _tokenBearer;
+
+        private readonly ExternalApis _externalApis;
 
         private readonly HttpClient _httpClient;
 
-        private readonly string _tokenBearer;
-
         private readonly Mapper _mapper;
+
+        private readonly Uri _baseAddress;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DemonstrativoPagamentoController"/> class.
         /// </summary>
-        public DemonstrativoPagamentoController()
+        public DemonstrativoPagamentoController(IOptions<ExternalApis> externalApis)
         {
+            this._externalApis = externalApis.Value;
+
+            this._baseAddress = new(
+                this._externalApis.PayCheck);
+
             var mapperConfiguration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<MatriculaDemonstrativoPagamentoRequestCreateDto, MatriculaDemonstrativoPagamentoResponseDto>().ReverseMap();
@@ -69,6 +77,16 @@
         [HttpGet]
         public IActionResult Index()
         {
+            try
+            {
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
             var guidColaborador = default(Guid?);
 
             if (TempData.Peek("GuidColaborador") != null &&
@@ -92,8 +110,9 @@
             {
                 string matriculasDemonstrativosPagamentoResponseJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-                mdps = JsonConvert.DeserializeObject<List<MatriculaDemonstrativoPagamentoResponseDto>>(
-                    matriculasDemonstrativosPagamentoResponseJson);
+                if (matriculasDemonstrativosPagamentoResponseJson.IsValidJson())
+                    mdps = JsonConvert.DeserializeObject<List<MatriculaDemonstrativoPagamentoResponseDto>>(
+                        matriculasDemonstrativosPagamentoResponseJson);
             }
 
             return View(

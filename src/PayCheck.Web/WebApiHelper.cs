@@ -181,15 +181,15 @@
                         {
                             httpResponseMessage.EnsureSuccessStatusCode();
                         }
-                        catch
-                        {
-                            throw new Exception(
-                                string.Concat(
-                                    Convert.ToInt16(
-                                        httpResponseMessage.StatusCode),
-                                    " ",
-                                    httpResponseMessage.ReasonPhrase));
-                        }
+                        catch { }
+                        //  {
+                            //throw new Exception(
+                            //    string.Concat(
+                            //        Convert.ToInt16(
+                            //            httpResponseMessage.StatusCode),
+                            //        " ",
+                            //        httpResponseMessage.ReasonPhrase));
+                        //  }
 
                         return httpResponseMessage.Content.ReadAsStringAsync().Result;
                     }
