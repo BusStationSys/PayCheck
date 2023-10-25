@@ -20,6 +20,10 @@
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="unitOfWork"></param>
         protected BaseBusiness(IUnitOfWork unitOfWork)
         {
             this._unitOfWork = unitOfWork;

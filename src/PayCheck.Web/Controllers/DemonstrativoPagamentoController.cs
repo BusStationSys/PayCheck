@@ -77,16 +77,6 @@
         [HttpGet]
         public IActionResult Index()
         {
-            try
-            {
-
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
             var guidColaborador = default(Guid?);
 
             if (TempData.Peek("GuidColaborador") != null &&

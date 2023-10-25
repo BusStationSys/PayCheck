@@ -3,6 +3,7 @@
     using System;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared;
+    using ARVTech.Shared.Extensions;
     using AutoMapper;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
@@ -93,19 +94,21 @@
             if (guidColaborador != null)
                 requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/getDemonstrativoPagamentoByGuidColaborador/{guidColaborador}";
 
-            List<MatriculaEspelhoPontoResponseDto>? eps = null;
+            List<MatriculaEspelhoPontoResponseDto>? meps = null;
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
                 this._tokenBearer))
             {
-                string stringJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+                string matriculasEspelhosPontoResponseJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-                eps = JsonConvert.DeserializeObject<List<MatriculaEspelhoPontoResponseDto>>(stringJson);
+                if (matriculasEspelhosPontoResponseJson.IsValidJson())
+                    meps = JsonConvert.DeserializeObject<List<MatriculaEspelhoPontoResponseDto>>(
+                        matriculasEspelhosPontoResponseJson);
             }
 
             return View(
-                eps);
+                meps);
         }
 
         [HttpGet()]
