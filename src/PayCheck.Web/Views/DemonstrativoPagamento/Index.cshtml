@@ -18,23 +18,27 @@
         <thead>
 
             <tr>
-
-                @*            <th>
-
-                @Html.DisplayNameFor(model => model.Guid)
-
-                </th>*@
-
+                @*
+                <th class="hidden-xs col-md-2 col-lg-1">SBB</th>
+                <th class="hidden-xs col-md-2 col-lg-1">RP</th>
+                <th class="col-xs-4 col-sm-6 col-md-4 col-lg-4">Nome</th>
+                <th class="hidden-xs hidden-sm hidden-md col-lg-3 text-center">Nascimento</th>
+                <th class="col-xs-8 col-sm-6 col-md-4 col-lg-3 text-center">Ações</th>
                 <th>
+                @Html.DisplayNameFor(model => model.Guid)
+                </th>
+                *@
+
+                <th class="col-xs-3 col-sm-3 col-md-2 col-lg-2">
                     @Html.DisplayNameFor(model => model.Competencia)
                 </th>
-                <th>
+                <th class="col-xs-3 col-sm-3 col-md-2 col-lg-2">
                     @Html.DisplayNameFor(model => model.Matricula.Matricula)
                 </th>
-                <th>
+                <th class="hidden-xs hidden-sm col-md-4 col-lg-4">
                     @Html.DisplayNameFor(model => model.Matricula.Empregador.RazaoSocial)
                 </th>
-                <th>
+                <th class="col-xs-6 col-sm-6 col-md-4 col-lg-4">
                     @Html.DisplayNameFor(model => model.Matricula.Colaborador.Nome)
                 </th>
                 <th>
