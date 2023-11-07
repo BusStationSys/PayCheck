@@ -1,8 +1,8 @@
 ﻿namespace PayCheck.Api.Controllers
 {
     using System;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
     using System.Net;
+    using ARVTech.DataAccess.DTOs.UniPayCheck;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using PayCheck.Business.Interfaces;
@@ -24,8 +24,6 @@
         /// <exception cref="ArgumentNullException"></exception>
         public DemonstrativoPagamentoController(IMatriculaDemonstrativoPagamentoBusiness business)
         {
-            // this._repository = repository ?? throw new ArgumentNullException(nameof(repository));
-
             this._business = business ?? throw new ArgumentNullException(nameof(business));
         }
 
@@ -34,6 +32,9 @@
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetDemonstrativosPagamento()
         {
             try
@@ -49,9 +50,11 @@
                 return Ok(
                     dps);
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    ex.Message);
             }
         }
 
@@ -60,8 +63,10 @@
         /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
-        //[Authorize]
         [HttpGet("{guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetDemonstrativoPagamento(Guid guid)
         {
             try
@@ -78,9 +83,11 @@
                 return Ok(
                     dp);
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    ex.Message);
             }
         }
 
@@ -89,8 +96,10 @@
         /// </summary>
         /// <param name="guidColaborador"></param>
         /// <returns></returns>
-        //[Authorize]
         [HttpGet("getDemonstrativoPagamentoByGuidColaborador/{guidColaborador}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetDemonstrativoPagamentoByGuidColaborador(Guid guidColaborador)
         {
             try
@@ -107,9 +116,11 @@
                 return Ok(
                     dp);
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    ex.Message);
             }
         }
 
@@ -119,9 +130,11 @@
         /// <param name="competencia"></param>
         /// <param name="matricula"></param>
         /// <returns></returns>
-        //[Authorize]
         [HttpGet("{competencia}/{matricula}")]
-        public IActionResult GetDemonstrativoPagamento(string competencia, string matricula)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetDemonstrativoPagamentoByCompetenciaAndMatricula(string competencia, string matricula)
         {
             try
             {
@@ -138,9 +151,11 @@
                 return Ok(
                     dps);
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    ex.Message);
             }
         }
 
@@ -150,12 +165,11 @@
         /// <param name="guid"></param>
         /// <param name="updateDto"></param>
         /// <returns></returns>
-        //[Authorize]
         [HttpPut("{guid}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateMatriculaDemonstrativoPagamento(Guid guid, [FromBody] MatriculaDemonstrativoPagamentoRequestUpdateDto updateDto)
+        public IActionResult UpdateDemonstrativoPagamento(Guid guid, [FromBody] MatriculaDemonstrativoPagamentoRequestUpdateDto updateDto)
         {
             try
             {
