@@ -24,9 +24,11 @@
                 cfg.CreateMap<UsuarioRequestCreateDto, UsuarioEntity>().ReverseMap();
                 cfg.CreateMap<UsuarioRequestUpdateDto, UsuarioEntity>().ReverseMap();
                 cfg.CreateMap<UsuarioResponseDto, UsuarioEntity>().ReverseMap();
-                cfg.CreateMap<PessoaFisicaRequestDto, PessoaFisicaEntity>().ReverseMap();
+                cfg.CreateMap<PessoaFisicaRequestCreateDto, PessoaFisicaEntity>().ReverseMap();
+                cfg.CreateMap<PessoaFisicaRequestUpdateDto, PessoaFisicaEntity>().ReverseMap();
                 cfg.CreateMap<PessoaFisicaResponseDto, PessoaFisicaEntity>().ReverseMap();
-                cfg.CreateMap<PessoaRequestDto, PessoaEntity>().ReverseMap();
+                cfg.CreateMap<PessoaRequestCreateDto, PessoaEntity>().ReverseMap();
+                cfg.CreateMap<PessoaRequestUpdateDto, PessoaEntity>().ReverseMap();
                 cfg.CreateMap<PessoaResponseDto, PessoaEntity>().ReverseMap();
             });
 
