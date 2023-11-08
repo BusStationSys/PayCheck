@@ -1,11 +1,11 @@
 ﻿namespace PayCheck.Api.Controllers
 {
+    using System.Net;
+    using ARVTech.DataAccess.Business.UniPayCheck.Interfaces;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using PayCheck.Business.Interfaces;
-    using System.Net;
 
     /// <summary>
     /// 
@@ -140,12 +140,12 @@
             try
             {
                 var pessoaFisicaResponse = this._business.SaveData(
-                    updateDto: updateDto);
+                    createDto);
 
-                matriculaEspelhoPontoResponse.StatusCode = HttpStatusCode.Created;
+                pessoaFisicaResponse.StatusCode = HttpStatusCode.Created;
 
                 return Ok(
-                    matriculaEspelhoPontoResponse);
+                    pessoaFisicaResponse);
 
                 //var matriculaEspelhoPontoResponse = this._business.Get(
                 //    guid);

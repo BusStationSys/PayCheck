@@ -20,11 +20,11 @@
 
         private readonly IEmailService _emailService;
 
-        private readonly ExternalApis _externalApis;
+        // private readonly ExternalApis _externalApis;
 
         private readonly HttpClient _httpClient;
 
-        private readonly Uri _baseAddress;
+        // private readonly Uri _baseAddress;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccessController"/> class.
@@ -33,19 +33,20 @@
         /// <param name="externalApis"></param>
         public AccessController(IEmailService emailService, IOptions<ExternalApis> externalApis)
         {
-            this._externalApis = externalApis.Value;
+            //this._baseAddress = new(
+            //    externalApis.Value.PayCheck);
 
-            this._baseAddress = new(
-                this._externalApis.PayCheck);
+            Uri baseAddress = new(
+                externalApis.Value.PayCheck);
 
             this._httpClient = new HttpClient
             {
-                BaseAddress = this._baseAddress,
+                BaseAddress = baseAddress,
             };
 
             using (var webApiHelper = new WebApiHelper(
                 string.Concat(
-                    this._baseAddress,
+                    baseAddress,
                     "/auth"),
                 "arvtech",
                 "(@rV73Ch)"))
@@ -123,7 +124,9 @@
                         }
 
                         //  Pega a diferença da data de geração do link com a data atual.
-                        TimeSpan diferencaDataLink = DateTime.Now.Subtract(dataAtual.LocalDateTime);
+                        DateTime dataDiferenca = DateTime.Now;
+
+                        TimeSpan diferencaDataLink = dataDiferenca.Subtract(dataAtual.LocalDateTime);
 
                         //  Se a diferença da data de geração do link com a data atual for superior a 120 minutos (2 Horas), mostra a mensagem.
                         //  Caso contrário, prossegue com o carregamento da tela para que o usuário possa atualizar a nova senha.

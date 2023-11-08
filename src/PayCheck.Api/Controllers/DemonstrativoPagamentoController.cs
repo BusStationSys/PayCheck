@@ -2,10 +2,10 @@
 {
     using System;
     using System.Net;
+    using ARVTech.DataAccess.Business.UniPayCheck.Interfaces;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using PayCheck.Business.Interfaces;
 
     /// <summary>
     /// 
@@ -41,7 +41,8 @@
             {
                 var dps = this._business.GetAll();
 
-                if (dps is null || dps.Count() == 0)
+                if (dps is null || 
+                    dps.Count() == 0)
                 {
                     return NotFound(
                         $"Demonstrativos de Pagamento não encontrados!");

@@ -1,10 +1,10 @@
 ﻿namespace PayCheck.Api.Controllers
 {
     using System.Net;
+    using ARVTech.DataAccess.Business.UniPayCheck.Interfaces;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using PayCheck.Business.Interfaces;
 
     /// <summary>
     /// 
@@ -43,7 +43,7 @@
             try
             {
                 var usuarioResponse = this._business.GetByUsername(
-                    loginDto.CpfEmailUsername);
+                    loginDto.CpfEmailUsername).FirstOrDefault();
 
                 if (usuarioResponse is null)
                 {
