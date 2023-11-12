@@ -10,12 +10,6 @@ using PayCheck.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-//string connectionString = builder.Configuration.GetValue<string>("ConnectionStrings:SqlServer");
-
-//builder.Services.AddSingleton(provider => new SqlConnection(
-//    connectionString));
-
 var unitOfWork = new UnitOfWorkSqlServer(
     builder.Configuration);
 

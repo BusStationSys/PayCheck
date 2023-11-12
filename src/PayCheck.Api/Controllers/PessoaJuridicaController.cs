@@ -13,16 +13,16 @@
     [ApiController]
     [Authorize]
     [Route("api/[controller]")]
-    public class PessoaFisicaController : ControllerBase
+    public class PessoaJuridicaController : ControllerBase
     {
-        private readonly IPessoaFisicaBusiness _business;
+        private readonly IPessoaJuridicaBusiness _business;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="business"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public PessoaFisicaController(IPessoaFisicaBusiness business)
+        public PessoaJuridicaController(IPessoaJuridicaBusiness business)
         {
             this._business = business ?? throw new ArgumentNullException(nameof(business));
         }
@@ -33,17 +33,17 @@
         /// <param name="guid"></param>
         /// <returns></returns>
         [HttpDelete("{guid}")]
-        public ApiResponse<PessoaFisicaResponseDto> DeletePessoaFisica(Guid guid)
+        public ApiResponse<PessoaJuridicaResponseDto> DeletePessoaJuridica(Guid guid)
         {
             try
             {
-                var apiResponse = this.GetPessoaFisica(
+                var apiResponse = this.GetPessoaJuridica(
                     guid);
 
                 this._business.Delete(
                     guid);
 
-                return new ApiResponse<PessoaFisicaResponseDto>
+                return new ApiResponse<PessoaJuridicaResponseDto>
                 {
                     Data = apiResponse.Data,
                     Success = true,
@@ -52,7 +52,7 @@
             }
             catch (Exception ex)
             {
-                return new ApiResponse<PessoaFisicaResponseDto>
+                return new ApiResponse<PessoaJuridicaResponseDto>
                 {
                     Message = ex.Message,
                     StatusCode = HttpStatusCode.InternalServerError,
@@ -66,7 +66,7 @@
         /// <param name="guid"></param>
         /// <returns></returns>
         [HttpGet("{guid}")]
-        public ApiResponse<PessoaFisicaResponseDto> GetPessoaFisica(Guid guid)
+        public ApiResponse<PessoaJuridicaResponseDto> GetPessoaJuridica(Guid guid)
         {
             try
             {
@@ -74,22 +74,22 @@
                     guid);
 
                 if (data != null)
-                    return new ApiResponse<PessoaFisicaResponseDto>
+                    return new ApiResponse<PessoaJuridicaResponseDto>
                     {
                         Data = data,
                         Success = true,
                         StatusCode = HttpStatusCode.OK,
                     };
 
-                return new ApiResponse<PessoaFisicaResponseDto>
+                return new ApiResponse<PessoaJuridicaResponseDto>
                 {
-                    Message = $"Pessoa Física {guid} não encontrada.",
+                    Message = $"Pessoa Jurídica {guid} não encontrada.",
                     StatusCode = HttpStatusCode.NotFound,
                 };
             }
             catch (Exception ex)
             {
-                return new ApiResponse<PessoaFisicaResponseDto>
+                return new ApiResponse<PessoaJuridicaResponseDto>
                 {
                     Message = ex.Message,
                     StatusCode = HttpStatusCode.InternalServerError,
@@ -102,29 +102,29 @@
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ApiResponse<IEnumerable<PessoaFisicaResponseDto>> GetPessoasFisicas()
+        public ApiResponse<IEnumerable<PessoaJuridicaResponseDto>> GetPessoasJuridicas()
         {
             try
             {
                 var data = this._business.GetAll();
 
                 if (data != null && data.Count() > 0)
-                    return new ApiResponse<IEnumerable<PessoaFisicaResponseDto>>
+                    return new ApiResponse<IEnumerable<PessoaJuridicaResponseDto>>
                     {
                         Data = data,
                         Success = true,
                         StatusCode = HttpStatusCode.OK,
                     };
 
-                return new ApiResponse<IEnumerable<PessoaFisicaResponseDto>>
+                return new ApiResponse<IEnumerable<PessoaJuridicaResponseDto>>
                 {
-                    Message = "Não há registros de Pessoas Físicas.",
+                    Message = "Não há registros de Pessoas Juridicas.",
                     StatusCode = HttpStatusCode.NotFound,
                 };
             }
             catch (Exception ex)
             {
-                return new ApiResponse<IEnumerable<PessoaFisicaResponseDto>>
+                return new ApiResponse<IEnumerable<PessoaJuridicaResponseDto>>
                 {
                     Message = ex.Message,
                     StatusCode = HttpStatusCode.InternalServerError,
@@ -138,14 +138,14 @@
         /// <param name="createDto"></param>
         /// <returns></returns>
         [HttpPost]
-        public ApiResponse<PessoaFisicaResponseDto> InsertPessoaFisica([FromBody] PessoaFisicaRequestCreateDto createDto)
+        public ApiResponse<PessoaJuridicaResponseDto> InsertPessoaJuridica([FromBody] PessoaJuridicaRequestCreateDto createDto)
         {
             try
             {
                 var data = this._business.SaveData(
                     createDto);
 
-                return new ApiResponse<PessoaFisicaResponseDto>
+                return new ApiResponse<PessoaJuridicaResponseDto>
                 {
                     Data = data,
                     Success = true,
@@ -154,7 +154,7 @@
             }
             catch (Exception ex)
             {
-                return new ApiResponse<PessoaFisicaResponseDto>
+                return new ApiResponse<PessoaJuridicaResponseDto>
                 {
                     Message = ex.Message,
                     StatusCode = HttpStatusCode.InternalServerError,
@@ -168,7 +168,7 @@
         /// <param name="updateDto"></param>
         /// <returns></returns>
         [HttpPut]
-        public ApiResponse<PessoaFisicaResponseDto> UpdatePessoaFisica([FromBody] PessoaFisicaRequestUpdateDto updateDto)
+        public ApiResponse<PessoaJuridicaResponseDto> UpdatePessoaJuridica([FromBody] PessoaJuridicaRequestUpdateDto updateDto)
         {
             try
             {
@@ -177,7 +177,7 @@
                 var data = this._business.SaveData(
                     updateDto: updateDto);
 
-                return new ApiResponse<PessoaFisicaResponseDto>
+                return new ApiResponse<PessoaJuridicaResponseDto>
                 {
                     Data = data,
                     Success = true,
@@ -186,7 +186,7 @@
             }
             catch (Exception ex)
             {
-                return new ApiResponse<PessoaFisicaResponseDto>
+                return new ApiResponse<PessoaJuridicaResponseDto>
                 {
                     Message = ex.Message,
                     StatusCode = HttpStatusCode.InternalServerError,

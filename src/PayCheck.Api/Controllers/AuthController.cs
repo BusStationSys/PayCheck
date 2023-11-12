@@ -19,9 +19,6 @@
     {
         private readonly Authentication _authentication;
 
-        //  private readonly SignInManager<IdentityUser> _signInManager;
-        //  private readonly UserManager<IdentityUser> _userManager;
-
         /// <summary>
         /// 
         /// </summary>
@@ -41,10 +38,8 @@
         {
             if (authDto.Username != this._authentication.Username ||
                 authDto.Password != this._authentication.Password)
-            {
                 return BadRequest(
                     "Username ou Password inválidos!");
-            }
 
             string jwtString = await this.GerarJwt(
                 authDto.Username);
@@ -62,7 +57,7 @@
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        private async Task<string> GerarJwt(string username)
+        private Task<string> GerarJwt(string username)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -88,9 +83,10 @@
                     }),
             };
 
-            return tokenHandler.WriteToken(
-                tokenHandler.CreateToken(
-                    tokenDescriptor));
+            return Task.FromResult<string>(
+                tokenHandler.WriteToken(
+                    tokenHandler.CreateToken(
+                        tokenDescriptor)));
         }
     }
 }
