@@ -39,6 +39,9 @@ builder.Services.AddScoped<IMatriculaDemonstrativoPagamentoBusiness>(
 builder.Services.AddScoped<IPessoaFisicaBusiness>(
     provider => new PessoaFisicaBusiness(unitOfWork));
 
+builder.Services.AddScoped<IPessoaJuridicaBusiness>(
+    provider => new PessoaJuridicaBusiness(unitOfWork));
+
 builder.Services.AddScoped<IUsuarioBusiness>(
     provider => new UsuarioBusiness(unitOfWork));
 

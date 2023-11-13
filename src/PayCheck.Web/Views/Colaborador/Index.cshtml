@@ -1,0 +1,80 @@
+﻿@model IEnumerable<ARVTech.DataAccess.DTOs.UniPayCheck.PessoaFisicaResponseDto>
+
+@{
+    ViewData["Title"] = "Index";
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Colaboradores</h1>
+        <a href="@Url.Action("Edit", "Colaborador")" class="d-none d-sm-inline-block btn btn-sm btn-xs btn-success shadow-sm">
+            <i class="fas fa-sm fa-plus text-white-50"></i> Novo Colaborador
+        </a>
+    </div>
+
+    <table class="table">
+
+        <thead>
+
+            <tr>
+                <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    @Html.DisplayNameFor(model => model.CpfFormatado)
+                </th>
+                <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center">
+                    @Html.DisplayNameFor(model => model.DataNascimentoFormatada)
+                </th>
+                <th class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    @Html.DisplayNameFor(model => model.Nome)
+                </th>
+                <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center">
+                    Ações
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (Model != null)
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.CpfFormatado
+                        </td>
+                        <td align="center">
+                            @item.DataNascimentoFormatada
+                        </td>
+                        <td>
+                            @item.Nome
+                        </td>
+                        <td align="center">
+                            <span>
+                                <a href="@Url.Action("Details", "Colaborador", new { guid = item.Guid })" class="btn btn-secondary btn-xs">
+                                    <i class="fas fa-fw fa-align-justify"></i>
+                                </a>
+                                <a href="@Url.Action("Edit", "Colaborador", new { guid = item.Guid })" class="btn btn-primary btn-xs">
+                                    <i class="fas fa-fw fa-pencil-alt"></i>
+                                </a>
+                                <a href="@Url.Action("Delete", "Colaborador", new { guid = item.Guid })" class="btn btn-danger btn-xs">
+                                    <i class="fas fa-fw fa-trash-alt"></i>
+                                </a>
+                            </span>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center">
+                        Nenhum registro encontrado.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

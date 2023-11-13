@@ -5,7 +5,6 @@
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using PayCheck.Api.Models;
 
     /// <summary>
     /// 
@@ -33,7 +32,7 @@
         /// <param name="guid"></param>
         /// <returns></returns>
         [HttpDelete("{guid}")]
-        public ApiResponse<PessoaJuridicaResponseDto> DeletePessoaJuridica(Guid guid)
+        public ApiResponseDto<PessoaJuridicaResponseDto> DeletePessoaJuridica(Guid guid)
         {
             try
             {
@@ -43,7 +42,7 @@
                 this._business.Delete(
                     guid);
 
-                return new ApiResponse<PessoaJuridicaResponseDto>
+                return new ApiResponseDto<PessoaJuridicaResponseDto>
                 {
                     Data = apiResponse.Data,
                     Success = true,
@@ -52,7 +51,7 @@
             }
             catch (Exception ex)
             {
-                return new ApiResponse<PessoaJuridicaResponseDto>
+                return new ApiResponseDto<PessoaJuridicaResponseDto>
                 {
                     Message = ex.Message,
                     StatusCode = HttpStatusCode.InternalServerError,
@@ -66,7 +65,7 @@
         /// <param name="guid"></param>
         /// <returns></returns>
         [HttpGet("{guid}")]
-        public ApiResponse<PessoaJuridicaResponseDto> GetPessoaJuridica(Guid guid)
+        public ApiResponseDto<PessoaJuridicaResponseDto> GetPessoaJuridica(Guid guid)
         {
             try
             {
@@ -74,14 +73,14 @@
                     guid);
 
                 if (data != null)
-                    return new ApiResponse<PessoaJuridicaResponseDto>
+                    return new ApiResponseDto<PessoaJuridicaResponseDto>
                     {
                         Data = data,
                         Success = true,
                         StatusCode = HttpStatusCode.OK,
                     };
 
-                return new ApiResponse<PessoaJuridicaResponseDto>
+                return new ApiResponseDto<PessoaJuridicaResponseDto>
                 {
                     Message = $"Pessoa Jurídica {guid} não encontrada.",
                     StatusCode = HttpStatusCode.NotFound,
@@ -89,7 +88,7 @@
             }
             catch (Exception ex)
             {
-                return new ApiResponse<PessoaJuridicaResponseDto>
+                return new ApiResponseDto<PessoaJuridicaResponseDto>
                 {
                     Message = ex.Message,
                     StatusCode = HttpStatusCode.InternalServerError,
@@ -102,21 +101,21 @@
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ApiResponse<IEnumerable<PessoaJuridicaResponseDto>> GetPessoasJuridicas()
+        public ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>> GetPessoasJuridicas()
         {
             try
             {
                 var data = this._business.GetAll();
 
                 if (data != null && data.Count() > 0)
-                    return new ApiResponse<IEnumerable<PessoaJuridicaResponseDto>>
+                    return new ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>
                     {
                         Data = data,
                         Success = true,
                         StatusCode = HttpStatusCode.OK,
                     };
 
-                return new ApiResponse<IEnumerable<PessoaJuridicaResponseDto>>
+                return new ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>
                 {
                     Message = "Não há registros de Pessoas Juridicas.",
                     StatusCode = HttpStatusCode.NotFound,
@@ -124,7 +123,7 @@
             }
             catch (Exception ex)
             {
-                return new ApiResponse<IEnumerable<PessoaJuridicaResponseDto>>
+                return new ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>
                 {
                     Message = ex.Message,
                     StatusCode = HttpStatusCode.InternalServerError,
@@ -138,14 +137,14 @@
         /// <param name="createDto"></param>
         /// <returns></returns>
         [HttpPost]
-        public ApiResponse<PessoaJuridicaResponseDto> InsertPessoaJuridica([FromBody] PessoaJuridicaRequestCreateDto createDto)
+        public ApiResponseDto<PessoaJuridicaResponseDto> InsertPessoaJuridica([FromBody] PessoaJuridicaRequestCreateDto createDto)
         {
             try
             {
                 var data = this._business.SaveData(
                     createDto);
 
-                return new ApiResponse<PessoaJuridicaResponseDto>
+                return new ApiResponseDto<PessoaJuridicaResponseDto>
                 {
                     Data = data,
                     Success = true,
@@ -154,7 +153,7 @@
             }
             catch (Exception ex)
             {
-                return new ApiResponse<PessoaJuridicaResponseDto>
+                return new ApiResponseDto<PessoaJuridicaResponseDto>
                 {
                     Message = ex.Message,
                     StatusCode = HttpStatusCode.InternalServerError,
@@ -168,7 +167,7 @@
         /// <param name="updateDto"></param>
         /// <returns></returns>
         [HttpPut]
-        public ApiResponse<PessoaJuridicaResponseDto> UpdatePessoaJuridica([FromBody] PessoaJuridicaRequestUpdateDto updateDto)
+        public ApiResponseDto<PessoaJuridicaResponseDto> UpdatePessoaJuridica([FromBody] PessoaJuridicaRequestUpdateDto updateDto)
         {
             try
             {
@@ -177,7 +176,7 @@
                 var data = this._business.SaveData(
                     updateDto: updateDto);
 
-                return new ApiResponse<PessoaJuridicaResponseDto>
+                return new ApiResponseDto<PessoaJuridicaResponseDto>
                 {
                     Data = data,
                     Success = true,
@@ -186,7 +185,7 @@
             }
             catch (Exception ex)
             {
-                return new ApiResponse<PessoaJuridicaResponseDto>
+                return new ApiResponseDto<PessoaJuridicaResponseDto>
                 {
                     Message = ex.Message,
                     StatusCode = HttpStatusCode.InternalServerError,
