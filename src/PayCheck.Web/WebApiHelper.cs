@@ -288,15 +288,15 @@
                         "Accept",
                         "*/*");
 
-                    var stringContent = new StringContent(
+                    httpRequestMessage.Content = new StringContent(
                         content,
                         Encoding.UTF8,
                         this._mediaTypes);
 
-                    httpRequestMessage.Content = stringContent;
-
                     var httpResponseMessage = this._httpClient.SendAsync(
                         httpRequestMessage).Result;
+
+                    var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
 
                     try
                     {
