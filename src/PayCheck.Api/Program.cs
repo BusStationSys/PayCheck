@@ -45,7 +45,10 @@ builder.Services.AddScoped<IPessoaJuridicaBusiness>(
 builder.Services.AddScoped<IUsuarioBusiness>(
     provider => new UsuarioBusiness(unitOfWork));
 
-builder.Services.AddControllers();
+//builder.Services.AddControllers();
+builder.Services.AddControllers(
+    options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);   //  Removes the required attribute for non-nullable reference types.
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

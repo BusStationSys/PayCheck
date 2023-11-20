@@ -137,7 +137,7 @@
         /// <param name="createDto"></param>
         /// <returns></returns>
         [HttpPost]
-        public ApiResponseDto<PessoaFisicaResponseDto> InsertPessoaFisica([FromBody] PessoaFisicaRequestCreateDto createDto)
+        public ApiResponseDto<PessoaFisicaResponseDto> CreatePessoaFisica([FromBody] PessoaFisicaRequestCreateDto createDto)
         {
             try
             {

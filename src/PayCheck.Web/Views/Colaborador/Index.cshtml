@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ARVTech.DataAccess.DTOs.UniPayCheck.PessoaFisicaResponseDto>
+﻿@model IEnumerable<PessoaFisicaViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -11,8 +11,10 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Colaboradores</h1>
-        <a href="@Url.Action("Edit", "Colaborador")" class="d-none d-sm-inline-block btn btn-sm btn-xs btn-success shadow-sm">
-            <i class="fas fa-sm fa-plus text-white-50"></i> Novo Colaborador
+        <a href="@Url.Action("Edit", "Colaborador")" class="btn btn-success btn-icon-split">
+            <span class="icon text-white">
+                <i class="fas fa-plus"></i> Novo Colaborador
+            </span>
         </a>
     </div>
 
@@ -22,10 +24,10 @@
 
             <tr>
                 <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    @Html.DisplayNameFor(model => model.CpfFormatado)
+                    @Html.DisplayNameFor(model => model.Cpf)
                 </th>
                 <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center">
-                    @Html.DisplayNameFor(model => model.DataNascimentoFormatada)
+                    @Html.DisplayNameFor(model => model.DataNascimento)
                 </th>
                 <th class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                     @Html.DisplayNameFor(model => model.Nome)
@@ -43,19 +45,20 @@
                 {
                     <tr>
                         <td>
-                            @item.CpfFormatado
+                            @Convert.ToInt64(
+                                item.Cpf).ToString(
+                                    @"000\.000\.000\-00")
                         </td>
                         <td align="center">
-                            @item.DataNascimentoFormatada
+                            @(item.DataNascimento.HasValue ? 
+                                item.DataNascimento.Value.ToString("dd/MM/yyyy") : 
+                                "__/__/____")
                         </td>
                         <td>
                             @item.Nome
                         </td>
                         <td align="center">
                             <span>
-                                <a href="@Url.Action("Details", "Colaborador", new { guid = item.Guid })" class="btn btn-secondary btn-xs">
-                                    <i class="fas fa-fw fa-align-justify"></i>
-                                </a>
                                 <a href="@Url.Action("Edit", "Colaborador", new { guid = item.Guid })" class="btn btn-primary btn-xs">
                                     <i class="fas fa-fw fa-pencil-alt"></i>
                                 </a>

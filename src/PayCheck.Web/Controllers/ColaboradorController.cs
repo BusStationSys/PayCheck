@@ -6,6 +6,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
+    using PayCheck.Web.Models;
 
     public class ColaboradorController : Controller
     {
@@ -29,6 +30,10 @@
             {
                 cfg.CreateMap<PessoaFisicaRequestCreateDto, PessoaFisicaResponseDto>().ReverseMap();
                 cfg.CreateMap<PessoaFisicaRequestUpdateDto, PessoaFisicaResponseDto>().ReverseMap();
+                cfg.CreateMap<PessoaFisicaRequestCreateDto, PessoaFisicaViewModel>().ReverseMap();
+                cfg.CreateMap<PessoaFisicaRequestUpdateDto, PessoaFisicaViewModel>().ReverseMap();
+
+                cfg.CreateMap<PessoaFisicaResponseDto, PessoaFisicaViewModel>().ReverseMap();
             });
 
             this._mapper = new Mapper(
@@ -69,12 +74,16 @@
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet()]
         public IActionResult Index()
         {
             string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica";
 
-            List<PessoaFisicaResponseDto>? data = null;
+            var pessoasFisicasViewModel = default(IEnumerable<PessoaFisicaViewModel>);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -83,23 +92,34 @@
                 string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
                 if (dataJson.IsValidJson())
-                    data = JsonConvert.DeserializeObject<ApiResponseDto<List<PessoaFisicaResponseDto>>>(
+                {
+                    var data = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>>(
                         dataJson).Data;
+
+                    pessoasFisicasViewModel = this._mapper.Map<IEnumerable<PessoaFisicaViewModel>>(
+                        data);
+                }
             }
 
             return View(
-                data);
+                pessoasFisicasViewModel);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
         [HttpGet()]
-        public IActionResult Details(Guid? guid)
+        public IActionResult Edit(Guid? guid)
         {
             if (guid == null)
-                return NotFound();
+                return View(
+                    new PessoaFisicaViewModel());
 
             string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/{guid}";
 
-            var data = default(PessoaFisicaResponseDto);
+            var pessoaFisicaViewModel = default(PessoaFisicaViewModel);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -108,12 +128,150 @@
                 string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
                 if (dataJson.IsValidJson())
-                    data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(
+                {
+                    var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(
                         dataJson).Data;
+
+                    pessoaFisicaViewModel = this._mapper.Map<PessoaFisicaViewModel>(
+                        data);
+
+                    pessoaFisicaViewModel.Bairro = data.Pessoa.Bairro;
+                    pessoaFisicaViewModel.Cep = data.Pessoa.Cep;
+                    pessoaFisicaViewModel.Cidade = data.Pessoa.Cidade;
+                    pessoaFisicaViewModel.Complemento = data.Pessoa.Complemento;
+                    pessoaFisicaViewModel.Email = data.Pessoa.Email;
+                    pessoaFisicaViewModel.Endereco = data.Pessoa.Endereco;
+                    pessoaFisicaViewModel.Numero = data.Pessoa.Numero;
+                    pessoaFisicaViewModel.Telefone = data.Pessoa.Telefone;
+                    pessoaFisicaViewModel.Uf = data.Pessoa.Uf;
+                }
             }
 
-            return View(
-                data);
+            return View("Edit",
+                pessoaFisicaViewModel);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <returns></returns>
+        [HttpPost()]
+        public IActionResult Edit(PessoaFisicaViewModel vm)
+        {
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            bool isNew = false;
+
+            var createDto = default(PessoaFisicaRequestCreateDto);
+            var updateDto = default(PessoaFisicaRequestUpdateDto);
+
+            if (vm.Guid is null ||
+                vm.Guid == Guid.Empty)
+            {
+                isNew = true;
+
+                createDto = this._mapper.Map<PessoaFisicaRequestCreateDto>(
+                    vm);
+
+                createDto.Cpf = createDto.Cpf.Replace(
+                    ".",
+                    "").Replace(
+                        "-",
+                        "");
+
+                createDto.Pessoa = new PessoaRequestCreateDto()
+                {
+                    Bairro = vm.Bairro,
+
+                    Cep = vm.Cep.Replace(
+                        "-",
+                        ""),
+
+                    Cidade = vm.Cidade,
+                    Complemento = vm.Complemento,
+                    Email = vm.Email,
+                    Endereco = vm.Endereco,
+                    Numero = vm.Numero,
+                    Telefone = vm.Telefone,
+                    Uf = vm.Uf,
+                };
+            }
+            else
+            {
+                updateDto = this._mapper.Map<PessoaFisicaRequestUpdateDto>(
+                    vm);
+
+                updateDto.Cpf = updateDto.Cpf.Replace(
+                    ".",
+                    "").Replace(
+                        "-",
+                        "");
+
+                if (updateDto.Pessoa is null)
+                    updateDto.Pessoa = new PessoaRequestUpdateDto();
+
+                updateDto.Pessoa.Bairro = vm.Bairro;
+
+                updateDto.Pessoa.Cep = !string.IsNullOrEmpty(vm.Cep) ? vm.Cep.Replace(
+                    "-",
+                    "") :
+                    string.Empty;
+
+                updateDto.Pessoa.Cidade = vm.Cidade;
+                updateDto.Pessoa.Complemento = vm.Complemento;
+                updateDto.Pessoa.Email = vm.Email;
+                updateDto.Pessoa.Endereco = vm.Endereco;
+                updateDto.Pessoa.Numero = vm.Numero;
+                updateDto.Pessoa.Telefone = vm.Telefone;
+                updateDto.Pessoa.Uf = vm.Uf;
+            }
+
+            string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica";
+
+            string fromBody = JsonConvert.SerializeObject(
+                isNew ?
+                    createDto :
+                    updateDto,
+                Formatting.Indented);
+
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
+            {
+                if (isNew)
+                    fromBody = webApiHelper.ExecutePostWithAuthenticationByBearer(
+                        fromBody);
+                else
+                    fromBody = webApiHelper.ExecutePutWithAuthenticationByBearer(
+                        fromBody);
+
+                var pessoaResponseDto = JsonConvert.DeserializeObject<PessoaResponseDto>(
+                    fromBody);
+            }
+
+            //if (guid == null)
+            //    return View(
+            //        new PessoaFisicaResponseDto());
+
+            //string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/{guid}";
+
+            //var data = default(PessoaFisicaResponseDto);
+
+            //using (var webApiHelper = new WebApiHelper(
+            //    requestUri,
+            //    this._tokenBearer))
+            //{
+            //    string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+
+            //    if (dataJson.IsValidJson())
+            //        data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(
+            //            dataJson).Data;
+            //}
+
+            return RedirectToAction(
+                "Index");
         }
     }
 }
