@@ -390,6 +390,9 @@
 
     <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
+    @*<script src="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/jquery.mask/jquery.mask.js"></script>*@
+    <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/jquery.mask/jquery.mask.min.js"></script>
+
     <!-- Core plugin JavaScript-->
     <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/vendor/jquery-easing/jquery.easing.min.js"></script>
 
@@ -406,8 +409,10 @@
 </body>
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery.mask/jquery.mask.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
+
 @await RenderSectionAsync("Scripts", required: false)
 
 </html>

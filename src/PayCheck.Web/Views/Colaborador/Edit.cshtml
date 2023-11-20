@@ -54,7 +54,7 @@
                         @Html.DisplayNameFor(model => model.Cpf)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.Cpf, "", new { @class = "form-control", @id="txtCpf", @maxlength=14, @placeholder = "XXX.XXX.XXX-XX", @required = "required", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Cpf, "", new { @class = "form-control", @id="txtCpf", @maxlength = "14", @placeholder = "XXX.XXX.XXX-XX", @required = "required" } )
                     @Html.ValidationMessageFor(model => model.Cpf, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -65,7 +65,7 @@
                         @Html.DisplayNameFor(model => model.DataNascimento)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.DataNascimento, "{0:dd/MM/yyyy}", new { @class = "form-control", @id = "txtDataNascimento", @required = "required" })
+                    @Html.TextBoxFor(Model => Model.DataNascimento, "{0:dd/MM/yyyy}", new { @class = "form-control", @id = "txtDataNascimento", @maxlength = "10", @required = "required" })
                     @Html.ValidationMessageFor(model => model.DataNascimento, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -74,11 +74,11 @@
         <div class="row">
             <div class="col-md-2">
                 <div class="form-group">
-                    <label class="control-label">
+                    <label class="control-label" for="txtCep">
                         @Html.DisplayNameFor(model => model.Cep)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.Cep, "", new { @class="form-control", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Cep, "", new { @class="form-control", @id = "txtCep", @maxlength = "9", @type = "text" } )
                 </div>
             </div>
             <div class="col-md-5">
@@ -210,84 +210,32 @@
             </div>
         </div>
     }
-
-    <!--
-            <form class="user" method="post" action="SaveData">
-        <div class="row">
-            <div class="col-xl-7 col-sm-4 col-md-7 mb-4">
-                <label for="txtNome">Nome</label>
-                <input asp-for=Nome type="text" class="form-control" maxlength="75" data-error="Por favor, digite o Nome." required id="txtNome">
-                <div class="help-block with-errors"></div>
-            </div>
-
-            <div class="col-xl-3 col-sm-4 col-md-3 mb-4">
-                <div class="form-group">
-                    <label for="txtCpf">CPF</label>
-                    <input asp-for=CpfFormatado type="text" class="form-control" placeholder="000.000.000-00" maxlength="14" data-error="Por favor, digite o CPF." required id="txtCpf">
-                    <div class="help-block with-errors"></div>
-                </div>
-            </div>
-
-            <div class="col-xl-2 col-sm-4 col-md-2 mb-4">
-                <div class="form-group">
-                    <label for="txtDataNascimento">Nascimento</label>
-                    <input asp-for=DataNascimentoFormatada type="date" class="form-control" placeholder="dd/MM/aaaa" data-error="Por favor, digite a Data de Nascimento." required id="txtDataNascimento">
-                    <div class="help-block with-errors"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-2">
-                <div class="form-group">
-                    <label for="txtCEP">CEP</label>
-                    <input asp-for=Cep type="text" class="form-control" placeholder="00000-000" maxlength="9" id="txtCEP" />
-                    <div class="help-block with-errors"></div>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="form-group">
-                    <label for="txtEndereco">Endereço</label>
-                    <input asp-for=Endereco type="text" class="form-control" maxlength="100" required data-error="Por favor, digite o Endereço." id="txtEndereco" />
-                    <span class="help-block"></span>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="form-group">
-                    <label for="txtNumero">Número</label>
-                    <input asp-for=Numero type="text" class="form-control" maxlength="10" id="txtNumero" />
-                    <span class="help-block"></span>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="txtComplemento">Complemento</label>
-                    <input asp-for=Complemento type="text" class="form-control" maxlength="30" id="txtComplemento" />
-                    <div class="help-block with-errors"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-9 col-sm-9 col-xs-9">
-                <a class="btn btn-secondary btn-icon-split" asp-action="Index">
-                    <span class="icon text-white-50">
-                        <i class="fas fa-arrow-left"></i>
-                    </span>
-                    <span class="text">Voltar</span>
-                </a>
-            </div>
-            <div class="col-md-3 col-sm-3 col-xs-3 text-right">
-                <a class="btn btn-success" asp-controller="Colaborador" asp-action="SaveData" asp-route-guid=@Model.Guid>S A L V A R</a>
-
-                <button id="btnSalvar" type="submit" class="btn btn-primary btn-icon-split pull-right">
-                    <span class="icon text-white">
-                        <i class="fas fa-save"></i>
-                    </span>
-                    <span class="text">Salvar</span>
-                </button>
-            </div>
-        </div>
-    </form>
-    -->
 </div>
+
+@*https://igorescobar.github.io/jQuery-Mask-Plugin/docs.html*@
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txtCep').mask('00000-000');
+
+            $('#txtCpf').mask('000.000.000-00');
+
+            $('#txtDataNascimento').mask('00/00/0000');
+
+            //$('#txtCep').mask('00000-000',
+            //    {
+            //        reverse: true
+            //    });
+
+            //$('#txtCpf').mask('000.000.000-00',
+            //    {
+            //        reverse: true
+            //    });
+
+            //$('#txtDataNascimento').mask('00/00/0000',
+            //    {
+            //        reverse: true
+            //    });
+        });
+    </script>
+}

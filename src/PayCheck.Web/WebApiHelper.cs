@@ -358,6 +358,8 @@
                     var httpResponseMessage = this._httpClient.SendAsync(
                         httpRequestMessage).Result;
 
+                    var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
+
                     try
                     {
                         httpResponseMessage.EnsureSuccessStatusCode();

@@ -23,7 +23,7 @@ public class PessoaFisicaViewModel
     [Display(Name = "CPF")]
     [Required(ErrorMessage = "É necessário o preenchimento do CPF.")]
     [StringLength(14, MinimumLength = 14, ErrorMessage = "O CPF deve conter 14 caracteres.")]
-    //[CpfValidation(ErrorMessage = "O CPF está inválido.")]
+    [CpfValidation(ErrorMessage = "O CPF está inválido.")]
     [DisplayFormat(DataFormatString = "###.###.###-##")]
     public string Cpf { get; set; }
 
