@@ -35,7 +35,18 @@
             @Html.HiddenFor(model => model.Guid)
             @Html.HiddenFor(model => model.GuidPessoa)
 
-            <div class="col-xl-7 col-sm-4 col-md-7">
+            <div class="col-xl-2 col-sm-3 col-md-2">
+                <div class="form-group">
+                    <label class="control-label" for="txtCpf">
+                        @Html.DisplayNameFor(model => model.Cpf)
+                    </label>
+
+                    @Html.TextBoxFor(Model => Model.Cpf, "", new { @class = "form-control", @id="txtCpf", @maxlength = "14", @placeholder = "XXX.XXX.XXX-XX", @required = "required" } )
+                    @Html.ValidationMessageFor(model => model.Cpf, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="col-xl-6 col-sm-3 col-md-6">
                 <div class="form-group">
                     <label class="control-label" for="txtNome">
                         @Html.DisplayNameFor(model => model.Nome)
@@ -48,25 +59,24 @@
                 </div>
             </div>
 
-            <div class="col-xl-3 col-sm-4 col-md-3">
-                <div class="form-group">
-                    <label class="control-label" for="txtCpf">
-                        @Html.DisplayNameFor(model => model.Cpf)
-                    </label>
-
-                    @Html.TextBoxFor(Model => Model.Cpf, "", new { @class = "form-control", @id="txtCpf", @maxlength = "14", @placeholder = "XXX.XXX.XXX-XX", @required = "required" } )
-                    @Html.ValidationMessageFor(model => model.Cpf, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="col-xl-2 col-sm-4 col-md-2">
+            <div class="col-xl-2 col-sm-3 col-md-2">
                 <div class="form-group">
                     <label class="control-label" for="txtDataNascimento">
                         @Html.DisplayNameFor(model => model.DataNascimento)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.DataNascimento, "{0:dd/MM/yyyy}", new { @class = "form-control", @id = "txtDataNascimento", @maxlength = "10", @required = "required" })
+                    @Html.TextBoxFor(Model => Model.DataNascimento, "{0:dd/MM/yyyy}", new { @class = "form-control", @id = "txtDataNascimento", @maxlength = "10", @placeholder = "XX/XX/XXXX", @required = "required" })
                     @Html.ValidationMessageFor(model => model.DataNascimento, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-sm-3 col-md-3">
+                <div class="form-group">
+                    <label class="control-label" for="txtRg">
+                        @Html.DisplayNameFor(model => model.Rg)
+                    </label>
+
+                    @Html.TextBoxFor(Model => Model.Rg, "", new { @class = "form-control", @id="txtRg", @maxlength = "20" } )
                 </div>
             </div>
         </div>
