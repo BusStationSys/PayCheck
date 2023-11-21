@@ -11,8 +11,7 @@
         /// Initializes a new instance of the <see cref="CpfValidationAttribute"/> class.
         /// </summary>
         public CpfValidationAttribute()
-        {
-        }
+        { }
 
         /// <summary>
         /// Checks if a value passed is a valid CPF.
@@ -24,7 +23,8 @@
             try
             {
                 if (value != null)
-                    return ARVTech.Shared.Verifiers.CpfVerifier.IsValid(value.ToString());
+                    return ARVTech.Shared.Verifiers.CpfVerifier.IsValid(
+                        value.ToString());
 
                 return false;
             }

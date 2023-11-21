@@ -1,4 +1,4 @@
-﻿namespace EquHos.Models.CustomValidationAttribute
+﻿namespace PayCheck.Web.Models.CustomValidationAttribute
 {
     using System.ComponentModel.DataAnnotations;
 
@@ -11,8 +11,7 @@
         /// Initializes a new instance of the <see cref="CnpjValidationAttribute"/> class.
         /// </summary>
         public CnpjValidationAttribute()
-        {
-        }
+        { }
 
         /// <summary>
         /// Checks if a value passed is a valid CNPJ.
@@ -24,16 +23,15 @@
             try
             {
                 if (value != null)
-                {
-                    //return Verifiers.CnpjVerifier.IsValid(value.ToString());
-                    return true;
-                }
+                    return ARVTech.Shared.Verifiers.CnpjVerifier.IsValid(
+                        value.ToString());
+
+                return false;
             }
             catch
             {
+                return false;
             }
-
-            return false;
         }
     }
 }
