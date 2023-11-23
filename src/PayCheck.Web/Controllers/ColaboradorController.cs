@@ -19,6 +19,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="ColaboradorController"/> class.
         /// </summary>
+        /// <param name="externalApis"></param>
         public ColaboradorController(IOptions<ExternalApis> externalApis)
         {
             var externalApisValue = externalApis.Value;
@@ -230,7 +231,7 @@
 
             string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica";
 
-            string fromBody = JsonConvert.SerializeObject(
+            string fromBodyString = JsonConvert.SerializeObject(
                 isNew ?
                     createDto :
                     updateDto,
@@ -241,34 +242,17 @@
                 this._tokenBearer))
             {
                 if (isNew)
-                    fromBody = webApiHelper.ExecutePostWithAuthenticationByBearer(
-                        fromBody);
+                    fromBodyString = webApiHelper.ExecutePostWithAuthenticationByBearer(
+                        fromBodyString);
                 else
-                    fromBody = webApiHelper.ExecutePutWithAuthenticationByBearer(
-                        fromBody);
+                    fromBodyString = webApiHelper.ExecutePutWithAuthenticationByBearer(
+                        fromBodyString);
 
-                var pessoaResponseDto = JsonConvert.DeserializeObject<PessoaResponseDto>(
-                    fromBody);
+                if (fromBodyString.IsValidJson())
+                {
+
+                }
             }
-
-            //if (guid == null)
-            //    return View(
-            //        new PessoaFisicaResponseDto());
-
-            //string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/{guid}";
-
-            //var data = default(PessoaFisicaResponseDto);
-
-            //using (var webApiHelper = new WebApiHelper(
-            //    requestUri,
-            //    this._tokenBearer))
-            //{
-            //    string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
-
-            //    if (dataJson.IsValidJson())
-            //        data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(
-            //            dataJson).Data;
-            //}
 
             return RedirectToAction(
                 "Index");

@@ -19,6 +19,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="EmpregadorController"/> class.
         /// </summary>
+        /// <param name="externalApis"></param>
         public EmpregadorController(IOptions<ExternalApis> externalApis)
         {
             var externalApisValue = externalApis.Value;
@@ -151,29 +152,117 @@
                 pessoaJuridicaViewModel);
         }
 
-        [HttpGet()]
-        public IActionResult Details(Guid? guid)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <returns></returns>
+        [HttpPost()]
+        public IActionResult Edit(PessoaJuridicaViewModel vm)
         {
-            if (guid == null)
-                return NotFound();
+            if (!ModelState.IsValid)
+                return View(vm);
 
-            string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/{guid}";
+            bool isNew = false;
 
-            var data = default(PessoaJuridicaResponseDto);
+            var createDto = default(PessoaJuridicaRequestCreateDto);
+            var updateDto = default(PessoaJuridicaRequestUpdateDto);
+
+            if (vm.Guid is null ||
+                vm.Guid == Guid.Empty)
+            {
+                isNew = true;
+
+                createDto = this._mapper.Map<PessoaJuridicaRequestCreateDto>(
+                    vm);
+
+                createDto.Cnpj = createDto.Cnpj.Replace(
+                    ".",
+                    "").Replace(
+                        "/",
+                        "").Replace(
+                            "-",
+                            "");
+
+                createDto.Pessoa = new PessoaRequestCreateDto()
+                {
+                    Bairro = vm.Bairro,
+
+                    Cep = !string.IsNullOrEmpty(vm.Cep) ?
+                        vm.Cep.Replace(
+                            "-",
+                            "") :
+                        string.Empty,
+
+                    Cidade = vm.Cidade,
+                    Complemento = vm.Complemento,
+                    Email = vm.Email,
+                    Endereco = vm.Endereco,
+                    Numero = vm.Numero,
+                    Telefone = vm.Telefone,
+                    Uf = vm.Uf,
+                };
+            }
+            else
+            {
+                updateDto = this._mapper.Map<PessoaJuridicaRequestUpdateDto>(
+                    vm);
+
+                updateDto.Cnpj = updateDto.Cnpj.Replace(
+                    ".",
+                    "").Replace(
+                        "/",
+                        "").Replace(
+                            "-",
+                            "");
+
+                if (updateDto.Pessoa is null)
+                    updateDto.Pessoa = new PessoaRequestUpdateDto();
+
+                updateDto.Pessoa.Bairro = vm.Bairro;
+
+                updateDto.Pessoa.Cep = !string.IsNullOrEmpty(vm.Cep) ?
+                    vm.Cep.Replace(
+                        "-",
+                        "") :
+                    string.Empty;
+
+                updateDto.Pessoa.Cidade = vm.Cidade;
+                updateDto.Pessoa.Complemento = vm.Complemento;
+                updateDto.Pessoa.Email = vm.Email;
+                updateDto.Pessoa.Endereco = vm.Endereco;
+                updateDto.Pessoa.Numero = vm.Numero;
+                updateDto.Pessoa.Telefone = vm.Telefone;
+                updateDto.Pessoa.Uf = vm.Uf;
+            }
+
+            string requestUri = @$"{this._httpClient.BaseAddress}/PessoaJuridica";
+
+            string fromBodyString = JsonConvert.SerializeObject(
+                isNew ?
+                    createDto :
+                    updateDto,
+                Formatting.Indented);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
                 this._tokenBearer))
             {
-                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+                if (isNew)
+                    fromBodyString = webApiHelper.ExecutePostWithAuthenticationByBearer(
+                        fromBodyString);
+                else
+                    fromBodyString = webApiHelper.ExecutePutWithAuthenticationByBearer(
+                        fromBodyString);
 
-                if (dataJson.IsValidJson())
-                    data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
-                        dataJson).Data;
+                if (fromBodyString.IsValidJson())
+                {
+
+                }
             }
 
-            return View(
-                data);
+            return RedirectToAction(
+                "Index");
         }
     }
 }
