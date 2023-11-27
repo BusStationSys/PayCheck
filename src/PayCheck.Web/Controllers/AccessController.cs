@@ -1,6 +1,7 @@
 ﻿namespace PayCheck.Web.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Net;
     using System.Security.Claims;
@@ -13,6 +14,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
+    using PayCheck.Web.Models;
 
     public class AccessController : Controller
     {
@@ -238,14 +240,21 @@
 
             if (TempData.ContainsKey("GuidUsuario"))
             {
+                string emailColaborador = string.Empty;
+
                 if (TempData.ContainsKey("NomeColaborador"))
-                {
                     ViewBag.NomeColaborador = TempData.Peek("NomeColaborador");
-                }
+
+                if (TempData.ContainsKey("EmailColaborador"))
+                    emailColaborador = TempData.Peek("EmailColaborador").ToString();
 
                 TempData.Keep();
 
-                return View();
+                return View(
+                    new ActivateViewModel()
+                    {
+                        Email = emailColaborador,
+                    });
             }
 
             ViewBag.ValidateMessage = "Usuário não encontrado para geração e envio do Link de Ativação.";
@@ -254,11 +263,12 @@
             //    "Index",
             //    "Home");
 
-            return View("Login");
+            return View(
+                "Login");
         }
 
         [HttpPost]
-        public IActionResult LinkActivation(ActivateRequestDto activateDto)
+        public IActionResult LinkActivation(ActivateViewModel activateViewModel)
         {
             try
             {
@@ -289,12 +299,15 @@
                         "GuidColaborador");
 
                     TempData.Remove(
+                        "EmailColaborador");
+
+                    TempData.Remove(
                         "NomeColaborador");
 
                     TempData.Remove(
                         "Username");
 
-                    var parametros = $"GuidUsuario={guidUsuario:N}&DataAtual={dataAtualString}&Email={activateDto.Email}&GuidColaborador={guidColaborador:N}&Username={username}";
+                    var parametros = $"GuidUsuario={guidUsuario:N}&DataAtual={dataAtualString}&Email={activateViewModel.Email}&GuidColaborador={guidColaborador:N}&Username={username}";
 
                     string key = QueryStringCryptography.Encrypt(
                         parametros,
@@ -331,12 +344,12 @@ A Equipe de Suporte PayCheck®.";
                     this._emailService.SendMail(new EmailData
                     {
                         Body = bodyString,
-                        ReceiverEmail = activateDto.Email,
+                        ReceiverEmail = activateViewModel.Email,
                         ReceiverName = nomeColaborador,
                         Subject = "Ativação de Conta"
                     });
 
-                    ViewBag.SuccessMessage = $"E-mail enviado para o endereço {activateDto.Email}.";
+                    ViewBag.SuccessMessage = $"E-mail enviado para o endereço {activateViewModel.Email}.";
                 }
                 else
                 {
@@ -353,7 +366,12 @@ A Equipe de Suporte PayCheck®.";
             }
 
             // return View("Login");
-            return View();
+
+            return View(
+                new ActivateViewModel()
+                {
+                    Email = activateViewModel.Email,
+                });
         }
 
         public IActionResult Login()
@@ -406,11 +424,13 @@ A Equipe de Suporte PayCheck®.";
                         TempData.Remove("GuidUsuario");
                         TempData.Remove("GuidColaborador");
                         TempData.Remove("NomeColaborador");
+                        TempData.Remove("EmailColaborador");
                         TempData.Remove("Username");
 
                         TempData["GuidUsuario"] = usuarioResponse.Guid;
                         TempData["GuidColaborador"] = usuarioResponse.Colaborador.Guid;
                         TempData["NomeColaborador"] = usuarioResponse.Colaborador.Nome;
+                        TempData["EmailColaborador"] = usuarioResponse.Colaborador.Pessoa.Email;
                         TempData["Username"] = usuarioResponse.Username;
 
                         return RedirectToAction(
@@ -432,9 +452,7 @@ A Equipe de Suporte PayCheck®.";
                             nomeColaborador = usuarioResponse.Colaborador.Nome;
                         }
                         else
-                        {
                             nomeColaborador = usuarioResponse.Username;
-                        }
 
                         var claims = new List<Claim>
                         {
@@ -443,18 +461,24 @@ A Equipe de Suporte PayCheck®.";
                             new Claim(ClaimTypes.Email, emailUsuario),
 
                             new Claim(
-                                $"{nameof(UsuarioResponseDto.Guid)}Usuario",
+                                $"{nameof(
+                                    UsuarioResponseDto.Guid)}Usuario",
                                 usuarioResponse.Guid.ToString()),
 
                             new Claim(
-                                $"{nameof(UsuarioResponseDto.Colaborador.Guid)}Colaborador",
+                                $"{nameof(
+                                    UsuarioResponseDto.Colaborador.Guid)}Colaborador",
                                 guidColaborador),
 
                             new Claim(
-                                $"{nameof(UsuarioResponseDto.Colaborador.Nome)}Colaborador",
+                                $"{nameof(
+                                    UsuarioResponseDto.Colaborador.Nome)}Colaborador",
                                 nomeColaborador),
 
-                            new Claim(nameof(UsuarioResponseDto.Username), usuarioResponse.Username),
+                            new Claim(
+                                nameof(
+                                    UsuarioResponseDto.Username),
+                                usuarioResponse.Username),
 
                             new Claim(
                                 $"{nameof(UsuarioResponseDto.Email)}Usuario",

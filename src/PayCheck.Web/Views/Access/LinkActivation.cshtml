@@ -1,4 +1,4 @@
-﻿@model ARVTech.DataAccess.DTOs.UniPayCheck.ActivateRequestDto
+﻿@model ActivateViewModel
 
 @{
     Layout = null;
@@ -72,18 +72,24 @@
                                             <h1 class="h4 text-gray-900 mb-2">Ative sua Conta de Usuário.</h1>
                                             <p style="text-align:justify" class="mb-4">
 
-                                                Olá @ViewBag.NomeColaborador,
+                                                Olá @ViewBag.NomeColaborador.
 
-                                                Para que o processo de ativação seja efetivado, é necessário digitar seu endereço de e-mail
-                                                no campo abaixo para que seja enviado um link de redirecionamento que vai possibilitar
+                                                Para que o processo de ativação seja efetivado, é necessário enviar um link para o endereço de e-mail salvo em seu
+                                                cadastro e que está exibido abaixo. Através deste e-mail, será enviado o link de redirecionamento que vai possibilitar
                                                 redefinir a sua senha.
                                             </p>
                                         </div>
                                     }
 
                                     <form class="user" asp-action="LinkActivation" asp-controller="Access" method="post">
-                                        <div class="form-group">
-                                            <input type="email" class="form-control form-control-user" id="txtEmail" aria-describedby="emailHelp" placeholder="Digite seu E-Mail" asp-for="Email" required>
+                                        <div class="text-center">
+                                            <div class="form-group">
+                                                <h1 class="h4 text-gray-900 mb-2">
+                                                    <label asp-for="Email" class="control-label">@Model.Email</label>
+                                                </h1>
+
+                                                <input type="hidden" asp-for="Email" />
+                                            </div>
                                         </div>
                                         <button type="submit" class="btn btn-success btn-user btn-block">
                                             Enviar Link

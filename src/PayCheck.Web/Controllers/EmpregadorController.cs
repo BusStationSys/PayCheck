@@ -3,11 +3,13 @@
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared.Extensions;
     using AutoMapper;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using PayCheck.Web.Models;
 
+    [Authorize]
     public class EmpregadorController : Controller
     {
         private readonly string _tokenBearer;

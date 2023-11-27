@@ -5,10 +5,12 @@
     using ARVTech.Shared;
     using ARVTech.Shared.Extensions;
     using AutoMapper;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
 
+    [Authorize]
     public class EspelhoPontoController : Controller
     {
         private readonly string _tokenBearer;
