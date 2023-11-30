@@ -15,6 +15,40 @@
         <h1 class="h3 mb-0 text-gray-800">Colaborador</h1>
     </div>
 
+    <div class="alert alert-danger alert-dismissible" style="display: none;"></div>
+    <div id="alertSuccess" class="alert alert-success alert-dismissible" style="display: none;"></div>
+    <div class="alert alert-warning alert-dismissible" style="display: none;"></div>
+    <div class="text-center" style="display: none;"></div>
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger alert-dismissible">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+            <strong>Erro</strong>
+            @ViewBag.ErrorMessage
+        </div>
+    }
+    else if (ViewBag.SuccessMessage != null)
+    {
+        <div id="alertSuccess" class="alert alert-success alert-dismissible">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+            <strong>Sucesso</strong>
+            <p>@Html.Raw(@ViewBag.SuccessMessage)</p>
+            <p>
+                <small class="text-success">
+                    Se o redirecionamento não funcionar, clique <a href="@Url.Action("Index", "Colaborador")" class="text-success"><strong>aqui</strong></a>.
+                </small>
+            </p>
+        </div>
+    }
+    else if (ViewBag.ValidateMessage != null)
+    {
+        <div class="alert alert-warning alert-dismissible">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+            <strong>Validação</strong>@Html.Raw(@ViewBag.ValidateMessage)
+        </div>
+    }
+
     @using (Html.BeginForm("Edit", "Colaborador", FormMethod.Post, new { @class = "user" }))
     {
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -41,8 +75,7 @@
                         @Html.DisplayNameFor(model => model.Cpf)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.Cpf, "", new { @class = "form-control", @id="txtCpf", @maxlength = "14", @placeholder = "XXX.XXX.XXX-XX", @required = "required" } )
-                    @Html.ValidationMessageFor(model => model.Cpf, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(Model => Model.Cpf, "", new { @class = "form-control", @id="txtCpf", @maxlength = "14", @placeholder = "XXX.XXX.XXX-XX" } )
                 </div>
             </div>
 
@@ -52,10 +85,7 @@
                         @Html.DisplayNameFor(model => model.Nome)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.Nome, new { @class = "form-control", @id="txtNome", @maxlength="100", @required = "required", @type = "text" } )
-                    @Html.ValidationMessageFor(model => model.Nome, "", new { @class = "text-danger" })
-
-                    @*                    <span asp-validation-for="Nome" class="text-danger"></span>*@
+                    @Html.TextBoxFor(Model => Model.Nome, new { @class = "form-control", @id="txtNome", @maxlength="100", @type = "text" } )
                 </div>
             </div>
 
@@ -65,8 +95,7 @@
                         @Html.DisplayNameFor(model => model.DataNascimento)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.DataNascimento, "{0:dd/MM/yyyy}", new { @class = "form-control", @id = "txtDataNascimento", @maxlength = "10", @placeholder = "XX/XX/XXXX", @required = "required" })
-                    @Html.ValidationMessageFor(model => model.DataNascimento, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(Model => Model.DataNascimento, "{0:dd/MM/yyyy}", new { @class = "form-control", @id = "txtDataNascimento", @maxlength = "10", @placeholder = "XX/XX/XXXX" })
                 </div>
             </div>
 
@@ -96,8 +125,7 @@
                     <label class="control-label" for="txtEndereco">
                         @Html.DisplayNameFor(model => model.Endereco)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Endereco, "", new { @class="form-control", @id="txtEndereco", @maxlenght="100", @required  = "required", @type = "text" } )
-                    @Html.ValidationMessageFor(model => model.Endereco, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(Model => Model.Endereco, "", new { @class="form-control", @id="txtEndereco", @maxlenght="100", @type = "text" } )
                 </div>
             </div>
             <div class="col-md-2">
@@ -133,8 +161,7 @@
                     <label class="control-label" for="txtCidade">
                         @Html.DisplayNameFor(model => model.Cidade)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Cidade, "", new { @class="form-control", @id="txtCidade", @maxlenght="60", @required = "required", @type = "text" } )
-                    @Html.ValidationMessageFor(model => model.Cidade, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(Model => Model.Cidade, "", new { @class="form-control", @id="txtCidade", @maxlenght="60", @type = "text" } )
                 </div>
             </div>
 
@@ -143,8 +170,7 @@
                     <label class="control-label" for="txtUf">
                         @Html.DisplayNameFor(model => model.Uf)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Uf, "", new { @class="form-control", @id="txtUf", @maxlenght="2", @required = "required", @type = "text" } )
-                    @Html.ValidationMessageFor(model => model.Uf, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(Model => Model.Uf, "", new { @class="form-control", @id="txtUf", @maxlenght="2", @type = "text" } )
                 </div>
             </div>
         </div>
@@ -175,8 +201,7 @@
                     <label class="control-label" for="txtNumeroCtps">
                         @Html.DisplayNameFor(model => model.NumeroCtps)
                     </label>
-                    @Html.TextBoxFor(Model => Model.NumeroCtps, "", new { @class="form-control", @id="txtNumeroCtps", @maxlenght="7", @required = "required", @type = "text" } )
-                    @Html.ValidationMessageFor(model => model.NumeroCtps, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(Model => Model.NumeroCtps, "", new { @class="form-control", @id="txtNumeroCtps", @maxlenght="7", @type = "text" } )
                 </div>
             </div>
 
@@ -185,8 +210,7 @@
                     <label class="control-label" for="txtSerieCtps">
                         @Html.DisplayNameFor(model => model.SerieCtps)
                     </label>
-                    @Html.TextBoxFor(Model => Model.SerieCtps, "", new { @class="form-control", @id="txtSerieCtps", @maxlenght="4", @required = "required", @type = "text" } )
-                    @Html.ValidationMessageFor(model => model.SerieCtps, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(Model => Model.SerieCtps, "", new { @class="form-control", @id="txtSerieCtps", @maxlenght="4", @type = "text" } )
                 </div>
             </div>
 
@@ -195,8 +219,7 @@
                     <label class="control-label" for="txtUfCtps">
                         @Html.DisplayNameFor(model => model.UfCtps)
                     </label>
-                    @Html.TextBoxFor(Model => Model.UfCtps, "", new { @class="form-control", @id="txtUfCtps", @maxlenght="2", @required = "required", @type = "text" } )
-                    @Html.ValidationMessageFor(model => model.UfCtps, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(Model => Model.UfCtps, "", new { @class="form-control", @id="txtUfCtps", @maxlenght="2", @type = "text" } )
                 </div>
             </div>
         </div>
@@ -231,6 +254,18 @@
             $('#txtCpf').mask('000.000.000-00');
 
             $('#txtDataNascimento').mask('00/00/0000');
+
+            //  Controle para redirecionar a página se o ViewBag de Mensagem de Sucesso estiver preenchido.
+            var msg = '@ViewBag.SuccessMessage';
+
+            if (msg !== '') {
+                setTimeout(function () {
+                    window.location.replace(
+                        '@Url.Action(
+                            "Index", 
+                            "Colaborador")')
+                }, 4000);
+            }
 
             //$('#txtCep').mask('00000-000',
             //    {

@@ -63,6 +63,8 @@
                     using (var httpResponseMessage = this._httpClient.SendAsync(
                         httpRequestMessage).Result)
                     {
+                        var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
+
                         try
                         {
                             httpResponseMessage.EnsureSuccessStatusCode();
@@ -74,10 +76,12 @@
                                     Convert.ToInt16(
                                         httpResponseMessage.StatusCode),
                                     " ",
-                                    httpResponseMessage.ReasonPhrase));
+                                    httpResponseMessage.ReasonPhrase,
+                                    " ",
+                                    details));
                         }
 
-                        return httpResponseMessage.Content.ReadAsStringAsync().Result;
+                        return details;
                     }
                 }
             }
@@ -124,6 +128,8 @@
                     using (var httpResponseMessage = this._httpClient.SendAsync(
                         httpRequestMessage).Result)
                     {
+                        var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
+
                         try
                         {
                             httpResponseMessage.EnsureSuccessStatusCode();
@@ -135,10 +141,12 @@
                                     Convert.ToInt16(
                                         httpResponseMessage.StatusCode),
                                     " ",
-                                    httpResponseMessage.ReasonPhrase));
+                                    httpResponseMessage.ReasonPhrase,
+                                    " ",
+                                    details));
                         }
 
-                        return httpResponseMessage.Content.ReadAsStringAsync().Result;
+                        return details;
                     }
                 }
             }
@@ -177,21 +185,25 @@
                     using (var httpResponseMessage = this._httpClient.SendAsync(
                         httpRequestMessage).Result)
                     {
+                        var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
+
                         try
                         {
                             httpResponseMessage.EnsureSuccessStatusCode();
                         }
-                        catch { }
-                        //  {
-                            //throw new Exception(
-                            //    string.Concat(
-                            //        Convert.ToInt16(
-                            //            httpResponseMessage.StatusCode),
-                            //        " ",
-                            //        httpResponseMessage.ReasonPhrase));
-                        //  }
+                        catch
+                        {
+                            throw new Exception(
+                                string.Concat(
+                                    Convert.ToInt16(
+                                        httpResponseMessage.StatusCode),
+                                    " ",
+                                    httpResponseMessage.ReasonPhrase,
+                                    " ",
+                                    details));
+                        }
 
-                        return httpResponseMessage.Content.ReadAsStringAsync().Result;
+                        return details;
                     }
                 }
             }
@@ -235,24 +247,29 @@
 
                     httpRequestMessage.Content = stringContent;
 
-                    var httpResponseMessage = this._httpClient.SendAsync(
-                        httpRequestMessage).Result;
-
-                    try
+                    using (var httpResponseMessage = this._httpClient.SendAsync(
+                        httpRequestMessage).Result)
                     {
-                        httpResponseMessage.EnsureSuccessStatusCode();
-                    }
-                    catch
-                    {
-                        throw new Exception(
-                            string.Concat(
-                                Convert.ToInt16(
-                                    httpResponseMessage.StatusCode),
-                                " ",
-                                httpResponseMessage.ReasonPhrase));
-                    }
+                        var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
 
-                    return httpResponseMessage.Content.ReadAsStringAsync().Result;
+                        try
+                        {
+                            httpResponseMessage.EnsureSuccessStatusCode();
+                        }
+                        catch
+                        {
+                            throw new Exception(
+                                string.Concat(
+                                    Convert.ToInt16(
+                                        httpResponseMessage.StatusCode),
+                                    " ",
+                                    httpResponseMessage.ReasonPhrase,
+                                    " ",
+                                    details));
+                        }
+
+                        return details;
+                    }
                 }
             }
             catch
@@ -293,26 +310,52 @@
                         Encoding.UTF8,
                         this._mediaTypes);
 
-                    var httpResponseMessage = this._httpClient.SendAsync(
-                        httpRequestMessage).Result;
-
-                    var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
-
-                    try
+                    using (var httpResponseMessage = this._httpClient.SendAsync(
+                        httpRequestMessage).Result)
                     {
-                        httpResponseMessage.EnsureSuccessStatusCode();
-                    }
-                    catch
-                    {
-                        throw new Exception(
-                            string.Concat(
-                                Convert.ToInt16(
-                                    httpResponseMessage.StatusCode),
-                                " ",
-                                httpResponseMessage.ReasonPhrase));
+                        var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
+
+                        try
+                        {
+                            httpResponseMessage.EnsureSuccessStatusCode();
+                        }
+                        catch
+                        {
+                            throw new Exception(
+                                string.Concat(
+                                    Convert.ToInt16(
+                                        httpResponseMessage.StatusCode),
+                                    " ",
+                                    httpResponseMessage.ReasonPhrase,
+                                    " ",
+                                    details));
+                        }
+
+                        return details;
                     }
 
-                    return httpResponseMessage.Content.ReadAsStringAsync().Result;
+                    //var httpResponseMessage = this._httpClient.SendAsync(
+                    //    httpRequestMessage).Result;
+
+                    //var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
+
+                    //try
+                    //{
+                    //    httpResponseMessage.EnsureSuccessStatusCode();
+                    //}
+                    //catch
+                    //{
+                    //    throw new Exception(
+                    //        string.Concat(
+                    //            Convert.ToInt16(
+                    //                httpResponseMessage.StatusCode),
+                    //            " ",
+                    //            httpResponseMessage.ReasonPhrase,
+                    //            " ",
+                    //            details));
+                    //}
+
+                    //return details;
                 }
             }
             catch
@@ -355,26 +398,52 @@
 
                     httpRequestMessage.Content = stringContent;
 
-                    var httpResponseMessage = this._httpClient.SendAsync(
-                        httpRequestMessage).Result;
-
-                    var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
-
-                    try
+                    using (var httpResponseMessage = this._httpClient.SendAsync(
+                        httpRequestMessage).Result)
                     {
-                        httpResponseMessage.EnsureSuccessStatusCode();
-                    }
-                    catch
-                    {
-                        throw new Exception(
-                            string.Concat(
-                                Convert.ToInt16(
-                                    httpResponseMessage.StatusCode),
-                                " ",
-                                httpResponseMessage.ReasonPhrase));
+                        var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
+
+                        try
+                        {
+                            httpResponseMessage.EnsureSuccessStatusCode();
+                        }
+                        catch
+                        {
+                            throw new Exception(
+                                string.Concat(
+                                    Convert.ToInt16(
+                                        httpResponseMessage.StatusCode),
+                                    " ",
+                                    httpResponseMessage.ReasonPhrase,
+                                    " ",
+                                    details));
+                        }
+
+                        return details;
                     }
 
-                    return httpResponseMessage.Content.ReadAsStringAsync().Result;
+                    //var httpResponseMessage = this._httpClient.SendAsync(
+                    //    httpRequestMessage).Result;
+
+                    //var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
+
+                    //try
+                    //{
+                    //    httpResponseMessage.EnsureSuccessStatusCode();
+                    //}
+                    //catch
+                    //{
+                    //    throw new Exception(
+                    //        string.Concat(
+                    //            Convert.ToInt16(
+                    //                httpResponseMessage.StatusCode),
+                    //            " ",
+                    //            httpResponseMessage.ReasonPhrase,
+                    //            " ",
+                    //            details));
+                    //}
+
+                    //return details;
                 }
             }
             catch

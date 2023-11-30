@@ -1,5 +1,6 @@
 ﻿namespace PayCheck.Web.Controllers
 {
+    using System.Text;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared.Extensions;
     using AutoMapper;
@@ -162,8 +163,41 @@
         [HttpPost()]
         public IActionResult Edit(PessoaFisicaViewModel vm)
         {
+            ViewBag.ErrorMessage = null;
+            ViewBag.SuccessMessage = null;
+            ViewBag.ValidateMessage = null;
+
             if (!ModelState.IsValid)
-                return View(vm);
+            {
+                var modelErrors = new StringBuilder();
+
+                var modelStateErrors = this.ModelState.Keys.OrderBy(x => x).SelectMany(key => this.ModelState[key].Errors);
+
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var modelError in modelState.Errors)
+                    {
+                        if (modelErrors.Length == 0)
+                            modelErrors.Append(
+                                Environment.NewLine);
+
+                        modelErrors.Append(
+                            modelError.ErrorMessage);
+
+                        break;
+                    }
+
+                    if (modelErrors.Length > 0)
+                        break;
+                }
+
+                ViewBag.ValidateMessage = modelErrors.ToString().Replace(
+                    System.Environment.NewLine,
+                    "<br/>");
+
+                return View(
+                    vm);
+            }
 
             bool isNew = false;
 
@@ -217,9 +251,10 @@
 
                 updateDto.Pessoa.Bairro = vm.Bairro;
 
-                updateDto.Pessoa.Cep = !string.IsNullOrEmpty(vm.Cep) ? vm.Cep.Replace(
-                    "-",
-                    "") :
+                updateDto.Pessoa.Cep = !string.IsNullOrEmpty(vm.Cep) ?
+                    vm.Cep.Replace(
+                        "-",
+                        "") :
                     string.Empty;
 
                 updateDto.Pessoa.Cidade = vm.Cidade;
@@ -239,6 +274,8 @@
                     updateDto,
                 Formatting.Indented);
 
+            var apiResponseDto = default(ApiResponseDto<PessoaFisicaResponseDto>);
+
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
                 this._tokenBearer))
@@ -251,13 +288,18 @@
                         fromBodyString);
 
                 if (fromBodyString.IsValidJson())
-                {
-
-                }
+                    apiResponseDto = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(
+                        fromBodyString);
             }
 
-            return RedirectToAction(
-                "Index");
+            if (apiResponseDto != null &&
+                apiResponseDto.Success)
+                ViewBag.SuccessMessage = "Aguarde, você será redirecionado em alguns segundos.";
+            else
+                ViewBag.ErrorMessage = apiResponseDto.Message;
+
+            return View(
+                vm);
         }
     }
 }

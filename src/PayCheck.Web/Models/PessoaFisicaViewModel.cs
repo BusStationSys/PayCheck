@@ -11,19 +11,25 @@ public class PessoaFisicaViewModel
 
     public Guid? GuidPessoa { get; set; }
 
-    [StringLength(40, ErrorMessage = "O Bairro não pode exceder 40 caracteres.", MinimumLength = 0)]
-    public string? Bairro { get; set; } = string.Empty;
-
-    [Required(ErrorMessage = "É necessário o preenchimento da Cidade.")]
-    [StringLength(60, ErrorMessage = "A Cidade não pode exceder 60 caracteres.")]
-    public string Cidade { get; set; }
-
-    [Display(Name = "CPF")]
+    [Display(Name = "CPF", Order = 0)]
     [Required(ErrorMessage = "É necessário o preenchimento do CPF.")]
     [StringLength(14, MinimumLength = 14, ErrorMessage = "O CPF deve conter 14 caracteres.")]
     [CpfValidation(ErrorMessage = "O CPF está inválido.")]
-    [DisplayFormat(DataFormatString = "###.###.###-##")]
+    //[DisplayFormat(DataFormatString = "###.###.###-##")]
     public string Cpf { get; set; }
+
+    [Display(Order = 1)]
+    [Required(ErrorMessage = "É necessário o preenchimento do Nome.")]
+    [StringLength(100, ErrorMessage = "O Nome não pode exceder 100 caracteres.")]
+    public string Nome { get; set; }
+
+    [StringLength(40, ErrorMessage = "O Bairro não pode exceder 40 caracteres.", MinimumLength = 0)]
+    public string? Bairro { get; set; } = string.Empty;
+
+    [Display(Order = 5)]
+    [Required(ErrorMessage = "É necessário o preenchimento da Cidade.")]
+    [StringLength(60, ErrorMessage = "A Cidade não pode exceder 60 caracteres.")]
+    public string Cidade { get; set; }
 
     [Display(Name = "CEP")]
     [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:#####-###}")]
@@ -31,7 +37,7 @@ public class PessoaFisicaViewModel
     public string? Cep { get; set; }
 
     [DataType(DataType.Date)]
-    [Display(Name = "Nascimento")]
+    [Display(Name = "Nascimento", Order = 3)]
     [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
     [Required(ErrorMessage = "É necessário o preenchimento da Data de Nascimento.")]
     public DateTime? DataNascimento { get; set; }
@@ -41,7 +47,7 @@ public class PessoaFisicaViewModel
     [StringLength(75, ErrorMessage = "O E-Mail não pode exceder 75 caracteres.", MinimumLength = 0)]
     public string? Email { get; set; }
 
-    [Display(Name = "Endereço")]
+    [Display(Name = "Endereço", Order = 4)]
     [Required(ErrorMessage = "É necessário o preenchimento do Endereco.")]
     [StringLength(100, ErrorMessage = "O Endereço não pode exceder 100 caracteres.")]
     public string Endereco { get; set; }
@@ -52,10 +58,6 @@ public class PessoaFisicaViewModel
 
     [StringLength(30, ErrorMessage = "O Complemento não pode exceder 30 caracteres.", MinimumLength = 0)]
     public string? Complemento { get; set; }
-
-    [Required(ErrorMessage = "É necessário o preenchimento do Nome.")]
-    [StringLength(100, ErrorMessage = "O Nome não pode exceder 100 caracteres.")]
-    public string Nome { get; set; }
 
     [Display(Name = "Número da CTPS")]
     [Required(ErrorMessage = "É necessário o preenchimento do Número CTPS.")]
@@ -74,12 +76,13 @@ public class PessoaFisicaViewModel
     [StringLength(30, ErrorMessage = "O Telefone não pode exceder 30 caracteres.", MinimumLength = 0)]
     public string? Telefone { get; set; }
 
-    [Display(Name = "UF")]
+    [Display(Name = "UF", Order = 6)]
     [Required(ErrorMessage = "É necessário o preenchimento da UF.")]
     [StringLength(2, ErrorMessage = "A UF deve ter 2 caracteres.", MinimumLength = 2)]
     public string Uf { get; set; }
 
     [Display(Name = "UF da CTPS")]
+    [Required(ErrorMessage = "É necessário o preenchimento da UF CTPS.")]
     [StringLength(2, ErrorMessage = "A UF da CTPS deve ter 2 caracteres.", MinimumLength = 2)]
     public string UfCtps { get; set; }
 }
