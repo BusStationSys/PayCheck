@@ -169,31 +169,39 @@
 
             if (!ModelState.IsValid)
             {
-                var modelErrors = new StringBuilder();
+                var errorMessageHtml = new StringBuilder();
 
                 var modelStateErrors = this.ModelState.Keys.OrderBy(x => x).SelectMany(key => this.ModelState[key].Errors);
 
-                foreach (var modelState in ModelState.Values)
+                if (modelStateErrors != null &&
+                    modelStateErrors.Count() > 0)
                 {
-                    foreach (var modelError in modelState.Errors)
+                    errorMessageHtml.Append("<p></p>");
+
+                    foreach (var modelStateError in modelStateErrors)
                     {
-                        if (modelErrors.Length == 0)
-                            modelErrors.Append(
-                                Environment.NewLine);
+                        errorMessageHtml.Append("<p style=\"text-align:justify\">");
 
-                        modelErrors.Append(
-                            modelError.ErrorMessage);
+                        errorMessageHtml.Append($"- {modelStateError.ErrorMessage}");
 
-                        break;
+                        errorMessageHtml.Append("</p>");
                     }
 
-                    if (modelErrors.Length > 0)
-                        break;
+                    //errorMessageHtml.Append("<ul class=\"list-group\">");
+
+                    //foreach (var modelStateError in modelStateErrors)
+                    //{
+                    //    errorMessageHtml.Append("<li class=\"list-group-item list-group-item-warning\" style=\"border: none\">");
+
+                    //    errorMessageHtml.Append($"- {modelStateError.ErrorMessage}");
+
+                    //    errorMessageHtml.Append("</li>");
+                    //}
+
+                    //errorMessageHtml.Append("</ul>");
                 }
 
-                ViewBag.ValidateMessage = modelErrors.ToString().Replace(
-                    System.Environment.NewLine,
-                    "<br/>");
+                ViewBag.ValidateMessage = errorMessageHtml.ToString();
 
                 return View(
                     vm);
@@ -294,9 +302,9 @@
 
             if (apiResponseDto != null &&
                 apiResponseDto.Success)
-                ViewBag.SuccessMessage = "Aguarde, você será redirecionado em alguns segundos.";
+                ViewBag.SuccessMessage = "<p>Aguarde, você será redirecionado em alguns segundos.</p>";
             else
-                ViewBag.ErrorMessage = apiResponseDto.Message;
+                ViewBag.ErrorMessage = $"<p>{apiResponseDto.Message}</p>";
 
             return View(
                 vm);

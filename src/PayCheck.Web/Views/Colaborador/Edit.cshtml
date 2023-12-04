@@ -15,7 +15,20 @@
         <h1 class="h3 mb-0 text-gray-800">Colaborador</h1>
     </div>
 
-    <div class="alert alert-danger alert-dismissible" style="display: none;"></div>
+    @*<div class="alert alert-danger alert-dismissible" style="display: none;"></div>*@
+
+    <div class="alert alert-danger alert-dismissible" style="display: none;">
+        <h4 class="alert-heading">Erro</h4>
+        <p>This is a sample alert with a list group:</p>
+        <ul class="list-group">
+            <li class="list-group-item">Item 1</li>
+            <li class="list-group-item">Item 2</li>
+            <li class="list-group-item">Item 3</li>
+        </ul>
+        <hr>
+        <p class="mb-0">Additional information or actions can be placed here.</p>
+    </div>
+
     <div id="alertSuccess" class="alert alert-success alert-dismissible" style="display: none;"></div>
     <div class="alert alert-warning alert-dismissible" style="display: none;"></div>
     <div class="text-center" style="display: none;"></div>
@@ -24,16 +37,25 @@
     {
         <div class="alert alert-danger alert-dismissible">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+            
+            <i class="icon fa fa-ban"></i>
             <strong>Erro</strong>
-            @ViewBag.ErrorMessage
+
+            @Html.Raw(@ViewBag.ErrorMessage)
         </div>
     }
     else if (ViewBag.SuccessMessage != null)
     {
         <div id="alertSuccess" class="alert alert-success alert-dismissible">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-            <strong>Sucesso</strong>
-            <p>@Html.Raw(@ViewBag.SuccessMessage)</p>
+
+            <h4>
+                <i class="icon fa fa-check"></i>
+                <strong>Sucesso</strong>
+            </h4>
+
+            @Html.Raw(@ViewBag.SuccessMessage)
+
             <p>
                 <small class="text-success">
                     Se o redirecionamento não funcionar, clique <a href="@Url.Action("Index", "Colaborador")" class="text-success"><strong>aqui</strong></a>.
@@ -45,7 +67,11 @@
     {
         <div class="alert alert-warning alert-dismissible">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-            <strong>Validação</strong>@Html.Raw(@ViewBag.ValidateMessage)
+
+            <i class="icon fa fa-exclamation"></i>
+            <strong>Validação</strong>
+
+            @Html.Raw(@ViewBag.ValidateMessage)
         </div>
     }
 
@@ -262,9 +288,9 @@
                 setTimeout(function () {
                     window.location.replace(
                         '@Url.Action(
-                            "Index", 
-                            "Colaborador")')
-                }, 4000);
+                                    "Index",
+                    "Colaborador")')
+                                }, 4000);
             }
 
             //$('#txtCep').mask('00000-000',

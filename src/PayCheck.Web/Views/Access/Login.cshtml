@@ -145,3 +145,17 @@
 <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/js/sb-admin-2.min.js"></script>
 
 </html>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+    });
+
+    $("#chkMostrarSenha").change(function () {
+        var checked = $(this).is(":checked");
+        if (checked) {
+            $("#txtSenha").attr("type", "text");
+        } else {
+            $("#txtSenha").attr("type", "password");
+        }
+    });
+</script>
