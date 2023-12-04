@@ -15,6 +15,53 @@
         <h1 class="h3 mb-0 text-gray-800">Empregador</h1>
     </div>
 
+    <div class="alert alert-danger alert-dismissible" style="display: none;"></div>
+    <div id="alertSuccess" class="alert alert-success alert-dismissible" style="display: none;"></div>
+    <div class="alert alert-warning alert-dismissible" style="display: none;"></div>
+    <div class="text-center" style="display: none;"></div>
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger alert-dismissible">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+
+            <i class="icon fa fa-ban"></i>
+            <strong>Erro</strong>
+
+            @Html.Raw(@ViewBag.ErrorMessage)
+        </div>
+    }
+    else if (ViewBag.SuccessMessage != null)
+    {
+        <div id="alertSuccess" class="alert alert-success alert-dismissible">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+
+            <h4>
+                <i class="icon fa fa-check"></i>
+                <strong>Sucesso</strong>
+            </h4>
+
+            @Html.Raw(@ViewBag.SuccessMessage)
+
+            <p>
+                <small class="text-success">
+                    Se o redirecionamento não funcionar, clique <a href="@Url.Action("Index", "Empregador")" class="text-success"><strong>aqui</strong></a>.
+                </small>
+            </p>
+        </div>
+    }
+    else if (ViewBag.ValidateMessage != null)
+    {
+        <div class="alert alert-warning alert-dismissible">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+
+            <i class="icon fa fa-exclamation"></i>
+            <strong>Validação</strong>
+
+            @Html.Raw(@ViewBag.ValidateMessage)
+        </div>
+    }
+
     @using (Html.BeginForm("Edit", "Empregador", FormMethod.Post, new { @class = "user" }))
     {
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -189,6 +236,18 @@
             $('#txtCnpj').mask('00.000.000/0000-00');
 
             $('#txtDataFundacao').mask('00/00/0000');
+
+            //  Controle para redirecionar a página se o ViewBag de Mensagem de Sucesso estiver preenchido.
+            var msg = '@ViewBag.SuccessMessage';
+
+            if (msg !== '') {
+                setTimeout(function () {
+                    window.location.replace(
+                        '@Url.Action(
+                            "Index",
+                            "Empregador")')
+                }, 4000);
+            }
 
             //$('#txtCep').mask('00000-000',
             //    {

@@ -1,5 +1,6 @@
 ﻿namespace PayCheck.Web.Controllers
 {
+    using System.Text;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared.Extensions;
     using AutoMapper;
@@ -162,8 +163,49 @@
         [HttpPost()]
         public IActionResult Edit(PessoaJuridicaViewModel vm)
         {
+            ViewBag.ErrorMessage = null;
+            ViewBag.SuccessMessage = null;
+            ViewBag.ValidateMessage = null;
+
             if (!ModelState.IsValid)
-                return View(vm);
+            {
+                var errorMessageHtml = new StringBuilder();
+
+                var modelStateErrors = this.ModelState.Keys.OrderBy(x => x).SelectMany(key => this.ModelState[key].Errors);
+
+                if (modelStateErrors != null &&
+                    modelStateErrors.Count() > 0)
+                {
+                    errorMessageHtml.Append("<p></p>");
+
+                    foreach (var modelStateError in modelStateErrors)
+                    {
+                        errorMessageHtml.Append("<p style=\"text-align:justify\">");
+
+                        errorMessageHtml.Append($"- {modelStateError.ErrorMessage}");
+
+                        errorMessageHtml.Append("</p>");
+                    }
+
+                    //errorMessageHtml.Append("<ul class=\"list-group\">");
+
+                    //foreach (var modelStateError in modelStateErrors)
+                    //{
+                    //    errorMessageHtml.Append("<li class=\"list-group-item list-group-item-warning\" style=\"border: none\">");
+
+                    //    errorMessageHtml.Append($"- {modelStateError.ErrorMessage}");
+
+                    //    errorMessageHtml.Append("</li>");
+                    //}
+
+                    //errorMessageHtml.Append("</ul>");
+                }
+
+                ViewBag.ValidateMessage = errorMessageHtml.ToString();
+
+                return View(
+                    vm);
+            }
 
             bool isNew = false;
 
@@ -246,6 +288,8 @@
                     updateDto,
                 Formatting.Indented);
 
+            var apiResponseDto = default(ApiResponseDto<PessoaJuridicaResponseDto>);
+
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
                 this._tokenBearer))
@@ -258,13 +302,18 @@
                         fromBodyString);
 
                 if (fromBodyString.IsValidJson())
-                {
-
-                }
+                    apiResponseDto = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
+                        fromBodyString);
             }
 
-            return RedirectToAction(
-                "Index");
+            if (apiResponseDto != null &&
+                apiResponseDto.Success)
+                ViewBag.SuccessMessage = "<p>Aguarde, você será redirecionado em alguns segundos.</p>";
+            else
+                ViewBag.ErrorMessage = $"<p>{apiResponseDto.Message}</p>";
+
+            return View(
+                vm);
         }
     }
 }
