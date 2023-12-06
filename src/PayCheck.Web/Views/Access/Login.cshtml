@@ -1,4 +1,4 @@
-@model ARVTech.DataAccess.DTOs.UniPayCheck.LoginRequestDto
+@model LoginViewModel
 
 @{
     Layout = null;
@@ -57,7 +57,7 @@
                             <div class="col-lg-6"></div>
                             <div class="col-lg-6">
                                 <div class="p-5">
-                                    <div class="alert alert-danger alert-dismissible" style="display: none;"></div>
+@*                                    <div class="alert alert-danger alert-dismissible" style="display: none;"></div>
                                     <div class="alert alert-warning alert-dismissible" style="display: none;"></div>
 
                                     @if (ViewBag.ErrorMessage != null)
@@ -74,6 +74,53 @@
                                             <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
                                             <strong>Validação</strong>
                                             @ViewBag.ValidateMessage
+                                        </div>
+                                    }*@
+
+                                    <div class="alert alert-danger alert-dismissible" style="display: none;"></div>
+                                    <div id="alertSuccess" class="alert alert-success alert-dismissible" style="display: none;"></div>
+                                    <div class="alert alert-warning alert-dismissible" style="display: none;"></div>
+                                    <div class="text-center" style="display: none;"></div>
+
+                                    @if (ViewBag.ErrorMessage != null)
+                                    {
+                                        <div class="alert alert-danger alert-dismissible">
+                                            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+
+                                            <i class="icon fa fa-ban"></i>
+                                            <strong>Erro</strong>
+
+                                            @Html.Raw(@ViewBag.ErrorMessage)
+                                        </div>
+                                    }
+                                    else if (ViewBag.SuccessMessage != null)
+                                    {
+                                        <div id="alertSuccess" class="alert alert-success alert-dismissible">
+                                            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+
+                                            <h4>
+                                                <i class="icon fa fa-check"></i>
+                                                <strong>Sucesso</strong>
+                                            </h4>
+
+                                            @Html.Raw(@ViewBag.SuccessMessage)
+
+                                            <p>
+                                                <small class="text-success">
+                                                    Se o redirecionamento não funcionar, clique <a href="@Url.Action("Index", "Colaborador")" class="text-success"><strong>aqui</strong></a>.
+                                                </small>
+                                            </p>
+                                        </div>
+                                    }
+                                    else if (ViewBag.ValidateMessage != null)
+                                    {
+                                        <div class="alert alert-warning alert-dismissible">
+                                            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+
+                                            <i class="icon fa fa-exclamation"></i>
+                                            <strong>Validação</strong>
+
+                                            @Html.Raw(@ViewBag.ValidateMessage)
                                         </div>
                                     }
 

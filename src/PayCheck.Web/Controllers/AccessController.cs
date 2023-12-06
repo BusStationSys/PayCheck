@@ -3,12 +3,14 @@
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Net;
     using System.Security.Claims;
+    using System.Text;
     using System.Web;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared;
     using ARVTech.Shared.Email;
+    using ARVTech.Shared.Extensions;
+    using AutoMapper;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Mvc;
@@ -22,11 +24,9 @@
 
         private readonly IEmailService _emailService;
 
-        // private readonly ExternalApis _externalApis;
-
         private readonly HttpClient _httpClient;
 
-        // private readonly Uri _baseAddress;
+        private readonly Mapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccessController"/> class.
@@ -37,6 +37,14 @@
         {
             //this._baseAddress = new(
             //    externalApis.Value.PayCheck);
+
+            var mapperConfiguration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<LoginRequestDto, LoginViewModel>().ReverseMap();
+            });
+
+            this._mapper = new Mapper(
+                mapperConfiguration);
 
             Uri baseAddress = new(
                 externalApis.Value.PayCheck);
@@ -389,72 +397,124 @@ A Equipe de Suporte PayCheck®.";
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginRequestDto loginDto)
+        public async Task<IActionResult> Login(LoginViewModel vm)
         {
-            try
+            ViewBag.ErrorMessage = null;
+            ViewBag.SuccessMessage = null;
+            ViewBag.ValidateMessage = null;
+
+            if (!ModelState.IsValid)
             {
-                var usuarioResponse = default(UsuarioResponseDto);
+                var errorMessageHtml = new StringBuilder();
 
-                string requestUri = @$"{this._httpClient.BaseAddress}/Usuario";
+                var modelStateErrors = this.ModelState.Keys.OrderBy(x => x).SelectMany(key => this.ModelState[key].Errors);
 
-                using (var webApiHelper = new WebApiHelper(
-                    requestUri,
-                    this._tokenBearer))
+                if (modelStateErrors != null &&
+                    modelStateErrors.Count() > 0)
                 {
-                    string loginDtoJson = JsonConvert.SerializeObject(loginDto,
-                        Formatting.None,
-                        new JsonSerializerSettings
-                        {
-                            NullValueHandling = NullValueHandling.Ignore,
-                        });
+                    errorMessageHtml.Append("<p></p>");
 
-                    loginDtoJson = webApiHelper.ExecutePostWithAuthenticationByBearer(
-                        loginDtoJson);
+                    foreach (var modelStateError in modelStateErrors)
+                    {
+                        errorMessageHtml.Append("<p style=\"text-align:justify\">");
 
-                    usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponseDto>(
-                        loginDtoJson);
+                        errorMessageHtml.Append($"- {modelStateError.ErrorMessage}");
+
+                        errorMessageHtml.Append("</p>");
+                    }
                 }
 
-                if (usuarioResponse?.Guid != Guid.Empty &&
-                    usuarioResponse?.StatusCode == HttpStatusCode.OK)
+                ViewBag.ValidateMessage = errorMessageHtml.ToString();
+
+                return View(
+                    vm);
+            }
+
+            var loginDto = this._mapper.Map<LoginRequestDto>(
+                vm);
+
+            string requestUri = @$"{this._httpClient.BaseAddress}/Usuario";
+
+            //string fromBodyString = JsonConvert.SerializeObject(
+            //    loginDto,
+            //    Formatting.Indented);
+
+            string fromBodyString = JsonConvert.SerializeObject(loginDto,
+                Formatting.None,
+                new JsonSerializerSettings
                 {
-                    if (usuarioResponse.DataPrimeiroAcesso is null ||
-                        !usuarioResponse.DataPrimeiroAcesso.HasValue)
+                    NullValueHandling = NullValueHandling.Ignore,
+                });
+
+            var apiResponseDto = default(ApiResponseDto<UsuarioResponseDto>);
+
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
+            {
+                //string loginDtoJson = JsonConvert.SerializeObject(loginDto,
+                //    Formatting.None,
+                //    new JsonSerializerSettings
+                //    {
+                //        NullValueHandling = NullValueHandling.Ignore,
+                //    });
+
+                fromBodyString = webApiHelper.ExecutePostWithAuthenticationByBearer(
+                    fromBodyString);
+
+                if (fromBodyString.IsValidJson())
+                    apiResponseDto = JsonConvert.DeserializeObject<ApiResponseDto<UsuarioResponseDto>>(
+                        fromBodyString);
+
+                //loginDtoJson = webApiHelper.ExecutePostWithAuthenticationByBearer(
+                //    loginDtoJson);
+
+                //usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponseDto>(
+                //    loginDtoJson);
+            }
+
+            if (apiResponseDto != null &&
+                apiResponseDto.Success)
+            {
+                var usuarioResponse = apiResponseDto.Data;
+
+                if (usuarioResponse.DataPrimeiroAcesso is null ||
+                    !usuarioResponse.DataPrimeiroAcesso.HasValue)
+                {
+                    TempData.Remove("GuidUsuario");
+                    TempData.Remove("GuidColaborador");
+                    TempData.Remove("NomeColaborador");
+                    TempData.Remove("EmailColaborador");
+                    TempData.Remove("Username");
+
+                    TempData["GuidUsuario"] = usuarioResponse.Guid;
+                    TempData["GuidColaborador"] = usuarioResponse.Colaborador.Guid;
+                    TempData["NomeColaborador"] = usuarioResponse.Colaborador.Nome;
+                    TempData["EmailColaborador"] = usuarioResponse.Colaborador.Pessoa.Email;
+                    TempData["Username"] = usuarioResponse.Username;
+
+                    return RedirectToAction(
+                        "LinkActivation",
+                        "Access");
+                }
+                else
+                {
+                    string emailUsuario = string.Empty;
+                    string guidColaborador = string.Empty;
+                    string nomeColaborador = string.Empty;
+
+                    if (usuarioResponse.GuidColaborador != null &&
+                        usuarioResponse.GuidColaborador.HasValue &&
+                        usuarioResponse.GuidColaborador.Value != Guid.Empty)
                     {
-                        TempData.Remove("GuidUsuario");
-                        TempData.Remove("GuidColaborador");
-                        TempData.Remove("NomeColaborador");
-                        TempData.Remove("EmailColaborador");
-                        TempData.Remove("Username");
-
-                        TempData["GuidUsuario"] = usuarioResponse.Guid;
-                        TempData["GuidColaborador"] = usuarioResponse.Colaborador.Guid;
-                        TempData["NomeColaborador"] = usuarioResponse.Colaborador.Nome;
-                        TempData["EmailColaborador"] = usuarioResponse.Colaborador.Pessoa.Email;
-                        TempData["Username"] = usuarioResponse.Username;
-
-                        return RedirectToAction(
-                            "LinkActivation",
-                            "Access");
+                        emailUsuario = usuarioResponse.Email;
+                        guidColaborador = usuarioResponse.Colaborador.Guid.ToString();
+                        nomeColaborador = usuarioResponse.Colaborador.Nome;
                     }
                     else
-                    {
-                        string emailUsuario = string.Empty;
-                        string guidColaborador = string.Empty;
-                        string nomeColaborador = string.Empty;
+                        nomeColaborador = usuarioResponse.Username;
 
-                        if (usuarioResponse.GuidColaborador != null &&
-                            usuarioResponse.GuidColaborador.HasValue &&
-                            usuarioResponse.GuidColaborador.Value != Guid.Empty)
-                        {
-                            emailUsuario = usuarioResponse.Email;
-                            guidColaborador = usuarioResponse.Colaborador.Guid.ToString();
-                            nomeColaborador = usuarioResponse.Colaborador.Nome;
-                        }
-                        else
-                            nomeColaborador = usuarioResponse.Username;
-
-                        var claims = new List<Claim>
+                    var claims = new List<Claim>
                         {
                             new Claim(ClaimTypes.NameIdentifier, usuarioResponse.Guid.ToString()),
                             new Claim(ClaimTypes.Name, nomeColaborador),
@@ -487,45 +547,34 @@ A Equipe de Suporte PayCheck®.";
                             //new Claim("OtherProperty","OtherValue"),
                         };
 
-                        ClaimsIdentity claimsIdentity = new(
-                            claims,
-                            CookieAuthenticationDefaults.AuthenticationScheme);
+                    ClaimsIdentity claimsIdentity = new(
+                        claims,
+                        CookieAuthenticationDefaults.AuthenticationScheme);
 
-                        AuthenticationProperties authenticationProperties = new()
-                        {
-                            AllowRefresh = true,
-                            IsPersistent = loginDto.KeepLoggedIn,
-                        };
-
-                        await HttpContext.SignInAsync(
-                            CookieAuthenticationDefaults.AuthenticationScheme,
-                            new ClaimsPrincipal(
-                                claimsIdentity),
-                            authenticationProperties);
-
-                        return RedirectToAction(
-                            "Index",
-                            "Home");
-                    }
-                }
-                else
-                {
-                    if (usuarioResponse?.StatusCode == HttpStatusCode.NotFound)
+                    AuthenticationProperties authenticationProperties = new()
                     {
-                        ViewBag.ValidateMessage = usuarioResponse?.Message;
-                    }
-                    else if (usuarioResponse?.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        throw new Exception(usuarioResponse?.Message);
-                    }
+                        AllowRefresh = true,
+                        IsPersistent = loginDto.KeepLoggedIn,
+                    };
+
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(
+                            claimsIdentity),
+                        authenticationProperties);
+
+                    return RedirectToAction(
+                        "Index",
+                        "Home");
                 }
             }
-            catch (Exception ex)
-            {
-                ViewBag.ErrorMessage = ex.Message;
-            }
+            else
+                ViewBag.ErrorMessage = $"<p>{apiResponseDto.Message}</p>";
 
-            return View();
+            vm.Password = string.Empty;
+
+            return View(
+                vm);
         }
     }
 }
