@@ -1,5 +1,6 @@
 ﻿namespace PayCheck.Api.Controllers
 {
+    using System;
     using System.Net;
     using ARVTech.DataAccess.Business.UniPayCheck.Interfaces;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
@@ -35,52 +36,52 @@
         /// <response code="500">Ocorre</response>
         [Authorize]
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult Authenticate([FromBody] LoginRequestDto loginDto)
+        public ApiResponseDto<UsuarioResponseDto> Authenticate([FromBody] LoginRequestDto loginDto)
         {
             try
             {
-                var usuarioResponse = this._business.GetByUsername(
+                //var usuarioResponse = this._business.GetByUsername(
+                //    loginDto.CpfEmailUsername).FirstOrDefault();
+
+                var data = this._business.GetByUsername(
                     loginDto.CpfEmailUsername).FirstOrDefault();
 
-                if (usuarioResponse is null)
+                if (data is null)
                 {
-                    return NotFound(new
+                    return new ApiResponseDto<UsuarioResponseDto>
                     {
                         Message = $"Usuário não encontrado para a credencial {loginDto.CpfEmailUsername}!",
                         StatusCode = HttpStatusCode.NotFound,
-                    });
+                    };
                 }
                 else
                 {
-                    usuarioResponse = this._business.CheckPasswordValid(
-                        usuarioResponse.Guid,
+                    data = this._business.CheckPasswordValid(
+                        data.Guid,
                         loginDto.Password);
 
-                    if (usuarioResponse is null)
-                    {
-                        return NotFound(new
+                    if (data != null)
+                        return new ApiResponseDto<UsuarioResponseDto>
                         {
-                            Message = $"A Senha não confere para o Usuário com a credencial {loginDto.CpfEmailUsername}!",
-                            StatusCode = HttpStatusCode.NotFound,
-                        });
-                    }
-                    else
-                    {
-                        usuarioResponse.StatusCode = HttpStatusCode.OK;
-                    }
-                }
+                            Data = data,
+                            Success = true,
+                            StatusCode = HttpStatusCode.OK,
+                        };
 
-                return Ok(
-                    usuarioResponse);
+                    return new ApiResponseDto<UsuarioResponseDto>
+                    {
+                        Message = $"A Senha não confere para o Usuário com a credencial {loginDto.CpfEmailUsername}!",
+                        StatusCode = HttpStatusCode.NotFound,
+                    };
+                }
             }
             catch (Exception ex)
             {
-                return StatusCode(
-                    StatusCodes.Status500InternalServerError,
-                    ex.Message);
+                return new ApiResponseDto<UsuarioResponseDto>
+                {
+                    Message = ex.Message,
+                    StatusCode = HttpStatusCode.InternalServerError,
+                };
             }
         }
 
