@@ -61,7 +61,7 @@ public class PessoaFisicaViewModel
 
     [Display(Name = "Número da CTPS")]
     [Required(ErrorMessage = "É necessário o preenchimento do Número CTPS.")]
-    [StringLength(7, ErrorMessage = "O Número da CTPS não pode exceder 7 caracteres.", MinimumLength = 1)]
+    [StringLength(9, ErrorMessage = "O Número da CTPS não pode exceder 9 caracteres.", MinimumLength = 1)]
     public string NumeroCtps { get; set; }
 
     [Display(Name = "RG")]

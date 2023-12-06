@@ -224,7 +224,7 @@
                     ".",
                     "").Replace(
                         "-",
-                        "");
+                        string.Empty);
 
                 createDto.Pessoa = new PessoaRequestCreateDto()
                 {
@@ -232,7 +232,7 @@
 
                     Cep = vm.Cep.Replace(
                         "-",
-                        ""),
+                        string.Empty),
 
                     Cidade = vm.Cidade,
                     Complemento = vm.Complemento,
@@ -250,9 +250,9 @@
 
                 updateDto.Cpf = updateDto.Cpf.Replace(
                     ".",
-                    "").Replace(
+                    string.Empty).Replace(
                         "-",
-                        "");
+                        string.Empty);
 
                 if (updateDto.Pessoa is null)
                     updateDto.Pessoa = new PessoaRequestUpdateDto();
@@ -262,7 +262,7 @@
                 updateDto.Pessoa.Cep = !string.IsNullOrEmpty(vm.Cep) ?
                     vm.Cep.Replace(
                         "-",
-                        "") :
+                        string.Empty) :
                     string.Empty;
 
                 updateDto.Pessoa.Cidade = vm.Cidade;

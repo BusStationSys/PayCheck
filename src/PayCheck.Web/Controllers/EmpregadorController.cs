@@ -222,11 +222,11 @@
 
                 createDto.Cnpj = createDto.Cnpj.Replace(
                     ".",
-                    "").Replace(
+                    string.Empty).Replace(
                         "/",
-                        "").Replace(
+                        string.Empty).Replace(
                             "-",
-                            "");
+                            string.Empty);
 
                 createDto.Pessoa = new PessoaRequestCreateDto()
                 {
@@ -235,7 +235,7 @@
                     Cep = !string.IsNullOrEmpty(vm.Cep) ?
                         vm.Cep.Replace(
                             "-",
-                            "") :
+                            string.Empty) :
                         string.Empty,
 
                     Cidade = vm.Cidade,
@@ -254,11 +254,11 @@
 
                 updateDto.Cnpj = updateDto.Cnpj.Replace(
                     ".",
-                    "").Replace(
+                    string.Empty).Replace(
                         "/",
-                        "").Replace(
+                        string.Empty).Replace(
                             "-",
-                            "");
+                            string.Empty);
 
                 if (updateDto.Pessoa is null)
                     updateDto.Pessoa = new PessoaRequestUpdateDto();
@@ -268,7 +268,7 @@
                 updateDto.Pessoa.Cep = !string.IsNullOrEmpty(vm.Cep) ?
                     vm.Cep.Replace(
                         "-",
-                        "") :
+                        string.Empty) :
                     string.Empty;
 
                 updateDto.Pessoa.Cidade = vm.Cidade;
