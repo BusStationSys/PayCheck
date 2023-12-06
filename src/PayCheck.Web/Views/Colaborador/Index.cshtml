@@ -21,16 +21,16 @@
     <table class="table">
         <thead>
             <tr>
-                <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                <th class="hidden-xs col-md-2 col-lg-2">
                     @Html.DisplayNameFor(model => model.Cpf)
                 </th>
-                <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center">
-                    @Html.DisplayNameFor(model => model.DataNascimento)
-                </th>
-                <th class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <th class="col-xs-4 col-sm-6 col-md-6 col-lg-4">
                     @Html.DisplayNameFor(model => model.Nome)
                 </th>
-                <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center">
+                <th class="hidden-xs hidden-sm hidden-md col-lg-3 text-center">
+                    @Html.DisplayNameFor(model => model.DataNascimento)
+                </th>
+                <th class="col-xs-8 col-sm-6 col-md-4 col-lg-3 text-center">
                     Ações
                 </th>
             </tr>
@@ -47,13 +47,13 @@
                                 item.Cpf).ToString(
                                     @"000\.000\.000\-00")
                         </td>
-                        <td align="center">
-                            @(item.DataNascimento.HasValue ? 
-                                item.DataNascimento.Value.ToString("dd/MM/yyyy") : 
-                                "__/__/____")
-                        </td>
                         <td>
                             @item.Nome
+                        </td>
+                        <td align="center">
+                            @(item.DataNascimento.HasValue ?
+                                item.DataNascimento.Value.ToString("dd/MM/yyyy") :
+                                "__/__/____")
                         </td>
                         <td align="center">
                             <span>

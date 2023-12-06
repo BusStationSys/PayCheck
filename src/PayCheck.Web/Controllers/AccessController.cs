@@ -435,16 +435,16 @@ A Equipe de Suporte PayCheck®.";
 
             string requestUri = @$"{this._httpClient.BaseAddress}/Usuario";
 
-            //string fromBodyString = JsonConvert.SerializeObject(
-            //    loginDto,
-            //    Formatting.Indented);
+            string fromBodyString = JsonConvert.SerializeObject(
+                loginDto,
+                Formatting.Indented);
 
-            string fromBodyString = JsonConvert.SerializeObject(loginDto,
-                Formatting.None,
-                new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore,
-                });
+            //  string fromBodyString = JsonConvert.SerializeObject(loginDto,
+            //        Formatting.None,
+            //      new JsonSerializerSettings
+            //      {
+            //          NullValueHandling = NullValueHandling.Ignore,
+            //      });
 
             var apiResponseDto = default(ApiResponseDto<UsuarioResponseDto>);
 
@@ -452,25 +452,12 @@ A Equipe de Suporte PayCheck®.";
                 requestUri,
                 this._tokenBearer))
             {
-                //string loginDtoJson = JsonConvert.SerializeObject(loginDto,
-                //    Formatting.None,
-                //    new JsonSerializerSettings
-                //    {
-                //        NullValueHandling = NullValueHandling.Ignore,
-                //    });
-
                 fromBodyString = webApiHelper.ExecutePostWithAuthenticationByBearer(
                     fromBodyString);
 
                 if (fromBodyString.IsValidJson())
                     apiResponseDto = JsonConvert.DeserializeObject<ApiResponseDto<UsuarioResponseDto>>(
                         fromBodyString);
-
-                //loginDtoJson = webApiHelper.ExecutePostWithAuthenticationByBearer(
-                //    loginDtoJson);
-
-                //usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponseDto>(
-                //    loginDtoJson);
             }
 
             if (apiResponseDto != null &&
