@@ -8,6 +8,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
+    using PayCheck.Web.Models;
 
     [Authorize]
     public class DemonstrativoPagamentoController : Controller
@@ -94,21 +95,26 @@
             if (guidColaborador != null)
                 requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/getDemonstrativoPagamentoByGuidColaborador/{guidColaborador}";
 
-            List<MatriculaDemonstrativoPagamentoResponseDto>? mdps = null;
+            var demonstrativosPagamentoViewModel = default(IEnumerable<DemonstrativoPagamentoViewModel>);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
                 this._tokenBearer))
             {
-                string matriculasDemonstrativosPagamentoResponseJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-                if (matriculasDemonstrativosPagamentoResponseJson.IsValidJson())
-                    mdps = JsonConvert.DeserializeObject<List<MatriculaDemonstrativoPagamentoResponseDto>>(
-                        matriculasDemonstrativosPagamentoResponseJson);
+                if (dataJson.IsValidJson())
+                {
+                    var data = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>>(
+                        dataJson).Data;
+
+                    demonstrativosPagamentoViewModel = this._mapper.Map<IEnumerable<DemonstrativoPagamentoViewModel>>(
+                        data);
+                }
             }
 
             return View(
-                mdps);
+                demonstrativosPagamentoViewModel);
         }
 
         [HttpGet()]
