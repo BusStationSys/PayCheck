@@ -37,6 +37,20 @@
             {
                 cfg.CreateMap<MatriculaDemonstrativoPagamentoRequestCreateDto, MatriculaDemonstrativoPagamentoResponseDto>().ReverseMap();
                 cfg.CreateMap<MatriculaDemonstrativoPagamentoRequestUpdateDto, MatriculaDemonstrativoPagamentoResponseDto>().ReverseMap();
+
+                cfg.CreateMap<MatriculaDemonstrativoPagamentoResponseDto, DemonstrativoPagamentoViewModel>()
+                    .ForMember(
+                        dest => dest.NumeroMatricula,
+                        opt => opt.MapFrom(
+                            src => src.Matricula.Matricula))
+                    .ForMember(
+                        dest => dest.NomeColaborador,
+                        opt => opt.MapFrom(
+                            src => src.Matricula.Colaborador.Nome))
+                    .ForMember(
+                        dest => dest.RazaoSocialEmpregador,
+                        opt => opt.MapFrom(
+                            src => src.Matricula.Empregador.RazaoSocial)).ReverseMap();
             });
 
             this._mapper = new Mapper(

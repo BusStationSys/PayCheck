@@ -57,7 +57,13 @@
                 @Html.DisplayFor(modelItem => item.Guid)
                 </td>*@
                         <td>
-                            @item.Competencia
+                            @Convert.ToDateTime(
+                                string.Concat(
+                                    item.Competencia.Substring(6,2),
+                                    "/",
+                                    item.Competencia.Substring(4,2),
+                                    "/",
+                                    item.Competencia.Substring(0,4))).ToString("MM/yyyy")
                         </td>
                         <td>
                             @item.NumeroMatricula
