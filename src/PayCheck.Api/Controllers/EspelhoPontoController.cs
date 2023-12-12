@@ -39,55 +39,110 @@
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="guid"></param>
         /// <returns></returns>
-        [HttpGet]
-        public IActionResult GetEspelhosPonto()
+        [HttpGet("{guid}")]
+        public ApiResponseDto<MatriculaEspelhoPontoResponseDto> GetEspelhoPonto(Guid guid)
         {
             try
             {
-                var eps = this._business.GetAll();
+                var data = this._business.Get(
+                    guid);
 
-                if (eps is null ||
-                    eps.Count() == 0)
+                if (data != null)
+                    return new ApiResponseDto<MatriculaEspelhoPontoResponseDto>
+                    {
+                        Data = data,
+                        Success = true,
+                        StatusCode = HttpStatusCode.OK,
+                    };
+
+                return new ApiResponseDto<MatriculaEspelhoPontoResponseDto>
                 {
-                    return NotFound(
-                        $"Espelhos de Ponto não encontrados!");
-                }
-
-                return Ok(
-                    eps);
+                    Message = $"Espelho de Ponto {guid} não encontrado!",
+                    StatusCode = HttpStatusCode.NotFound,
+                };
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                return new ApiResponseDto<MatriculaEspelhoPontoResponseDto>
+                {
+                    Message = ex.Message,
+                    StatusCode = HttpStatusCode.InternalServerError,
+                };
             }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="guid"></param>
         /// <returns></returns>
-        [HttpGet("{guid}")]
-        public IActionResult GetEspelhoPonto(Guid guid)
+        [HttpGet]
+        public ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>> GetEspelhosPonto()
         {
             try
             {
-                var matriculaEspelhoPontoResponse = this._business.Get(
-                    guid);
+                var data = this._business.GetAll();
 
-                if (matriculaEspelhoPontoResponse is null)
+                if (data != null && data.Count() > 0)
+                    return new ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>>
+                    {
+                        Data = data,
+                        Success = true,
+                        StatusCode = HttpStatusCode.OK,
+                    };
+
+                return new ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>>
                 {
-                    return NotFound(
-                        $"Espelho de Ponto {guid} não encontrado!");
-                }
-
-                return Ok(
-                    matriculaEspelhoPontoResponse);
+                    Message = "Não há registros de Espelhos de Ponto.",
+                    StatusCode = HttpStatusCode.NotFound,
+                };
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                return new ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>>
+                {
+                    Message = ex.Message,
+                    StatusCode = HttpStatusCode.InternalServerError,
+                };
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="guidColaborador"></param>
+        /// <returns></returns>
+        [HttpGet("getEspelhoPontoByGuidColaborador/{guidColaborador}")]
+        public ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>> GetEspelhoPontoByGuidColaborador(Guid guidColaborador)
+        {
+            try
+            {
+                var data = this._business.GetByGuidColaborador(
+                    guidColaborador);
+
+                if (data != null &&
+                    data.Count() > 0)
+                    return new ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>>
+                    {
+                        Data = data,
+                        Success = true,
+                        StatusCode = HttpStatusCode.OK,
+                    };
+
+                return new ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>>
+                {
+                    Message = $"Espelhos de Ponto não encontrados para o Colaborador {guidColaborador}!",
+                    StatusCode = HttpStatusCode.NotFound,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>>
+                {
+                    Message = ex.Message,
+                    StatusCode = HttpStatusCode.InternalServerError,
+                };
             }
         }
 
@@ -98,74 +153,29 @@
         /// <param name="updateDto"></param>
         /// <returns></returns>
         [HttpPut("{guid}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        ////[ProducesResponseType(StatusCodes.Status200OK)]
-        ////[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        ////[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        ////[ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult UpdateMatriculaEspelhoPonto(Guid guid, [FromBody] MatriculaEspelhoPontoRequestUpdateDto updateDto)
+        public ApiResponseDto<MatriculaEspelhoPontoResponseDto> UpdateMatriculaEspelhoPonto(Guid guid, [FromBody] MatriculaEspelhoPontoRequestUpdateDto updateDto)
         {
             try
             {
                 updateDto.Guid = guid;
 
-                var matriculaEspelhoPontoResponse = this._business.SaveData(
+                var data = this._business.SaveData(
                     updateDto: updateDto);
 
-                matriculaEspelhoPontoResponse.StatusCode = HttpStatusCode.NoContent;
-
-                return Ok(
-                    matriculaEspelhoPontoResponse);
-
-                //var matriculaEspelhoPontoResponse = this._business.Get(
-                //    guid);
-
-                //if (matriculaEspelhoPontoResponse is null)
-                //{
-                //    return StatusCode(
-                //        StatusCodes.Status404NotFound,
-                //        $"Espelho de Ponto {guid} não encontrado!");
-                //}
-                //else if(matriculaEspelhoPontoResponse.DataConfirmacao != null)
-                //{
-                //    return StatusCode(
-                //        StatusCodes.Status404NotFound,
-                //        $"Espelho Ponto {guid} confirmado em {matriculaEspelhoPontoResponse.DataConfirmacao.Value.LocalDateTime:dd/MM/yyyy HH:mm:ss}.");
-                //}
-
-                //var matriculaEspelhoPontoRequestUpdateDto = this._mapper.Map<MatriculaEspelhoPontoRequestUpdateDto>(
-                //    matriculaEspelhoPontoResponse);
-
-                //matriculaEspelhoPontoResponse = this._business.SaveData(
-                //    updateDto: matriculaEspelhoPontoRequestUpdateDto);
-
-                //matriculaEspelhoPontoResponse.StatusCode = HttpStatusCode.NoContent;
-
-                //return StatusCode(
-                //    StatusCodes.Status204NoContent,
-                //    usuarioResponse);
-
-                //return Ok(
-                //    matriculaEspelhoPontoResponse);
-
-                //return CreatedAtAction(
-                //    nameof(
-                //        this.GetAgente),
-                //    new
-                //    {
-                //        id = agenteResponseDto.CodigoAgente,
-                //    },
-                //    agenteResponseDto);
-
-                //return NoContent();
+                return new ApiResponseDto<MatriculaEspelhoPontoResponseDto>
+                {
+                    Data = data,
+                    Success = true,
+                    StatusCode = HttpStatusCode.NoContent,
+                };
             }
             catch (Exception ex)
             {
-                return StatusCode(
-                    StatusCodes.Status500InternalServerError,
-                    ex.Message);
+                return new ApiResponseDto<MatriculaEspelhoPontoResponseDto>
+                {
+                    Message = ex.Message,
+                    StatusCode = HttpStatusCode.InternalServerError,
+                };
             }
         }
     }

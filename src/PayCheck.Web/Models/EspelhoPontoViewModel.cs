@@ -3,7 +3,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-public class DemonstrativoPagamentoViewModel
+public class EspelhoPontoViewModel
 {
     [Key]
     public Guid? Guid { get; set; }

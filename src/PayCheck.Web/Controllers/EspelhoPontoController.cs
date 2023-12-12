@@ -9,6 +9,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
+    using PayCheck.Web.Models;
 
     [Authorize]
     public class EspelhoPontoController : Controller
@@ -38,6 +39,20 @@
             {
                 cfg.CreateMap<MatriculaEspelhoPontoRequestCreateDto, MatriculaEspelhoPontoResponseDto>().ReverseMap();
                 cfg.CreateMap<MatriculaEspelhoPontoRequestUpdateDto, MatriculaEspelhoPontoResponseDto>().ReverseMap();
+
+                cfg.CreateMap<MatriculaEspelhoPontoResponseDto, EspelhoPontoViewModel>()
+                    .ForMember(
+                        dest => dest.NumeroMatricula,
+                        opt => opt.MapFrom(
+                            src => src.Matricula.Matricula))
+                    .ForMember(
+                        dest => dest.NomeColaborador,
+                        opt => opt.MapFrom(
+                            src => src.Matricula.Colaborador.Nome))
+                    .ForMember(
+                        dest => dest.RazaoSocialEmpregador,
+                        opt => opt.MapFrom(
+                            src => src.Matricula.Empregador.RazaoSocial)).ReverseMap();
             });
 
             this._mapper = new Mapper(
@@ -86,31 +101,34 @@
             if (TempData.Peek("GuidColaborador") != null &&
                 !string.IsNullOrEmpty(
                     TempData.Peek("GuidColaborador").ToString()))
-            {
                 guidColaborador = Guid.Parse(
                     TempData.Peek("GuidColaborador").ToString());
-            }
 
             string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto";
 
             if (guidColaborador != null)
-                requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/getDemonstrativoPagamentoByGuidColaborador/{guidColaborador}";
+                requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/getEspelhoPontoByGuidColaborador/{guidColaborador}";
 
-            List<MatriculaEspelhoPontoResponseDto>? meps = null;
+            var espelhosPontoViewModel = default(IEnumerable<EspelhoPontoViewModel>);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
                 this._tokenBearer))
             {
-                string matriculasEspelhosPontoResponseJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-                if (matriculasEspelhosPontoResponseJson.IsValidJson())
-                    meps = JsonConvert.DeserializeObject<List<MatriculaEspelhoPontoResponseDto>>(
-                        matriculasEspelhosPontoResponseJson);
+                if (dataJson.IsValidJson())
+                {
+                    var data = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>>>(
+                        dataJson).Data;
+
+                    espelhosPontoViewModel = this._mapper.Map<IEnumerable<EspelhoPontoViewModel>>(
+                        data);
+                }
             }
 
             return View(
-                meps);
+                espelhosPontoViewModel);
         }
 
         [HttpGet()]

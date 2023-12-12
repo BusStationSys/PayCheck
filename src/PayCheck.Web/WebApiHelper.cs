@@ -6,6 +6,7 @@
     using System.Net.Http.Headers;
     using System.Text;
     using ARVTech.Shared;
+    using Newtonsoft.Json;
 
     public class WebApiHelper : IDisposable
     {
@@ -55,8 +56,8 @@
             try
             {
                 using (var httpRequestMessage = new HttpRequestMessage(
-                                    HttpMethod.Get,
-                                    this._requestUri))
+                    HttpMethod.Get,
+                    this._requestUri))
                 {
                     httpRequestMessage.Headers.Clear();
 
@@ -112,14 +113,6 @@
                     httpRequestMessage.Headers.Add(
                         "Authorization",
                         $"Basic {Common.GetTokenBase64Encode(this._username, this._password)}");
-
-                    //        this._httpClient.DefaultRequestHeaders.Authorization = new BasicAuthenticationHeaderValue(
-                    //            this._username,
-                    //            this._password);
-
-                    //httpRequestMessage.Headers.Authorization = new BasicAuthenticationHeaderValue(
-                    //    this._username,
-                    //    this._password);
 
                     httpRequestMessage.Headers.Add(
                         "Accept",
@@ -325,37 +318,14 @@
                                 string.Concat(
                                     Convert.ToInt16(
                                         httpResponseMessage.StatusCode),
-                                    " ",
+                                    " | ",
                                     httpResponseMessage.ReasonPhrase,
-                                    " ",
+                                    " | ",
                                     details));
                         }
 
                         return details;
                     }
-
-                    //var httpResponseMessage = this._httpClient.SendAsync(
-                    //    httpRequestMessage).Result;
-
-                    //var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
-
-                    //try
-                    //{
-                    //    httpResponseMessage.EnsureSuccessStatusCode();
-                    //}
-                    //catch
-                    //{
-                    //    throw new Exception(
-                    //        string.Concat(
-                    //            Convert.ToInt16(
-                    //                httpResponseMessage.StatusCode),
-                    //            " ",
-                    //            httpResponseMessage.ReasonPhrase,
-                    //            " ",
-                    //            details));
-                    //}
-
-                    //return details;
                 }
             }
             catch
@@ -413,37 +383,14 @@
                                 string.Concat(
                                     Convert.ToInt16(
                                         httpResponseMessage.StatusCode),
-                                    " ",
+                                    " | ",
                                     httpResponseMessage.ReasonPhrase,
-                                    " ",
+                                    " | ",
                                     details));
                         }
 
                         return details;
                     }
-
-                    //var httpResponseMessage = this._httpClient.SendAsync(
-                    //    httpRequestMessage).Result;
-
-                    //var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
-
-                    //try
-                    //{
-                    //    httpResponseMessage.EnsureSuccessStatusCode();
-                    //}
-                    //catch
-                    //{
-                    //    throw new Exception(
-                    //        string.Concat(
-                    //            Convert.ToInt16(
-                    //                httpResponseMessage.StatusCode),
-                    //            " ",
-                    //            httpResponseMessage.ReasonPhrase,
-                    //            " ",
-                    //            details));
-                    //}
-
-                    //return details;
                 }
             }
             catch
@@ -495,6 +442,67 @@
                 throw;
             }
         }
+
+        #region [ Métodos Assíncronos ]
+        public async Task<T> ExecuteGetWithAuthenticationByBearerAsync<T>()
+        {
+            using (var httpRequestMessage = new HttpRequestMessage(
+                HttpMethod.Get,
+                this._requestUri))
+            {
+                httpRequestMessage.Headers.Clear();
+
+                httpRequestMessage.Headers.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue(
+                        this._mediaTypes));
+
+                httpRequestMessage.Headers.Add(
+                    "Accept",
+                    "*/*");
+
+                httpRequestMessage.Headers.Add(
+                    "Authorization",
+                    $"Bearer {this._token}");
+
+                using (var httpResponseMessage = await this._httpClient.SendAsync(
+                    httpRequestMessage))
+                {
+                    var details = await httpResponseMessage.Content.ReadAsStringAsync();
+
+                    try
+                    {
+                        httpResponseMessage.EnsureSuccessStatusCode();
+                    }
+                    catch
+                    {
+                        throw new Exception(
+                            string.Concat(
+                                Convert.ToInt16(
+                                    httpResponseMessage.StatusCode),
+                                " | ",
+                                httpResponseMessage.ReasonPhrase,
+                                " | ",
+                                details));
+                    }
+
+                    return JsonConvert.DeserializeObject<T>(
+                        details);
+                }
+            }
+
+            //using (var _response = await _httpClient.GetAsync(requestUri))
+            //{
+            //    if (!_response.IsSuccessStatusCode)
+            //    {
+            //        //if (_response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            //        //    throw new InvalidOperationException("Acesso negado, você precisa estar autenticado para realizar essa requisição.");
+            //        throw new InvalidOperationException("Falha na execução HTTP/GET.");
+            //    }
+            //    var _result = await _response.Content.ReadAsStringAsync();
+            //    return JsonConvert.DeserializeObject<T>(_result);
+            //}
+        }
+        #endregion
 
         protected virtual void Dispose(bool disposing)
         {

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ARVTech.DataAccess.DTOs.UniPayCheck.MatriculaEspelhoPontoResponseDto>
+﻿@model IEnumerable<EspelhoPontoViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -27,13 +27,13 @@
                     @Html.DisplayNameFor(model => model.Competencia)
                 </th>
                 <th class="col-xs-3 col-sm-3 col-md-2 col-lg-2">
-                    @Html.DisplayNameFor(model => model.Matricula.Matricula)
+                    @Html.DisplayNameFor(model => model.NumeroMatricula)
                 </th>
                 <th class="hidden-xs hidden-sm col-md-4 col-lg-4">
-                    @Html.DisplayNameFor(model => model.Matricula.Empregador.RazaoSocial)
+                    @Html.DisplayNameFor(model => model.RazaoSocialEmpregador)
                 </th>
                 <th class="col-xs-6 col-sm-6 col-md-4 col-lg-4">
-                    @Html.DisplayNameFor(model => model.Matricula.Colaborador.Nome)
+                    @Html.DisplayNameFor(model => model.NomeColaborador)
                 </th>
                 <th>
 
@@ -51,16 +51,22 @@
                 @Html.DisplayFor(modelItem => item.Guid)
                 </td>*@
                         <td>
-                            @item.CompetenciaFormatada
+                            @Convert.ToDateTime(
+                                string.Concat(
+                                    item.Competencia.Substring(6,2),
+                                    "/",
+                                    item.Competencia.Substring(4,2),
+                                    "/",
+                                    item.Competencia.Substring(0,4))).ToString("MM/yyyy")
                         </td>
                         <td>
-                            @item.Matricula.Matricula
+                            @item.NumeroMatricula
                         </td>
                         <td>
-                            @item.Matricula.Empregador.RazaoSocial
+                            @item.RazaoSocialEmpregador
                         </td>
                         <td>
-                            @item.Matricula.Colaborador.Nome
+                            @item.NomeColaborador
                         </td>
                         <td>
                             @*                    @Html.ActionLink("Edit", "Edit", new { id=item.Guid }) |

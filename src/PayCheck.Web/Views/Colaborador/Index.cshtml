@@ -18,10 +18,10 @@
         </a>
     </div>
 
-    <table class="table">
+    <table class="table table-hover table-responsive">
         <thead>
             <tr>
-                <th class="hidden-xs col-md-2 col-lg-2">
+                <th class="hidden-xs hidden-sm col-md-2 col-lg-2">
                     @Html.DisplayNameFor(model => model.Cpf)
                 </th>
                 <th class="col-xs-4 col-sm-6 col-md-6 col-lg-4">
@@ -42,7 +42,7 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>
+                        <td class="hidden-xs hidden-sm">
                             @Convert.ToInt64(
                                 item.Cpf).ToString(
                                     @"000\.000\.000\-00")
@@ -50,7 +50,7 @@
                         <td>
                             @item.Nome
                         </td>
-                        <td align="center">
+                        <td class="hidden-xs hidden-sm hidden-md" align="center">
                             @(item.DataNascimento.HasValue ?
                                 item.DataNascimento.Value.ToString("dd/MM/yyyy") :
                                 "__/__/____")
