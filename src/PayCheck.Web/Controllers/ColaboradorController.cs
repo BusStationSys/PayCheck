@@ -1,6 +1,7 @@
 ﻿namespace PayCheck.Web.Controllers
 {
     using System.Text;
+    using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared.Extensions;
     using AutoMapper;

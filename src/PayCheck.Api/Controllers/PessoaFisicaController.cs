@@ -2,6 +2,7 @@
 {
     using System.Net;
     using ARVTech.DataAccess.Business.UniPayCheck.Interfaces;
+    using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;

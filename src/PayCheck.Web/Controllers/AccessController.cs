@@ -6,6 +6,7 @@
     using System.Security.Claims;
     using System.Text;
     using System.Web;
+    using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared;
     using ARVTech.Shared.Email;

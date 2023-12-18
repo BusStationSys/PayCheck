@@ -1,5 +1,6 @@
 ﻿namespace PayCheck.Web.Controllers
 {
+    using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared;
     using ARVTech.Shared.Extensions;
