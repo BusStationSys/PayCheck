@@ -1,0 +1,79 @@
+﻿@model IEnumerable<UsuarioViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Usuários</h1>
+        <a href="@Url.Action("Edit", "Usuario")" class="btn btn-success btn-icon-split">
+            <span class="icon text-white">
+                <i class="fas fa-plus"></i> Novo Usuário
+            </span>
+        </a>
+    </div>
+
+    <table class="table table-hover table-responsive">
+        <thead>
+            <tr>
+                <th class="hidden-xs hidden-sm col-md-2 col-lg-2">
+                    @*@Html.DisplayNameFor(model => model.Cpf)*@
+                </th>
+                <th class="col-xs-4 col-sm-6 col-md-6 col-lg-4">
+                    @Html.DisplayNameFor(model => model.Username)
+                </th>
+                <th class="hidden-xs hidden-sm hidden-md col-lg-3 text-center">
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+                <th class="col-xs-8 col-sm-6 col-md-4 col-lg-3 text-center">
+                    Ações
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (Model != null)
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="hidden-xs hidden-sm">
+@*                            @Convert.ToInt64(
+                                item.Cpf).ToString(
+                                    @"000\.000\.000\-00")*@
+                        </td>
+                        <td>
+                            @item.Username
+                        </td>
+                        <td class="hidden-xs hidden-sm hidden-md" align="center">
+                            @(item.Email)
+                        </td>
+                        <td align="center">
+                            <span>
+                                <a href="@Url.Action("Edit", "Usuario", new { guid = item.Guid })" class="btn btn-primary btn-xs">
+                                    <i class="fas fa-fw fa-pencil-alt"></i>
+                                </a>
+                                <a href="@Url.Action("Delete", "Usuario", new { guid = item.Guid })" class="btn btn-danger btn-xs">
+                                    <i class="fas fa-fw fa-trash-alt"></i>
+                                </a>
+                            </span>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center">
+                        Nenhum registro encontrado.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
