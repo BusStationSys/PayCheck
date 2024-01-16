@@ -136,9 +136,7 @@
         public IActionResult Details(Guid? guid)
         {
             if (guid == null)
-            {
                 return NotFound();
-            }
 
             string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/{guid}";
 
@@ -148,9 +146,11 @@
                 requestUri,
                 this._tokenBearer))
             {
-                string stringJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-                mdp = JsonConvert.DeserializeObject<MatriculaDemonstrativoPagamentoResponseDto>(stringJson);
+                if (dataJson.IsValidJson())
+                    mdp = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto>>(
+                        dataJson).Data;
             }
 
             return View(

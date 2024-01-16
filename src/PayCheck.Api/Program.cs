@@ -58,7 +58,9 @@ var appSettingsAuthenticationSection = builder.Configuration.GetSection("Authent
 builder.Services.Configure<Authentication>(appSettingsAuthenticationSection);
 
 var appSettingsAuthentication = appSettingsAuthenticationSection.Get<Authentication>();
-var key = Encoding.ASCII.GetBytes(appSettingsAuthentication.Secret);
+
+var key = Encoding.UTF8.GetBytes(
+    appSettingsAuthentication.Secret);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -71,7 +73,8 @@ builder.Services.AddAuthentication(options =>
     jwtBearerOption.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
+        IssuerSigningKey = new SymmetricSecurityKey(
+            key),
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidAudience = appSettingsAuthentication.Audience,
@@ -138,13 +141,6 @@ var app = builder.Build();
 //app.UseSwagger();
 //app.UseSwaggerUI();
 ////}
-
-//app.UseHttpsRedirection();
-
-//app.UseAuthentication();
-//app.UseAuthorization();
-
-//app.MapControllers();
 
 app.UseHttpsRedirection();
 

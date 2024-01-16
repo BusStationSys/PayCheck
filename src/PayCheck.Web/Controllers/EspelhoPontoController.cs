@@ -147,13 +147,15 @@
                 requestUri,
                 this._tokenBearer))
             {
-                string stringJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-                matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponseDto>(stringJson);
+                if (dataJson.IsValidJson())
+                    matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaEspelhoPontoResponseDto>>(
+                        dataJson).Data;
             }
 
             return View(
-                matriculaEspelhoPontoResponse); ;
+                matriculaEspelhoPontoResponse);
         }
 
         /// <summary>
