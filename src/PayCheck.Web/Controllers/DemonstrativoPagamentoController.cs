@@ -140,7 +140,8 @@
 
             string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/{guid}";
 
-            var mdp = default(MatriculaDemonstrativoPagamentoResponseDto);
+            var matriculaDemonstrativoPagamentoResponse = default(
+                MatriculaDemonstrativoPagamentoResponseDto);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -149,12 +150,12 @@
                 string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
                 if (dataJson.IsValidJson())
-                    mdp = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto>>(
+                    matriculaDemonstrativoPagamentoResponse = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto>>(
                         dataJson).Data;
             }
 
             return View(
-                mdp);
+                matriculaDemonstrativoPagamentoResponse);
         }
 
         /// <summary>
