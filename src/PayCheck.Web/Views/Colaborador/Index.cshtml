@@ -18,23 +18,24 @@
         </a>
     </div>
 
-    <table class="table table-hover table-responsive">
+    <table class="table table-hover">
         <thead>
             <tr>
-                <th class="hidden-xs hidden-sm col-md-2 col-lg-2">
+                <th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
                     @Html.DisplayNameFor(model => model.Cpf)
                 </th>
-                <th class="col-xs-4 col-sm-6 col-md-6 col-lg-4">
-                    @Html.DisplayNameFor(model => model.Nome)
-                </th>
-                <th class="hidden-xs hidden-sm hidden-md col-lg-3 text-center">
+                <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center">
                     @Html.DisplayNameFor(model => model.DataNascimento)
                 </th>
-                <th class="col-xs-8 col-sm-6 col-md-4 col-lg-3 text-center">
+                <th class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
+                    @Html.DisplayNameFor(model => model.Nome)
+                </th>
+                <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center">
                     Ações
                 </th>
             </tr>
         </thead>
+
 
         <tbody>
             @if (Model != null)
@@ -47,13 +48,13 @@
                                 item.Cpf).ToString(
                                     @"000\.000\.000\-00")
                         </td>
-                        <td>
-                            @item.Nome
-                        </td>
                         <td class="hidden-xs hidden-sm hidden-md" align="center">
                             @(item.DataNascimento.HasValue ?
                                 item.DataNascimento.Value.ToString("dd/MM/yyyy") :
                                 "__/__/____")
+                        </td>
+                        <td>
+                            @item.Nome
                         </td>
                         <td align="center">
                             <span>
