@@ -29,9 +29,17 @@
 <body class="bg-gradient-success">
     <div class="container">
         <div class="row justify-content-center">
+
             <div class="col-xl-10 col-lg-12 col-md-9">
                 <div class="card o-hidden border-0 shadow-lg my-5">
                     <div class="card-body p-0">
+
+                        <div class="progress" id="divProgress" style="display: none;">
+                            <div class="progress-bar progress-bar-info progress-bar-striped" id="divProgressBar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                Enviando...
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-lg-6">
                             </div>
@@ -52,11 +60,23 @@
                                     }
                                     else if (ViewBag.SuccessMessage != null)
                                     {
-                                        <div class="alert alert-success alert-dismissible">
+                                        <div class="alert alert-success alert-dismissible" id="alertSuccess">
                                             <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-                                            <strong>Sucesso</strong>
-                                            @ViewBag.SuccessMessage
+
+                                            <h4>
+                                                <i class="icon fa fa-check"></i>
+                                                <strong>Sucesso</strong>
+                                            </h4>
+
+                                            @Html.Raw(@ViewBag.SuccessMessage)
+
+                                            <p>
+                                                <small class="text-success">
+                                                    Se o redirecionamento não funcionar, clique <a href="@Url.Action("Login", "Access")" class="text-success"><strong>aqui</strong></a>.
+                                                </small>
+                                            </p>
                                         </div>
+
                                     }
                                     else if (ViewBag.ValidateMessage != null)
                                     {
@@ -68,7 +88,7 @@
                                     }
                                     else
                                     {
-                                        <div class="text-center">
+                                        <div class="text-center" id="divTexto">
                                             <h1 class="h4 text-gray-900 mb-2">Ative sua Conta de Usuário.</h1>
                                             <p style="text-align:justify" class="mb-4">
 
@@ -82,7 +102,7 @@
                                     }
 
                                     <form class="user" asp-action="LinkActivation" asp-controller="Access" method="post">
-                                        <div class="text-center">
+                                        <div class="text-center" id="divEmail">
                                             <div class="form-group">
                                                 <h1 class="h4 text-gray-900 mb-2">
                                                     <label asp-for="Email" class="control-label">@Model.Email</label>
@@ -91,7 +111,7 @@
                                                 <input type="hidden" asp-for="Email" />
                                             </div>
                                         </div>
-                                        <button type="submit" class="btn btn-success btn-user btn-block">
+                                        <button class="btn btn-success btn-user btn-block" id="btnEnviarLink" type="submit">
                                             Enviar Link
                                         </button>
                                     </form>
@@ -120,3 +140,35 @@
 <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/js/sb-admin-2.min.js"></script>
 
 </html>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //  Controle para redirecionar a página se o ViewBag de Mensagem de Sucesso estiver preenchido.
+        var msg = '@ViewBag.SuccessMessage';
+
+        if (msg !== '') {
+            $("#btnEnviarLink").hide();
+            $('#divEmail').hide();
+            $('#divTexto').hide();
+
+            $("#divProgressBar").removeClass("progress-bar-animated");
+            $("#divProgress").hide();
+
+            setTimeout(function () {
+                window.location.replace(
+                    '@Url.Action(
+                        "Login",
+                        "Access")')
+            }, 4000);
+        }
+
+        $("#btnEnviarLink").on("click", function () {
+            $("#btnEnviarLink").hide();
+            $("#divEmail").hide();
+            $("#divTexto").hide();
+
+            $("#divProgressBar").addClass("progress-bar-animated");
+            $("#divProgress").show();
+        });
+    });
+</script>
