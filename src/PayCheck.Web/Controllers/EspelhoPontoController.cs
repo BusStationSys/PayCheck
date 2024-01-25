@@ -196,11 +196,12 @@
                         NullValueHandling = NullValueHandling.Ignore,
                     });
 
-                matriculaEspelhoPontoRequestUpdateDtoJson = webApiHelper.ExecutePutWithAuthenticationByBearer(
+                string dataJson = webApiHelper.ExecutePutWithAuthenticationByBearer(
                     matriculaEspelhoPontoRequestUpdateDtoJson);
 
-                matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponseDto>(
-                    matriculaEspelhoPontoRequestUpdateDtoJson);
+                if (dataJson.IsValidJson())
+                    matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaEspelhoPontoResponseDto>>(
+                        dataJson).Data;
             }
 
             return RedirectToAction(
@@ -224,10 +225,13 @@
                 requestUri,
                 this._tokenBearer))
             {
-                string matriculaEspelhoPontoResponseJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-                return JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponseDto>(
-                    matriculaEspelhoPontoResponseJson);
+                if (dataJson.IsValidJson())
+                    return JsonConvert.DeserializeObject<ApiResponseDto<MatriculaEspelhoPontoResponseDto>>(
+                        dataJson).Data;
+
+                return null;
             }
         }
     }

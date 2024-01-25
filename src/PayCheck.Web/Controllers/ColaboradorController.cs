@@ -83,12 +83,18 @@
         /// 
         /// </summary>
         /// <returns></returns>
-        [HttpGet()]
+
         public IActionResult Index()
+        {
+            return View();
+        }
+
+        [HttpPost()]
+        public IActionResult GetDataTable()
         {
             string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica";
 
-            var pessoasFisicasViewModel = default(IEnumerable<PessoaFisicaViewModel>);
+            var pessoasFisicas = default(IEnumerable<PessoaFisicaViewModel>);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -98,16 +104,72 @@
 
                 if (dataJson.IsValidJson())
                 {
-                    var data = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>>(
+                    var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>>(
                         dataJson).Data;
 
-                    pessoasFisicasViewModel = this._mapper.Map<IEnumerable<PessoaFisicaViewModel>>(
-                        data);
+                    pessoasFisicas = this._mapper.Map<IEnumerable<PessoaFisicaViewModel>>(
+                        source);
                 }
             }
 
-            return View(
-                pessoasFisicasViewModel);
+            var query = from pessoaFisica in pessoasFisicas
+                        select new
+                        {
+                            pessoaFisica.Guid,
+                            Cpf = Convert.ToInt64(
+                                pessoaFisica.Cpf).ToString(@"000\.000\.000\-00"),
+                            DataNascimento = pessoaFisica.DataNascimento.HasValue ?
+                                pessoaFisica.DataNascimento.Value.ToString("dd/MM/yyyy") :
+                                "__/__/____",
+                            pessoaFisica.Nome,
+                        };
+
+            var draw = Request.Form["draw"].FirstOrDefault();
+            var length = Request.Form["length"].FirstOrDefault();
+            //var sortColumn = Request.Form["sort"].FirstOrDefault();
+            //var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
+            var searchValue = Request.Form["search[value]"].FirstOrDefault() ?? string.Empty;
+            var start = Request.Form["start"].FirstOrDefault();
+
+            //  Paging Size (10, 20, 50, 100)
+            int pageSize = length != null ?
+                Convert.ToInt32(
+                    length) :
+                    0;
+
+            int skip = start != null ?
+                Convert.ToInt32(
+                    start) :
+                    0;
+
+            //  Retrieve data from WebApi
+            if (!string.IsNullOrEmpty(searchValue))
+                query = query.Where(
+                    td => td.Nome.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        td.Cpf.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        td.DataNascimento.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        string.IsNullOrEmpty(searchValue));
+
+            //  Total Number of Rows Count.
+            int recordsTotal = query.Count();
+
+            //  Paging.
+            var data = query.Skip(skip).Take(pageSize).ToList();
+
+            // Create a JSON response with the data and total count.
+            return new JsonResult(new
+            {
+                data,
+                draw,
+                recordsTotal,
+                recordsFiltered = recordsTotal,
+            });
         }
 
         /// <summary>

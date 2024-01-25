@@ -30,6 +30,9 @@ var unitOfWork = new UnitOfWorkSqlServer(
 //services.AddSingleton(provider => repository);
 //services.AddSingleton(provider => repository2);
 
+builder.Services.AddScoped<IMatriculaBusiness>(
+    provider => new MatriculaBusiness(unitOfWork));
+
 builder.Services.AddScoped<IMatriculaEspelhoPontoBusiness>(
     provider => new MatriculaEspelhoPontoBusiness(unitOfWork));
 

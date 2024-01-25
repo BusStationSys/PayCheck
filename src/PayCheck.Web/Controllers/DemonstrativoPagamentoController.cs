@@ -196,11 +196,12 @@
                         NullValueHandling = NullValueHandling.Ignore,
                     });
 
-                matriculaDemonstrativoPagamentoRequestUpdateDtoJson = webApiHelper.ExecutePutWithAuthenticationByBearer(
+                string dataJson = webApiHelper.ExecutePutWithAuthenticationByBearer(
                     matriculaDemonstrativoPagamentoRequestUpdateDtoJson);
 
-                matriculaDemonstrativoPagamentoResponse = JsonConvert.DeserializeObject<MatriculaDemonstrativoPagamentoResponseDto>(
-                    matriculaDemonstrativoPagamentoRequestUpdateDtoJson);
+                if (dataJson.IsValidJson())
+                    matriculaDemonstrativoPagamentoResponse = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto>>(
+                        dataJson).Data;
             }
 
             return RedirectToAction(
@@ -224,10 +225,13 @@
                 requestUri,
                 this._tokenBearer))
             {
-                string matriculaDemonstrativoPagamentoResponseJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-                return JsonConvert.DeserializeObject<MatriculaDemonstrativoPagamentoResponseDto>(
-                    matriculaDemonstrativoPagamentoResponseJson);
+                if (dataJson.IsValidJson())
+                    return JsonConvert.DeserializeObject<ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto>>(
+                        dataJson).Data;
+
+                return null;
             }
         }
     }

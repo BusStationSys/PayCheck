@@ -135,6 +135,42 @@
         /// <summary>
         /// 
         /// </summary>
+        /// <returns></returns>
+        [HttpGet("getAniversariantes/{mes}")]
+        public ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>> GetAniversariantes(int mes)
+        {
+            try
+            {
+                var data = this._business.GetAniversariantes(
+                    mes);
+
+                if (data != null && data.Count() > 0)
+                    return new ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>
+                    {
+                        Data = data,
+                        Success = true,
+                        StatusCode = HttpStatusCode.OK,
+                    };
+
+                return new ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>
+                {
+                    Message = $"Não há registros de Pessoas Físicas que realizam aniversário em {mes}.",
+                    StatusCode = HttpStatusCode.NotFound,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>
+                {
+                    Message = ex.Message,
+                    StatusCode = HttpStatusCode.InternalServerError,
+                };
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="createDto"></param>
         /// <returns></returns>
         [HttpPost]

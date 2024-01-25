@@ -61,7 +61,7 @@
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
-            var key = Encoding.ASCII.GetBytes(
+            var key = Encoding.UTF8.GetBytes(
                 this._authentication.Secret);
 
             var tokenDescriptor = new SecurityTokenDescriptor

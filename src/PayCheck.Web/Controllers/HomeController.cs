@@ -1,12 +1,18 @@
 ﻿namespace PayCheck.Web.Controllers;
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Security.Claims;
+using ARVTech.DataAccess.DTOs;
 using ARVTech.DataAccess.DTOs.UniPayCheck;
+using ARVTech.Shared.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using PayCheck.Web.Models;
 
 [Authorize]
@@ -14,9 +20,52 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
 
-    public HomeController(ILogger<HomeController> logger)
+    private readonly string _tokenBearer;
+
+    private readonly HttpClient _httpClient;
+
+    public HomeController(ILogger<HomeController> logger, IOptions<ExternalApis> externalApis)
     {
-        _logger = logger;
+        this._logger = logger;
+
+        var externalApisValue = externalApis.Value;
+
+        Uri baseAddress = new(
+            externalApisValue.PayCheck);
+
+        this._httpClient = new HttpClient
+        {
+            BaseAddress = baseAddress,
+        };
+
+        using (var webApiHelper = new WebApiHelper(
+            string.Concat(
+                baseAddress,
+                "/auth"),
+            "arvtech",
+            "(@rV73Ch)"))
+        {
+            var authDto = new AuthRequestDto
+            {
+                Username = "arvtech",
+                Password = "(@rV73Ch)",
+            };
+
+            string authDtoJson = JsonConvert.SerializeObject(authDto,
+                Formatting.None,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                });
+
+            authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
+                authDtoJson);
+
+            var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
+                authDtoJson);
+
+            this._tokenBearer = authResponse.Token;
+        }
     }
 
     public IActionResult Index()
@@ -37,6 +86,12 @@ public class HomeController : Controller
 
             TempData.Keep();
         }
+
+        ViewData["Aniversariantes"] = this.LoadAniversariantes(
+            DateTime.Now.Month);
+
+        ViewData["AniversariantesEmpresa"] = this.LoadAniversariantesEmpresa(
+            DateTime.Now.Month);
 
         return View();
     }
@@ -60,5 +115,88 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    private IEnumerable<dynamic> LoadAniversariantes(int mes)
+    {
+        string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/getAniversariantes/{mes}";
+
+        var pessoasFisicas = default(IEnumerable<PessoaFisicaResponseDto>);
+
+        using (var webApiHelper = new WebApiHelper(
+            requestUri,
+            this._tokenBearer))
+        {
+            string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+
+            if (dataJson.IsValidJson())
+            {
+                pessoasFisicas = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>>(
+                    dataJson).Data;
+            }
+        }
+
+        var aniversariantes = from aniversariante in pessoasFisicas
+                              where aniversariante.DataNascimento != null
+                              select new
+                              {
+                                  aniversariante.Guid,
+                                  aniversariante.Nome,
+                                  DataNascimentoOrdenado = Convert.ToDateTime(
+                                      aniversariante.DataNascimento).ToString("MMdd"),
+                                  DataNascimentoString = Convert.ToDateTime(
+                                      aniversariante.DataNascimento).ToString("dd/MM"),
+                                  Indice = Convert.ToDouble(
+                                      Math.Round(
+                                          (Convert.ToDateTime(
+                                              Convert.ToDateTime(
+                                                  aniversariante.DataNascimento).ToString("dd/MM") + "/" + DateTime.Now.Year) - DateTime.Now).TotalDays, 2)),
+                              };
+
+        return aniversariantes.OrderBy(
+            a => a.DataNascimentoOrdenado)
+                .ThenBy(a => a.Nome).ToList();
+    }
+
+    private IEnumerable<dynamic> LoadAniversariantesEmpresa(int mes)
+    {
+        string requestUri = @$"{this._httpClient.BaseAddress}/Matricula/getAniversariantesEmpresa/{mes}";
+
+        var matriculas = default(IEnumerable<MatriculaResponseDto>);
+
+        using (var webApiHelper = new WebApiHelper(
+            requestUri,
+            this._tokenBearer))
+        {
+            string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+
+            if (dataJson.IsValidJson())
+            {
+                matriculas = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaResponseDto>>>(
+                    dataJson).Data;
+            }
+        }
+
+        var aniversariantes = from aniversarianteEmpresa in matriculas
+                              select new
+                              {
+                                  aniversarianteEmpresa.Guid,
+                                  aniversarianteEmpresa.Colaborador.Nome,
+                                  DataAdmissaoOrdenada = Convert.ToDateTime(
+                                      aniversarianteEmpresa.DataAdmissao).ToString("MMdd"),
+                                  DataAdmissaoString = Convert.ToDateTime(
+                                      aniversarianteEmpresa.DataAdmissao).ToString("dd/MM"),
+                                  aniversarianteEmpresa.DataAdmissao,
+                                  Indice = Convert.ToDouble(
+                                      Math.Round(
+                                          (Convert.ToDateTime(
+                                              Convert.ToDateTime(
+                                                  aniversarianteEmpresa.DataAdmissao).ToString("dd/MM") + "/" + DateTime.Now.Year) - DateTime.Now).TotalDays, 2)),
+                              };
+
+        return aniversariantes.OrderBy(
+            a => a.DataAdmissaoOrdenada)
+                .ThenByDescending(a => a.DataAdmissao)
+                .ThenBy(a => a.Nome).ToList();
     }
 }

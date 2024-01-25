@@ -17,6 +17,8 @@
 
     <!-- Custom styles for this template-->
     <link href="~/Theme/startbootstrap-sb-admin-2-gh-pages/css/sb-admin-2.min.css" rel="stylesheet" type="text/css">
+
+    @RenderSection("Styles", false)
 </head>
 
 <body id="page-top">
@@ -124,6 +126,7 @@
             </div>
         </ul>
         <!-- End of Sidebar -->
+
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
 
@@ -342,29 +345,26 @@
 
                 </nav>
                 <!-- End of Topbar -->
-                <!-- Begin Page Content -->
+
+                @RenderBody()
+
+@*                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
                     <!-- Content Row -->
                     <div class="row">
                         <div class="container">
-                            <main role="main" class="pb-3">
-                                @RenderBody()
-                            </main>
-                        </div>
-
-                        @*                        <footer class="border-top footer text-muted">
-                        <div class="container">
-                        <p>Copyright&copy; @DateTime.Now.Year - UniPayCheck.App - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></p>
-                        </div>
-                        </footer>*@
+                            @* <main role="main" class="pb-3"> *@
+                                @* @RenderBody() *@
+                            @* </main> *@
+@*                         </div>
                     </div>
 
-                </div>
+                </div> *@
                 <!-- /.container-fluid -->
-
             </div>
             <!-- End of Main Content -->
+
             <!-- Footer -->
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
@@ -412,7 +412,7 @@
 
     <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-    @*<script src="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/jquery.mask/jquery.mask.js"></script>*@
+    <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/jquery.mask/jquery.mask.js"></script>
     <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/jquery.mask/jquery.mask.min.js"></script>
 
     <!-- Core plugin JavaScript-->
@@ -422,17 +422,18 @@
     <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/js/sb-admin-2.min.js"></script>
 
     <!-- Page level plugins -->
-    <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/vendor/chart.js/Chart.min.js"></script>
+    @* <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/vendor/chart.js/Chart.min.js"></script> *@
 
     <!-- Page level custom scripts -->
-    <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/js/demo/chart-area-demo.js"></script>
-    <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/js/demo/chart-pie-demo.js"></script>
+@*     <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/js/demo/chart-area-demo.js"></script>
+    <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/js/demo/chart-pie-demo.js"></script> *@
 
 </body>
 
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/jquery.mask/jquery.mask.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+@* <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
+@* <script src="~/lib/jquery.mask/jquery.mask.min.js"></script> *@
+@* <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> *@
+
 <script src="~/js/site.js" asp-append-version="true"></script>
 
 @await RenderSectionAsync("Scripts", required: false)
