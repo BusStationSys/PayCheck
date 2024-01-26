@@ -112,6 +112,7 @@
                 }
             }
 
+            //  Retrieve data from WebApi
             var query = from pessoaFisica in pessoasFisicas
                         select new
                         {
@@ -126,8 +127,10 @@
 
             var draw = Request.Form["draw"].FirstOrDefault();
             var length = Request.Form["length"].FirstOrDefault();
-            //var sortColumn = Request.Form["sort"].FirstOrDefault();
-            //var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
+
+            var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
+            var sortColumnDir = Request.Form["order[0][dir]"].FirstOrDefault();
+
             var searchValue = Request.Form["search[value]"].FirstOrDefault() ?? string.Empty;
             var start = Request.Form["start"].FirstOrDefault();
 
@@ -142,7 +145,23 @@
                     start) :
                     0;
 
-            //  Retrieve data from WebApi
+            //  Sorting
+            if (!string.IsNullOrEmpty(sortColumn))
+            {
+                if (!string.IsNullOrEmpty(sortColumnDir) &&
+                    sortColumnDir.ToUpper() == "DESC")
+                    query = query.OrderByDescending(pf => pf.GetType().GetProperty(
+                        sortColumn).GetValue(
+                            pf,
+                            null));
+                else
+                    query = query.OrderBy(pf => pf.GetType().GetProperty(
+                        sortColumn).GetValue(
+                            pf,
+                            null));
+            }
+
+            //  Search
             if (!string.IsNullOrEmpty(searchValue))
                 query = query.Where(
                     td => td.Nome.Contains(

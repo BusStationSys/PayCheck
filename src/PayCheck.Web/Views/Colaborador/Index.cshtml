@@ -24,7 +24,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="tblColaboradores" width="100%" cellspacing="0">
+                <table class="table table-bordered dt-responsive nowrap" id="tblColaboradores" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>
@@ -95,11 +95,12 @@
 
 @section Styles {
     <!-- Custom styles for this page -->
-    <link href="@Url.Content("~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/datatables.bootstrap4.min.css") rel="stylesheet" type="text/css" />
+    <link href="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/datatables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 }
 
 @section Scripts {
     <!-- Page level plugins -->
+
     <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/jquery.datatables.min.js"></script>
     <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/datatables.bootstrap4.min.js"></script>
 
@@ -109,6 +110,7 @@
         $(document).ready(function () {
             $('#tblColaboradores').DataTable({
                 "lengthMenu": [10, 25, 50, 100],
+                "orderMulti": false,
                 "pageLength": 10,
                 "paging": true,
                 "processing": true,
@@ -120,24 +122,35 @@
                 },
                 "columns": [
                     { "data": "guid", "title": "Guid" },
-                    { "data": "cpf", "title": "CPF" },
-                    { "data": "dataNascimento", "title": "Nascimento" },
+                    { "data": "cpf", "name": "Cpf", "title": "CPF" },
+                    { "data": "dataNascimento", "name": "DataNascimento", "title": "Nascimento" },
                     {
-                        "data": "nome", "title": "Nome",
+                        "data": "nome", "name": "Nome", "title": "Nome",
                         "render": function (data, type, row) {
                             return '<a href="/Colaborador/Edit?guid=' + row.guid + '">' + data + '</a>';
                         }
-                    }],
+                    },
+                    {
+                        "data": null,
+                        "render": function (data, type, full, meta) {
+
+                            return '<a href="" class="btn btn-warning btn-xs"><i class="fas fa-fw fa-file-alt"></i></a> <a href="" class="btn btn-primary btn-xs"><i class="fas fa-fw fa-pencil-alt"></i></a> <a href="" class="btn btn-danger btn-xs"><i class="fas fa-fw fa-trash-alt"></i></a>';
+                        }
+                    }
+                ],
                 "columnDefs": [
-                    { "className": "dt-center", "targets": [1, 2] },
+                    { "className": "dt-center", "targets": [1, 2, 4] },
 
-                    { "targets": [1, 2, 3], searchable: true, visible: true },
+                    { "targets": [1, 2, 3], orderable: true, searchable: true },
+                    { "targets": [1, 2, 3, 4], visible: true },
 
-                    { "width": "15%", "targets": 1 },
-                    { "width": "10%", "targets": 2 },
+                    { "width": "12%", "targets": 1 },
+                    { "width": "9%", "targets": 2 },
+                    { "width": "16%", "targets": 4 },
 
-                    { "targets": '_all', searchable: false, visible: false }
-                ]
+                    { "targets": '_all', orderable: false, searchable: false, visible: false }
+                ],
+                "responsive": true
             });
         });
     </script>
