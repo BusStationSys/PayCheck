@@ -1,0 +1,161 @@
+﻿@model PessoaJuridicaViewModel
+
+@{
+    ViewData["Title"] = "Details";
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Logout Modal-->
+    <!-- Page Heading -->
+    <div class="row d-sm-flex align-items-center justify-content-between mb-4">
+        <div class="col-sm-8 col-6">
+            <h1 class="h3 mb-0 text-gray-800">Empregador</h1>
+        </div>
+        <div class="col-sm-4 col-6 text-right">
+            <a class="btn btn-secondary btn-icon-split pull-right" asp-action="Index">
+                <span class="icon text-white-50">
+                    <i class="fas fa-arrow-left"></i>
+                </span>
+                <span class="text">Voltar</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        @Html.HiddenFor(model => model.Guid)
+        @Html.HiddenFor(model => model.GuidPessoa)
+
+        <div class="col-xl-3 col-sm-3 col-md-2">
+            <div class="form-group">
+                <label class="control-label" for="txtCnpj">
+                    @Html.DisplayNameFor(model => model.Cnpj)
+                </label>
+
+                @Html.TextBoxFor(Model => Model.Cnpj, "", new { @class = "form-control", @id = "txtCnpj", @maxlength = "18", @placeholder = "XX.XXX.XXX/XXXX-XX", @readonly = true })
+                @Html.ValidationMessageFor(model => model.Cnpj, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="col-xl-7 col-sm-6 col-md-8">
+            <div class="form-group">
+                <label class="control-label" for="txtRazaoSocial">
+                    @Html.DisplayNameFor(model => model.RazaoSocial)
+                </label>
+
+                @Html.TextBoxFor(Model => Model.RazaoSocial, new { @class = "form-control", @id = "txtRazaoSocial", @maxlength = "100", @readonly = true, @type = "text" })
+                @Html.ValidationMessageFor(model => model.RazaoSocial, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-sm-3 col-md-2">
+            <div class="form-group">
+                <label class="control-label" for="txtDataFundacao">
+                    @Html.DisplayNameFor(model => model.DataFundacao)
+                </label>
+
+                @Html.TextBoxFor(Model => Model.DataFundacao, "{0:dd/MM/yyyy}", new { @class = "form-control", @id = "txtDataFundacao", @maxlength = "10", @placeholder = "XX/XX/XXXX", @readonly = true })
+                @Html.ValidationMessageFor(model => model.DataFundacao, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group">
+                <label class="control-label" for="txtCep">
+                    @Html.DisplayNameFor(model => model.Cep)
+                </label>
+
+                @Html.TextBoxFor(Model => Model.Cep, "", new { @class = "form-control", @id = "txtCep", @maxlength = "9", @readonly = true, @type = "text" })
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="control-label" for="txtEndereco">
+                    @Html.DisplayNameFor(model => model.Endereco)
+                </label>
+                @Html.TextBoxFor(Model => Model.Endereco, "", new { @class = "form-control", @id = "txtEndereco", @maxlenght = "100", @readonly = true, @type = "text" })
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label class="control-label" for="txtNumero">
+                    @Html.DisplayNameFor(model => model.Numero)
+                </label>
+                @Html.TextBoxFor(Model => Model.Numero, "", new { @class = "form-control", @id = "txtNumero", @maxlenght = "10", @readonly = true, @type = "text" })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label class="control-label" for="txtComplemento">
+                    @Html.DisplayNameFor(model => model.Complemento)
+                </label>
+                @Html.TextBoxFor(Model => Model.Complemento, "", new { @class = "form-control", @id = "txtComplemento", @maxlenght = "30", @readonly = true, @type = "text" })
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="control-label" for="txtBairro">
+                    @Html.DisplayNameFor(model => model.Bairro)
+                </label>
+                @Html.TextBoxFor(Model => Model.Bairro, "", new { @class = "form-control", @id = "txtBairro", @maxlenght = "40", @readonly = true, @type = "text" })
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="control-label" for="txtCidade">
+                    @Html.DisplayNameFor(model => model.Cidade)
+                </label>
+                @Html.TextBoxFor(Model => Model.Cidade, "", new { @class = "form-control", @id = "txtCidade", @maxlenght = "60", @readonly = true, @type = "text" })
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="form-group">
+                <label class="control-label" for="txtUf">
+                    @Html.DisplayNameFor(model => model.Uf)
+                </label>
+                @Html.TextBoxFor(Model => Model.Uf, "", new { @class = "form-control", @id = "txtUf", @maxlenght = "2", @readonly = true, @type = "text" })
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label" for="txtEmail">
+                    @Html.DisplayNameFor(model => model.Email)
+                </label>
+                @Html.TextBoxFor(Model => Model.Email, "", new { @class = "form-control", @id = "txtEmail", @maxlenght = "75", @readonly = true, @type = "email" })
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label" for="txtTelefone">
+                    @Html.DisplayNameFor(model => model.Telefone)
+                </label>
+                @Html.TextBoxFor(Model => Model.Telefone, "", new { @class = "form-control", @id = "txtTelefone", @maxlenght = "30", @readonly = true, @type = "text" })
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txtCep').mask('00000-000');
+
+            $('#txtCnpj').mask('00.000.000/0000-00');
+
+            $('#txtDataFundacao').mask('00/00/0000');
+        });
+    </script>
+}

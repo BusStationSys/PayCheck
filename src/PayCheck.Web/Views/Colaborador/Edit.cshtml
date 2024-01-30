@@ -10,89 +10,81 @@
 <div class="container-fluid">
     <!-- Logout Modal-->
     <!-- Page Heading -->
-    <!-- Page Heading aria-hidden="true" -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Colaborador</h1>
-    </div>
-
-    @*<div class="alert alert-danger alert-dismissible" style="display: none;"></div>*@
-
-    <div class="alert alert-danger alert-dismissible" style="display: none;">
-        <h4 class="alert-heading">Erro</h4>
-        <p>This is a sample alert with a list group:</p>
-        <ul class="list-group">
-            <li class="list-group-item">Item 1</li>
-            <li class="list-group-item">Item 2</li>
-            <li class="list-group-item">Item 3</li>
-        </ul>
-        <hr>
-        <p class="mb-0">Additional information or actions can be placed here.</p>
-    </div>
-
     <div class="alert alert-danger alert-dismissible" style="display: none;"></div>
     <div id="alertSuccess" class="alert alert-success alert-dismissible" style="display: none;"></div>
     <div class="alert alert-warning alert-dismissible" style="display: none;"></div>
     <div class="text-center" style="display: none;"></div>
 
-    @if (ViewBag.ErrorMessage != null)
-    {
-        <div class="alert alert-danger alert-dismissible">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-
-            <i class="icon fa fa-ban"></i>
-            <strong>Erro</strong>
-
-            @Html.Raw(@ViewBag.ErrorMessage)
-        </div>
-    }
-    else if (ViewBag.SuccessMessage != null)
-    {
-        <div id="alertSuccess" class="alert alert-success alert-dismissible">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-
-            <h4>
-                <i class="icon fa fa-check"></i>
-                <strong>Sucesso</strong>
-            </h4>
-
-            @Html.Raw(@ViewBag.SuccessMessage)
-
-            <p>
-                <small class="text-success">
-                    Se o redirecionamento não funcionar, clique <a href="@Url.Action("Index", "Colaborador")" class="text-success"><strong>aqui</strong></a>.
-                </small>
-            </p>
-        </div>
-    }
-    else if (ViewBag.ValidateMessage != null)
-    {
-        <div class="alert alert-warning alert-dismissible">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-
-            <i class="icon fa fa-exclamation"></i>
-            <strong>Validação</strong>
-
-            @Html.Raw(@ViewBag.ValidateMessage)
-        </div>
-    }
-
     @using (Html.BeginForm("Edit", "Colaborador", FormMethod.Post, new { @class = "user" }))
     {
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="alert alert-danger alert-dismissible">
+                @* <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a> *@
+
+                <i class="icon fa fa-ban"></i>
+                <strong>Erro</strong>
+
+                @Html.Raw(@ViewBag.ErrorMessage)
+            </div>
+        }
+        else if (ViewBag.SuccessMessage != null)
+        {
+            <div id="alertSuccess" class="alert alert-success alert-dismissible">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+
+                <h4>
+                    <i class="icon fa fa-check"></i>
+                    <strong>Sucesso</strong>
+                </h4>
+
+                @Html.Raw(@ViewBag.SuccessMessage)
+
+                <p>
+                    <small class="text-success">
+                        Se o redirecionamento não funcionar, clique <a href="@Url.Action("Index", "Colaborador")" class="text-success"><strong>aqui</strong></a>.
+                    </small>
+                </p>
+            </div>
+        }
+        else if (ViewBag.ValidateMessage != null)
+        {
+            <div class="alert alert-warning alert-dismissible">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+
+                <i class="icon fa fa-exclamation"></i>
+                <strong>Validação</strong>
+
+                @Html.Raw(@ViewBag.ValidateMessage)
+            </div>
+        }
+
+        <div class="row d-sm-flex align-items-center justify-content-between mb-4">
+            <div class="col-sm-8 col-6">
+                <h1 class="h3 mb-0 text-gray-800">Colaborador</h1>
+            </div>
+            <div class="col-sm-4 col-6 text-right">
+                <a class="btn btn-secondary btn-icon-split pull-right" asp-action="Index">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-arrow-left"></i>
+                    </span>
+                    <span class="text">Voltar</span>
+                </a>
+
+                <button id="btnSalvar" type="submit" class="btn btn-primary btn-icon-split">
+                    <span class="icon text-white">
+                        <i class="fas fa-save"></i>
+                    </span>
+                    <span class="text">Salvar</span>
+                </button>
+            </div>
+        </div>
+
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         @Html.AntiForgeryToken()
 
         <div class="row">
-            @*            <div class="col-xl-12 col-sm-12 col-md-12">
-        <div class="form-group">
-        <label class="control-label" for="txtGuid">
-        @Html.DisplayNameFor(model => model.Guid)
-        </label>
-
-        @Html.TextBoxFor(Model => Model.Guid, new { @class = "form-control", @id="txtGuid", @maxlength="100", @required = "required", @type = "text" } )
-        </div>
-        </div>*@
-
             @Html.HiddenFor(model => model.Guid)
             @Html.HiddenFor(model => model.GuidPessoa)
 
@@ -102,7 +94,7 @@
                         @Html.DisplayNameFor(model => model.Cpf)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.Cpf, "", new { @class = "form-control", @id="txtCpf", @maxlength = "14", @placeholder = "XXX.XXX.XXX-XX" } )
+                    @Html.TextBoxFor(Model => Model.Cpf, "", new { @class = "form-control", @id = "txtCpf", @maxlength = "14", @placeholder = "XXX.XXX.XXX-XX" })
                 </div>
             </div>
 
@@ -112,7 +104,7 @@
                         @Html.DisplayNameFor(model => model.Nome)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.Nome, new { @class = "form-control", @id="txtNome", @maxlength="100", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Nome, new { @class = "form-control", @id = "txtNome", @maxlength = "100", @type = "text" })
                 </div>
             </div>
 
@@ -132,7 +124,7 @@
                         @Html.DisplayNameFor(model => model.Rg)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.Rg, "", new { @class = "form-control", @id="txtRg", @maxlength = "20" } )
+                    @Html.TextBoxFor(Model => Model.Rg, "", new { @class = "form-control", @id = "txtRg", @maxlength = "20" })
                 </div>
             </div>
         </div>
@@ -144,7 +136,7 @@
                         @Html.DisplayNameFor(model => model.Cep)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.Cep, "", new { @class="form-control", @id = "txtCep", @maxlength = "9", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Cep, "", new { @class = "form-control", @id = "txtCep", @maxlength = "9", @type = "text" })
                 </div>
             </div>
             <div class="col-md-5">
@@ -152,7 +144,7 @@
                     <label class="control-label" for="txtEndereco">
                         @Html.DisplayNameFor(model => model.Endereco)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Endereco, "", new { @class="form-control", @id="txtEndereco", @maxlenght="100", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Endereco, "", new { @class = "form-control", @id = "txtEndereco", @maxlenght = "100", @type = "text" })
                 </div>
             </div>
             <div class="col-md-2">
@@ -160,7 +152,7 @@
                     <label class="control-label" for="txtNumero">
                         @Html.DisplayNameFor(model => model.Numero)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Numero, "", new { @class="form-control", @id="txtNumero", @maxlenght="10", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Numero, "", new { @class = "form-control", @id = "txtNumero", @maxlenght = "10", @type = "text" })
                 </div>
             </div>
             <div class="col-md-3">
@@ -168,7 +160,7 @@
                     <label class="control-label" for="txtComplemento">
                         @Html.DisplayNameFor(model => model.Complemento)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Complemento, "", new { @class="form-control", @id="txtComplemento", @maxlenght="30", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Complemento, "", new { @class = "form-control", @id = "txtComplemento", @maxlenght = "30", @type = "text" })
                 </div>
             </div>
         </div>
@@ -179,7 +171,7 @@
                     <label class="control-label" for="txtBairro">
                         @Html.DisplayNameFor(model => model.Bairro)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Bairro, "", new { @class="form-control", @id="txtBairro", @maxlenght = "40", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Bairro, "", new { @class = "form-control", @id = "txtBairro", @maxlenght = "40", @type = "text" })
                 </div>
             </div>
 
@@ -188,7 +180,7 @@
                     <label class="control-label" for="txtCidade">
                         @Html.DisplayNameFor(model => model.Cidade)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Cidade, "", new { @class="form-control", @id="txtCidade", @maxlenght="60", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Cidade, "", new { @class = "form-control", @id = "txtCidade", @maxlenght = "60", @type = "text" })
                 </div>
             </div>
 
@@ -197,7 +189,7 @@
                     <label class="control-label" for="txtUf">
                         @Html.DisplayNameFor(model => model.Uf)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Uf, "", new { @class="form-control", @id="txtUf", @maxlenght="2", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Uf, "", new { @class = "form-control", @id = "txtUf", @maxlenght = "2", @type = "text" })
                 </div>
             </div>
         </div>
@@ -208,7 +200,7 @@
                     <label class="control-label" for="txtEmail">
                         @Html.DisplayNameFor(model => model.Email)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Email, "", new { @class="form-control", @id="txtEmail", @maxlenght="75", @type = "email" } )
+                    @Html.TextBoxFor(Model => Model.Email, "", new { @class = "form-control", @id = "txtEmail", @maxlenght = "75", @type = "email" })
                 </div>
             </div>
 
@@ -217,7 +209,7 @@
                     <label class="control-label" for="txtTelefone">
                         @Html.DisplayNameFor(model => model.Telefone)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Telefone, "", new { @class="form-control", @id="txtTelefone", @maxlenght="30", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Telefone, "", new { @class = "form-control", @id = "txtTelefone", @maxlenght = "30", @type = "text" })
                 </div>
             </div>
         </div>
@@ -228,7 +220,7 @@
                     <label class="control-label" for="txtNumeroCtps">
                         @Html.DisplayNameFor(model => model.NumeroCtps)
                     </label>
-                    @Html.TextBoxFor(Model => Model.NumeroCtps, "", new { @class="form-control", @id="txtNumeroCtps", @maxlenght="9", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.NumeroCtps, "", new { @class = "form-control", @id = "txtNumeroCtps", @maxlenght = "9", @type = "text" })
                 </div>
             </div>
 
@@ -237,7 +229,7 @@
                     <label class="control-label" for="txtSerieCtps">
                         @Html.DisplayNameFor(model => model.SerieCtps)
                     </label>
-                    @Html.TextBoxFor(Model => Model.SerieCtps, "", new { @class="form-control", @id="txtSerieCtps", @maxlenght="4", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.SerieCtps, "", new { @class = "form-control", @id = "txtSerieCtps", @maxlenght = "4", @type = "text" })
                 </div>
             </div>
 
@@ -246,27 +238,8 @@
                     <label class="control-label" for="txtUfCtps">
                         @Html.DisplayNameFor(model => model.UfCtps)
                     </label>
-                    @Html.TextBoxFor(Model => Model.UfCtps, "", new { @class="form-control", @id="txtUfCtps", @maxlenght="2", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.UfCtps, "", new { @class = "form-control", @id = "txtUfCtps", @maxlenght = "2", @type = "text" })
                 </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-lg-9 col-md-6 col-sm-6 col-xs-6">
-                <a class="btn btn-secondary btn-icon-split" asp-action="Index">
-                    <span class="icon text-white-50">
-                        <i class="fas fa-arrow-left"></i>
-                    </span>
-                    <span class="text">Voltar</span>
-                </a>
-            </div>
-            <div class="col-lg-3  col-md-6 col-sm-6 col-xs-6 text-right">
-                <button id="btnSalvar" type="submit" class="btn btn-primary btn-icon-split pull-right">
-                    <span class="icon text-white">
-                        <i class="fas fa-save"></i>
-                    </span>
-                    <span class="text">Salvar</span>
-                </button>
             </div>
         </div>
     }
@@ -289,9 +262,9 @@
                 setTimeout(function () {
                     window.location.replace(
                         '@Url.Action(
-                                "Index",
-                    "Colaborador")')
-                        }, 4000);
+                            "Index",
+                            "Colaborador")')
+                }, 4000);
             }
 
             //$('#txtCep').mask('00000-000',

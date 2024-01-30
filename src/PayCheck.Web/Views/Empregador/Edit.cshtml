@@ -10,75 +10,81 @@
 <div class="container-fluid">
     <!-- Logout Modal-->
     <!-- Page Heading -->
-    <!-- Page Heading aria-hidden="true" -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Empregador</h1>
-    </div>
-
     <div class="alert alert-danger alert-dismissible" style="display: none;"></div>
     <div id="alertSuccess" class="alert alert-success alert-dismissible" style="display: none;"></div>
     <div class="alert alert-warning alert-dismissible" style="display: none;"></div>
     <div class="text-center" style="display: none;"></div>
 
-    @if (ViewBag.ErrorMessage != null)
-    {
-        <div class="alert alert-danger alert-dismissible">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-
-            <i class="icon fa fa-ban"></i>
-            <strong>Erro</strong>
-
-            @Html.Raw(@ViewBag.ErrorMessage)
-        </div>
-    }
-    else if (ViewBag.SuccessMessage != null)
-    {
-        <div id="alertSuccess" class="alert alert-success alert-dismissible">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-
-            <h4>
-                <i class="icon fa fa-check"></i>
-                <strong>Sucesso</strong>
-            </h4>
-
-            @Html.Raw(@ViewBag.SuccessMessage)
-
-            <p>
-                <small class="text-success">
-                    Se o redirecionamento não funcionar, clique <a href="@Url.Action("Index", "Empregador")" class="text-success"><strong>aqui</strong></a>.
-                </small>
-            </p>
-        </div>
-    }
-    else if (ViewBag.ValidateMessage != null)
-    {
-        <div class="alert alert-warning alert-dismissible">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-
-            <i class="icon fa fa-exclamation"></i>
-            <strong>Validação</strong>
-
-            @Html.Raw(@ViewBag.ValidateMessage)
-        </div>
-    }
-
     @using (Html.BeginForm("Edit", "Empregador", FormMethod.Post, new { @class = "user" }))
     {
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="alert alert-danger alert-dismissible">
+                @* <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a> *@
+
+                <i class="icon fa fa-ban"></i>
+                <strong>Erro</strong>
+
+                @Html.Raw(@ViewBag.ErrorMessage)
+            </div>
+        }
+        else if (ViewBag.SuccessMessage != null)
+        {
+            <div id="alertSuccess" class="alert alert-success alert-dismissible">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+
+                <h4>
+                    <i class="icon fa fa-check"></i>
+                    <strong>Sucesso</strong>
+                </h4>
+
+                @Html.Raw(@ViewBag.SuccessMessage)
+
+                <p>
+                    <small class="text-success">
+                        Se o redirecionamento não funcionar, clique <a href="@Url.Action("Index", "Empregador")" class="text-success"><strong>aqui</strong></a>.
+                    </small>
+                </p>
+            </div>
+        }
+        else if (ViewBag.ValidateMessage != null)
+        {
+            <div class="alert alert-warning alert-dismissible">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+
+                <i class="icon fa fa-exclamation"></i>
+                <strong>Validação</strong>
+
+                @Html.Raw(@ViewBag.ValidateMessage)
+            </div>
+        }
+
+        <div class="row d-sm-flex align-items-center justify-content-between mb-4">
+            <div class="col-sm-8 col-6">
+                <h1 class="h3 mb-0 text-gray-800">Empregador</h1>
+            </div>
+            <div class="col-sm-4 col-6 text-right">
+                <a class="btn btn-secondary btn-icon-split pull-right" asp-action="Index">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-arrow-left"></i>
+                    </span>
+                    <span class="text">Voltar</span>
+                </a>
+
+                <button id="btnSalvar" type="submit" class="btn btn-primary btn-icon-split">
+                    <span class="icon text-white">
+                        <i class="fas fa-save"></i>
+                    </span>
+                    <span class="text">Salvar</span>
+                </button>
+            </div>
+        </div>
+
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         @Html.AntiForgeryToken()
 
         <div class="row">
-            @*            <div class="col-xl-12 col-sm-12 col-md-12">
-        <div class="form-group">
-        <label class="control-label" for="txtGuid">
-        @Html.DisplayNameFor(model => model.Guid)
-        </label>
-
-        @Html.TextBoxFor(Model => Model.Guid, new { @class = "form-control", @id="txtGuid", @maxlength="100", @required = "required", @type = "text" } )
-        </div>
-        </div>*@
-
             @Html.HiddenFor(model => model.Guid)
             @Html.HiddenFor(model => model.GuidPessoa)
 
@@ -88,8 +94,7 @@
                         @Html.DisplayNameFor(model => model.Cnpj)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.Cnpj, "", new { @class = "form-control", @id="txtCnpj", @maxlength = "18", @placeholder = "XX.XXX.XXX/XXXX-XX", @required = "required" } )
-                    @Html.ValidationMessageFor(model => model.Cnpj, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(Model => Model.Cnpj, "", new { @class = "form-control", @id="txtCnpj", @maxlength = "18", @placeholder = "XX.XXX.XXX/XXXX-XX" } )
                 </div>
             </div>
 
@@ -99,10 +104,7 @@
                         @Html.DisplayNameFor(model => model.RazaoSocial)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.RazaoSocial, new { @class = "form-control", @id="txtRazaoSocial", @maxlength="100", @required = "required", @type = "text" } )
-                    @Html.ValidationMessageFor(model => model.RazaoSocial, "", new { @class = "text-danger" })
-
-                    @*                    <span asp-validation-for="Nome" class="text-danger"></span>*@
+                    @Html.TextBoxFor(Model => Model.RazaoSocial, new { @class = "form-control", @id="txtRazaoSocial", @maxlength="100", @type = "text" } )
                 </div>
             </div>
 
@@ -112,8 +114,7 @@
                         @Html.DisplayNameFor(model => model.DataFundacao)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.DataFundacao, "{0:dd/MM/yyyy}", new { @class = "form-control", @id = "txtDataFundacao", @maxlength = "10", @placeholder = "XX/XX/XXXX", @required = "required" })
-                    @Html.ValidationMessageFor(model => model.DataFundacao, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(Model => Model.DataFundacao, "{0:dd/MM/yyyy}", new { @class = "form-control", @id = "txtDataFundacao", @maxlength = "10", @placeholder = "XX/XX/XXXX" })
                 </div>
             </div>
         </div>
@@ -133,8 +134,7 @@
                     <label class="control-label" for="txtEndereco">
                         @Html.DisplayNameFor(model => model.Endereco)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Endereco, "", new { @class="form-control", @id="txtEndereco", @maxlenght="100", @required  = "required", @type = "text" } )
-                    @Html.ValidationMessageFor(model => model.Endereco, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(Model => Model.Endereco, "", new { @class="form-control", @id="txtEndereco", @maxlenght="100", @type = "text" } )
                 </div>
             </div>
             <div class="col-md-2">
@@ -170,8 +170,7 @@
                     <label class="control-label" for="txtCidade">
                         @Html.DisplayNameFor(model => model.Cidade)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Cidade, "", new { @class="form-control", @id="txtCidade", @maxlenght="60", @required = "required", @type = "text" } )
-                    @Html.ValidationMessageFor(model => model.Cidade, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(Model => Model.Cidade, "", new { @class="form-control", @id="txtCidade", @maxlenght="60", @type = "text" } )
                 </div>
             </div>
 
@@ -180,8 +179,7 @@
                     <label class="control-label" for="txtUf">
                         @Html.DisplayNameFor(model => model.Uf)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Uf, "", new { @class="form-control", @id="txtUf", @maxlenght="2", @required = "required", @type = "text" } )
-                    @Html.ValidationMessageFor(model => model.Uf, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(Model => Model.Uf, "", new { @class="form-control", @id="txtUf", @maxlenght="2", @type = "text" } )
                 </div>
             </div>
         </div>
@@ -203,25 +201,6 @@
                     </label>
                     @Html.TextBoxFor(Model => Model.Telefone, "", new { @class="form-control", @id="txtTelefone", @maxlenght="30", @type = "text" } )
                 </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-9 col-sm-9 col-xs-9">
-                <a class="btn btn-secondary btn-icon-split" asp-action="Index">
-                    <span class="icon text-white-50">
-                        <i class="fas fa-arrow-left"></i>
-                    </span>
-                    <span class="text">Voltar</span>
-                </a>
-            </div>
-            <div class="col-md-3 col-sm-3 col-xs-3 text-right">
-                <button id="btnSalvar" type="submit" class="btn btn-primary btn-icon-split pull-right">
-                    <span class="icon text-white">
-                        <i class="fas fa-save"></i>
-                    </span>
-                    <span class="text">Salvar</span>
-                </button>
             </div>
         </div>
     }
@@ -248,21 +227,6 @@
                             "Empregador")')
                 }, 4000);
             }
-
-            //$('#txtCep').mask('00000-000',
-            //    {
-            //        reverse: true
-            //    });
-
-            //$('#txtCpf').mask('000.000.000-00',
-            //    {
-            //        reverse: true
-            //    });
-
-            //$('#txtDataNascimento').mask('00/00/0000',
-            //    {
-            //        reverse: true
-            //    });
         });
     </script>
 }

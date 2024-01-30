@@ -1,5 +1,6 @@
 ﻿namespace PayCheck.Web.Controllers
 {
+    using System;
     using System.Text;
     using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
@@ -83,18 +84,26 @@
         /// 
         /// </summary>
         /// <returns></returns>
-
         public IActionResult Index()
         {
             return View();
         }
 
-        [HttpPost()]
-        public IActionResult GetDataTable()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public IActionResult Details(Guid? id)
         {
-            string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica";
+            if (id == null)     // Se não encontrar os Dados do Colaborador ou é porque não existe o registro ou é porque está logado como UserMain.
+                return RedirectToAction(
+                    "Index",
+                    "Home");    // Em não existindo o registro, redireciona para a página inicial.
 
-            var pessoasFisicas = default(IEnumerable<PessoaFisicaViewModel>);
+            string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/{id}";
+
+            var pessoaFisicaViewModel = default(PessoaFisicaViewModel);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -104,91 +113,26 @@
 
                 if (dataJson.IsValidJson())
                 {
-                    var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>>(
+                    var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(
                         dataJson).Data;
 
-                    pessoasFisicas = this._mapper.Map<IEnumerable<PessoaFisicaViewModel>>(
-                        source);
+                    pessoaFisicaViewModel = this._mapper.Map<PessoaFisicaViewModel>(
+                        data);
+
+                    pessoaFisicaViewModel.Bairro = data.Pessoa.Bairro;
+                    pessoaFisicaViewModel.Cep = data.Pessoa.Cep;
+                    pessoaFisicaViewModel.Cidade = data.Pessoa.Cidade;
+                    pessoaFisicaViewModel.Complemento = data.Pessoa.Complemento;
+                    pessoaFisicaViewModel.Email = data.Pessoa.Email;
+                    pessoaFisicaViewModel.Endereco = data.Pessoa.Endereco;
+                    pessoaFisicaViewModel.Numero = data.Pessoa.Numero;
+                    pessoaFisicaViewModel.Telefone = data.Pessoa.Telefone;
+                    pessoaFisicaViewModel.Uf = data.Pessoa.Uf;
                 }
             }
 
-            //  Retrieve data from WebApi
-            var query = from pessoaFisica in pessoasFisicas
-                        select new
-                        {
-                            pessoaFisica.Guid,
-                            Cpf = Convert.ToInt64(
-                                pessoaFisica.Cpf).ToString(@"000\.000\.000\-00"),
-                            DataNascimento = pessoaFisica.DataNascimento.HasValue ?
-                                pessoaFisica.DataNascimento.Value.ToString("dd/MM/yyyy") :
-                                "__/__/____",
-                            pessoaFisica.Nome,
-                        };
-
-            var draw = Request.Form["draw"].FirstOrDefault();
-            var length = Request.Form["length"].FirstOrDefault();
-
-            var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
-            var sortColumnDir = Request.Form["order[0][dir]"].FirstOrDefault();
-
-            var searchValue = Request.Form["search[value]"].FirstOrDefault() ?? string.Empty;
-            var start = Request.Form["start"].FirstOrDefault();
-
-            //  Paging Size (10, 20, 50, 100)
-            int pageSize = length != null ?
-                Convert.ToInt32(
-                    length) :
-                    0;
-
-            int skip = start != null ?
-                Convert.ToInt32(
-                    start) :
-                    0;
-
-            //  Sorting
-            if (!string.IsNullOrEmpty(sortColumn))
-            {
-                if (!string.IsNullOrEmpty(sortColumnDir) &&
-                    sortColumnDir.ToUpper() == "DESC")
-                    query = query.OrderByDescending(pf => pf.GetType().GetProperty(
-                        sortColumn).GetValue(
-                            pf,
-                            null));
-                else
-                    query = query.OrderBy(pf => pf.GetType().GetProperty(
-                        sortColumn).GetValue(
-                            pf,
-                            null));
-            }
-
-            //  Search
-            if (!string.IsNullOrEmpty(searchValue))
-                query = query.Where(
-                    td => td.Nome.Contains(
-                            searchValue,
-                            StringComparison.OrdinalIgnoreCase) ||
-                        td.Cpf.Contains(
-                            searchValue,
-                            StringComparison.OrdinalIgnoreCase) ||
-                        td.DataNascimento.Contains(
-                            searchValue,
-                            StringComparison.OrdinalIgnoreCase) ||
-                        string.IsNullOrEmpty(searchValue));
-
-            //  Total Number of Rows Count.
-            int recordsTotal = query.Count();
-
-            //  Paging.
-            var data = query.Skip(skip).Take(pageSize).ToList();
-
-            // Create a JSON response with the data and total count.
-            return new JsonResult(new
-            {
-                data,
-                draw,
-                recordsTotal,
-                recordsFiltered = recordsTotal,
-            });
+            return View("Details",
+                pessoaFisicaViewModel);
         }
 
         /// <summary>
@@ -197,13 +141,13 @@
         /// <param name="guid"></param>
         /// <returns></returns>
         [HttpGet()]
-        public IActionResult Edit(Guid? guid)
+        public IActionResult Edit(Guid? id)
         {
-            if (guid == null)
+            if (id == null)
                 return View(
                     new PessoaFisicaViewModel());
 
-            string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/{guid}";
+            string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/{id}";
 
             var pessoaFisicaViewModel = default(PessoaFisicaViewModel);
 
@@ -390,6 +334,112 @@
 
             return View(
                 vm);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost()]
+        public IActionResult GetDataTable()
+        {
+            string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica";
+
+            var pessoasFisicas = default(IEnumerable<PessoaFisicaViewModel>);
+
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
+            {
+                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+
+                if (dataJson.IsValidJson())
+                {
+                    var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>>(
+                        dataJson).Data;
+
+                    pessoasFisicas = this._mapper.Map<IEnumerable<PessoaFisicaViewModel>>(
+                        source);
+                }
+            }
+
+            //  Retrieve data from WebApi
+            var query = from pessoaFisica in pessoasFisicas
+                        select new
+                        {
+                            pessoaFisica.Guid,
+                            Cpf = Convert.ToInt64(
+                                pessoaFisica.Cpf).ToString(@"000\.000\.000\-00"),
+                            DataNascimento = pessoaFisica.DataNascimento.HasValue ?
+                                pessoaFisica.DataNascimento.Value.ToString("dd/MM/yyyy") :
+                                "__/__/____",
+                            pessoaFisica.Nome,
+                        };
+
+            var draw = Request.Form["draw"].FirstOrDefault();
+            var length = Request.Form["length"].FirstOrDefault();
+
+            var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
+            var sortColumnDir = Request.Form["order[0][dir]"].FirstOrDefault();
+
+            var searchValue = Request.Form["search[value]"].FirstOrDefault() ?? string.Empty;
+            var start = Request.Form["start"].FirstOrDefault();
+
+            //  Paging Size (10, 20, 50, 100)
+            int pageSize = length != null ?
+                Convert.ToInt32(
+                    length) :
+                    0;
+
+            int skip = start != null ?
+                Convert.ToInt32(
+                    start) :
+                    0;
+
+            //  Sorting
+            if (!string.IsNullOrEmpty(sortColumn))
+            {
+                if (!string.IsNullOrEmpty(sortColumnDir) &&
+                    sortColumnDir.ToUpper() == "DESC")
+                    query = query.OrderByDescending(pf => pf.GetType().GetProperty(
+                        sortColumn).GetValue(
+                            pf,
+                            null));
+                else
+                    query = query.OrderBy(pf => pf.GetType().GetProperty(
+                        sortColumn).GetValue(
+                            pf,
+                            null));
+            }
+
+            //  Search
+            if (!string.IsNullOrEmpty(searchValue))
+                query = query.Where(
+                    td => td.Nome.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        td.Cpf.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        td.DataNascimento.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        string.IsNullOrEmpty(searchValue));
+
+            //  Total Number of Rows Count.
+            int recordsTotal = query.Count();
+
+            //  Paging.
+            var data = query.Skip(skip).Take(pageSize).ToList();
+
+            // Create a JSON response with the data and total count.
+            return new JsonResult(new
+            {
+                data,
+                draw,
+                recordsTotal,
+                recordsFiltered = recordsTotal,
+            });
         }
     }
 }

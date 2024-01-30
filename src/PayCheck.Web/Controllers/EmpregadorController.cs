@@ -83,7 +83,6 @@
         /// 
         /// </summary>
         /// <returns></returns>
-        [HttpGet()]
         public IActionResult Index()
         {
             string requestUri = @$"{this._httpClient.BaseAddress}/PessoaJuridica";
@@ -113,16 +112,62 @@
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public IActionResult Details(Guid? id)
+        {
+            if (id == null)     // Se não encontrar os Dados do Colaborador ou é porque não existe o registro ou é porque está logado como UserMain.
+                return RedirectToAction(
+                    "Index",
+                    "Home");    // Em não existindo o registro, redireciona para a página inicial.
+
+            string requestUri = @$"{this._httpClient.BaseAddress}/PessoaJuridica/{id}";
+
+            var pessoaJuridicaViewModel = default(PessoaJuridicaViewModel);
+
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
+            {
+                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+
+                if (dataJson.IsValidJson())
+                {
+                    var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
+                        dataJson).Data;
+
+                    pessoaJuridicaViewModel = this._mapper.Map<PessoaJuridicaViewModel>(
+                        data);
+
+                    pessoaJuridicaViewModel.Bairro = data.Pessoa.Bairro;
+                    pessoaJuridicaViewModel.Cep = data.Pessoa.Cep;
+                    pessoaJuridicaViewModel.Cidade = data.Pessoa.Cidade;
+                    pessoaJuridicaViewModel.Complemento = data.Pessoa.Complemento;
+                    pessoaJuridicaViewModel.Email = data.Pessoa.Email;
+                    pessoaJuridicaViewModel.Endereco = data.Pessoa.Endereco;
+                    pessoaJuridicaViewModel.Numero = data.Pessoa.Numero;
+                    pessoaJuridicaViewModel.Telefone = data.Pessoa.Telefone;
+                    pessoaJuridicaViewModel.Uf = data.Pessoa.Uf;
+                }
+            }
+
+            return View("Details",
+                pessoaJuridicaViewModel);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
         [HttpGet()]
-        public IActionResult Edit(Guid? guid)
+        public IActionResult Edit(Guid? id)
         {
-            if (guid == null)
+            if (id == null)
                 return View(
                     new PessoaJuridicaViewModel());
 
-            string requestUri = @$"{this._httpClient.BaseAddress}/PessoaJuridica/{guid}";
+            string requestUri = @$"{this._httpClient.BaseAddress}/PessoaJuridica/{id}";
 
             var pessoaJuridicaViewModel = default(PessoaJuridicaViewModel);
 
@@ -315,6 +360,112 @@
 
             return View(
                 vm);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost()]
+        public IActionResult GetDataTable()
+        {
+            string requestUri = @$"{this._httpClient.BaseAddress}/PessoaJuridica";
+
+            var pessoasJuridicas = default(IEnumerable<PessoaJuridicaViewModel>);
+
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
+            {
+                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+
+                if (dataJson.IsValidJson())
+                {
+                    var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>>(
+                        dataJson).Data;
+
+                    pessoasJuridicas = this._mapper.Map<IEnumerable<PessoaJuridicaViewModel>>(
+                        source);
+                }
+            }
+
+            //  Retrieve data from WebApi" 
+            var query = from pessoaJuridica in pessoasJuridicas
+                        select new
+                        {
+                            pessoaJuridica.Guid,
+                            Cnpj = Convert.ToInt64(
+                                pessoaJuridica.Cnpj).ToString(@"00\.000\.000\/0000\-00"),
+                            DataFundacao = pessoaJuridica.DataFundacao.HasValue ?
+                                pessoaJuridica.DataFundacao.Value.ToString("dd/MM/yyyy") :
+                                "__/__/____",
+                            pessoaJuridica.RazaoSocial,
+                        };
+
+            var draw = Request.Form["draw"].FirstOrDefault();
+            var length = Request.Form["length"].FirstOrDefault();
+
+            var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
+            var sortColumnDir = Request.Form["order[0][dir]"].FirstOrDefault();
+
+            var searchValue = Request.Form["search[value]"].FirstOrDefault() ?? string.Empty;
+            var start = Request.Form["start"].FirstOrDefault();
+
+            //  Paging Size (10, 20, 50, 100)
+            int pageSize = length != null ?
+                Convert.ToInt32(
+                    length) :
+                    0;
+
+            int skip = start != null ?
+                Convert.ToInt32(
+                    start) :
+                    0;
+
+            //  Sorting
+            if (!string.IsNullOrEmpty(sortColumn))
+            {
+                if (!string.IsNullOrEmpty(sortColumnDir) &&
+                    sortColumnDir.ToUpper() == "DESC")
+                    query = query.OrderByDescending(pf => pf.GetType().GetProperty(
+                        sortColumn).GetValue(
+                            pf,
+                            null));
+                else
+                    query = query.OrderBy(pf => pf.GetType().GetProperty(
+                        sortColumn).GetValue(
+                            pf,
+                            null));
+            }
+
+            //  Search
+            if (!string.IsNullOrEmpty(searchValue))
+                query = query.Where(
+                    td => td.RazaoSocial.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        td.Cnpj.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        td.DataFundacao.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        string.IsNullOrEmpty(searchValue));
+
+            //  Total Number of Rows Count.
+            int recordsTotal = query.Count();
+
+            //  Paging.
+            var data = query.Skip(skip).Take(pageSize).ToList();
+
+            // Create a JSON response with the data and total count.
+            return new JsonResult(new
+            {
+                data,
+                draw,
+                recordsTotal,
+                recordsFiltered = recordsTotal,
+            });
         }
     }
 }

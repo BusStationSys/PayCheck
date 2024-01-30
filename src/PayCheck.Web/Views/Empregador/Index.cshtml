@@ -1,6 +1,4 @@
-﻿@model IEnumerable<PessoaJuridicaViewModel>
-
-@{
+﻿@{
     ViewData["Title"] = "Index";
 
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -8,74 +6,115 @@
 
 <!-- Begin Page Content -->
 <div class="container-fluid">
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Empregadores</h1>
-        <a href="@Url.Action("Edit", "Empregador")" class="btn btn-success btn-icon-split">
-            <span class="icon text-white">
-                <i class="fas fa-plus"></i> Novo Empregador
-            </span>
-        </a>
+    <!-- DataTales Example -->
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div class="row">
+                <div class="col-sm-8 col-md-10">
+                    <h5 class="m-0 font-weight-bold text-success"><span>Empregadores</span></h5>
+                </div>
+                <div class="col-sm-4 col-md-2 text-right">
+                    <a href="@Url.Action("Edit", "Empregador")" class="d-none d-sm-inline-block btn btn-sm btn-success btn-icon-split shadow-sm">
+                        <span class="icon text-white">
+                            <i class="fas fa-plus"></i> Novo Empregador
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered dt-responsive nowrap" id="tblEmpregadores" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>
+                                Guid
+                            </th>
+                            <th align="center">
+                                CNPJ
+                            </th>
+                            <th align="center">
+                                Fundação
+                            </th>
+                            <th>
+                                Razão Social
+                            </th>
+                            <th align="center">
+                                Ações
+                            </th>
+                        </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
     </div>
-
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                    @Html.DisplayNameFor(model => model.Cnpj)
-                </th>
-                <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center">
-                    @Html.DisplayNameFor(model => model.DataFundacao)
-                </th>
-                <th class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
-                    @Html.DisplayNameFor(model => model.RazaoSocial)
-                </th>
-                <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center">
-                    Ações
-                </th>
-            </tr>
-        </thead>
-
-        <tbody>
-            @if (Model != null)
-            {
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td class="hidden-xs hidden-sm">
-                            @Convert.ToInt64(
-                                item.Cnpj).ToString(
-                                    @"00\.000\.000\/0000\-00")
-                        </td>
-                        <td class="hidden-xs hidden-sm hidden-md" align="center">
-                            @(item.DataFundacao.HasValue ?
-                                item.DataFundacao.Value.ToString("dd/MM/yyyy") :
-                                "__/__/____")
-                        </td>
-                        <td>
-                            @item.RazaoSocial
-                        </td>
-                        <td align="center">
-                            <span>
-                                <a href="@Url.Action("Edit", "Empregador", new { guid = item.Guid })" class="btn btn-primary btn-xs">
-                                    <i class="fas fa-fw fa-pencil-alt"></i>
-                                </a>
-                                <a href="@Url.Action("Delete", "Empregador", new { guid = item.Guid })" class="btn btn-danger btn-xs">
-                                    <i class="fas fa-fw fa-trash-alt"></i>
-                                </a>
-                            </span>
-                        </td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="4" class="text-center">
-                        Nenhum registro encontrado.
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
 </div>
+
+@section Styles {
+    <!-- Custom styles for this page -->
+    <link href="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/datatables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+}
+
+@section Scripts {
+    <!-- Page level plugins -->
+
+    <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/datatables.bootstrap4.min.js"></script>
+
+    <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/js/demo/datatables-demo.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#tblEmpregadores').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json"
+                },
+                "lengthMenu": [10, 25, 50, 100],
+                "orderMulti": false,
+                "pageLength": 10,
+                "paging": true,
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "/Empregador/GetDataTable",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "guid", "title": "Guid" },
+                    { "data": "cnpj", "name": "Cnpj", "title": "CNPJ" },
+                    { "data": "dataFundacao", "name": "DataFundacao", "title": "Fundação" },
+                    {
+                        "data": "razaoSocial", "name": "RazaoSocial", "title": "Razão Social",
+                        "render": function (data, type, row) {
+                            return '<a href="/Empregador/Edit/' + row.guid + '">' + data + '</a>';
+                        }
+                    },
+                    {
+                        "data": null,
+                        "render": function (data, type, row) {
+                            return '<a href="/Empregador/Details/' + row.guid + '" class="btn btn-warning btn-xs"><i class="fas fa-fw fa-file-alt"></i></a> <a href="/Empregador/Edit/' + row.guid + '" class="btn btn-primary btn-xs"><i class="fas fa-fw fa-pencil-alt"></i></a> <a href="" class="btn btn-danger btn-xs"><i class="fas fa-fw fa-trash-alt"></i></a>';
+                        }
+                    }
+                ],
+                "columnDefs": [
+                    { "className": "dt-center", "targets": [1, 2, 4] },
+
+                    { "targets": [1, 2, 3], orderable: true, searchable: true },
+                    { "targets": [1, 2, 3, 4], visible: true },
+
+                    { "width": "12%", "targets": 1 },
+                    { "width": "9%", "targets": 2 },
+                    { "width": "16%", "targets": 4 },
+
+                    { "targets": '_all', orderable: false, searchable: false, visible: false }
+                ],
+                "responsive": true
+            });
+        });
+    </script>
+}}
