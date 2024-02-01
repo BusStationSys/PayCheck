@@ -94,51 +94,28 @@
             }
         }
 
-        [HttpGet]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet()]
         public IActionResult Index()
         {
-            var guidColaborador = default(Guid?);
-
-            if (TempData.Peek("GuidColaborador") != null &&
-                !string.IsNullOrEmpty(
-                    TempData.Peek("GuidColaborador").ToString()))
-                guidColaborador = Guid.Parse(
-                    TempData.Peek("GuidColaborador").ToString());
-
-            string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto";
-
-            if (guidColaborador != null)
-                requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/getEspelhoPontoByGuidColaborador/{guidColaborador}";
-
-            var espelhosPontoViewModel = default(IEnumerable<EspelhoPontoViewModel>);
-
-            using (var webApiHelper = new WebApiHelper(
-                requestUri,
-                this._tokenBearer))
-            {
-                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
-
-                if (dataJson.IsValidJson())
-                {
-                    var data = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>>>(
-                        dataJson).Data;
-
-                    espelhosPontoViewModel = this._mapper.Map<IEnumerable<EspelhoPontoViewModel>>(
-                        data);
-                }
-            }
-
-            return View(
-                espelhosPontoViewModel);
+            return View();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet()]
-        public IActionResult Details(Guid? guid)
+        public IActionResult Details(Guid? id)
         {
-            if (guid == null)
+            if (id == null)
                 return NotFound();
 
-            string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/{guid}";
+            string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/{id}";
 
             var matriculaEspelhoPontoResponse = default(
                 MatriculaEspelhoPontoResponseDto);
@@ -163,7 +140,7 @@
         /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
-        public IActionResult ConfirmarRealizacaoFrequencia(Guid guid)
+        public IActionResult ConfirmarRealizacaoFrequencia(Guid id)
         {
             var ipAddress = Common.GetIP();
 
@@ -173,12 +150,12 @@
                 ipConfirmacao = ipAddress.GetAddressBytes();
 
             var matriculaEspelhoPontoResponse = this.GetMEP(
-                guid);
+                id);
 
             var matriculaEspelhoPontoRequestUpdateDto = this._mapper.Map<MatriculaEspelhoPontoRequestUpdateDto>(
                 matriculaEspelhoPontoResponse);
 
-            matriculaEspelhoPontoRequestUpdateDto.Guid = guid;
+            matriculaEspelhoPontoRequestUpdateDto.Guid = id;
             matriculaEspelhoPontoRequestUpdateDto.DataConfirmacao = DateTimeOffset.UtcNow;
             matriculaEspelhoPontoRequestUpdateDto.IpConfirmacao = ipConfirmacao;
 
@@ -208,18 +185,139 @@
                 "Details",
                 new
                 {
-                    guid = matriculaEspelhoPontoResponse.Guid
+                    id = matriculaEspelhoPontoResponse.Guid
                 });
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="guid"></param>
         /// <returns></returns>
-        private MatriculaEspelhoPontoResponseDto? GetMEP(Guid guid)
+        [HttpPost()]
+        public IActionResult GetDataTable()
         {
-            string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/{guid}";
+            var guidColaborador = default(Guid?);
+
+            if (TempData.Peek("GuidColaborador") != null &&
+                !string.IsNullOrEmpty(
+                    TempData.Peek("GuidColaborador").ToString()))
+                guidColaborador = Guid.Parse(
+                    TempData.Peek("GuidColaborador").ToString());
+
+            string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto";
+
+            if (guidColaborador != null)
+                requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/getEspelhoPontoByGuidColaborador/{guidColaborador}";
+
+            var espelhosPonto = default(IEnumerable<EspelhoPontoViewModel>);
+
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
+            {
+                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+
+                if (dataJson.IsValidJson())
+                {
+                    var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>>>(
+                        dataJson).Data;
+
+                    espelhosPonto = this._mapper.Map<IEnumerable<EspelhoPontoViewModel>>(
+                        source);
+                }
+            }
+
+            //  Retrieve data from WebApi
+            var query = from espelhoPonto in espelhosPonto
+                        select new
+                        {
+                            espelhoPonto.Guid,
+                            Competencia = string.Concat(
+                                espelhoPonto.Competencia.Substring(4, 2),
+                                "/",
+                                espelhoPonto.Competencia.Substring(0, 4)),
+                            espelhoPonto.NumeroMatricula,
+                            Empregador = espelhoPonto.RazaoSocialEmpregador,
+                            Colaborador = espelhoPonto.NomeColaborador,
+                        };
+
+            var draw = Request.Form["draw"].FirstOrDefault();
+            var length = Request.Form["length"].FirstOrDefault();
+
+            var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
+            var sortColumnDir = Request.Form["order[0][dir]"].FirstOrDefault();
+
+            var searchValue = Request.Form["search[value]"].FirstOrDefault() ?? string.Empty;
+            var start = Request.Form["start"].FirstOrDefault();
+
+            //  Paging Size (10, 20, 50, 100)
+            int pageSize = length != null ?
+                Convert.ToInt32(
+                    length) :
+                    0;
+
+            int skip = start != null ?
+                Convert.ToInt32(
+                    start) :
+                    0;
+
+            //  Sorting
+            if (!string.IsNullOrEmpty(sortColumn))
+            {
+                if (!string.IsNullOrEmpty(sortColumnDir) &&
+                    sortColumnDir.ToUpper() == "DESC")
+                    query = query.OrderByDescending(pf => pf.GetType().GetProperty(
+                        sortColumn).GetValue(
+                            pf,
+                            null));
+                else
+                    query = query.OrderBy(pf => pf.GetType().GetProperty(
+                        sortColumn).GetValue(
+                            pf,
+                            null));
+            }
+
+            //  Search
+            if (!string.IsNullOrEmpty(searchValue))
+                query = query.Where(
+                    td => td.Competencia.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                          td.NumeroMatricula.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        td.Empregador.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        td.Colaborador.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        string.IsNullOrEmpty(searchValue));
+
+            //  Total Number of Rows Count.
+            int recordsTotal = query.Count();
+
+            //  Paging.
+            var data = query.Skip(skip).Take(pageSize).ToList();
+
+            // Create a JSON response with the data and total count.
+            return new JsonResult(new
+            {
+                data,
+                draw,
+                recordsTotal,
+                recordsFiltered = recordsTotal,
+            });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private MatriculaEspelhoPontoResponseDto? GetMEP(Guid id)
+        {
+            string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/{id}";
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,

@@ -135,14 +135,17 @@
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="periodoInicialString">MMdd.</param>
+        /// <param name="periodoFinalString">MMdd.</param>
         /// <returns></returns>
-        [HttpGet("getAniversariantes/{mes}")]
-        public ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>> GetAniversariantes(int mes)
+        [HttpGet("getAniversariantes/{periodoInicialString}/{periodoFinalString}")]
+        public ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>> GetAniversariantes(string periodoInicialString, string periodoFinalString)
         {
             try
             {
                 var data = this._business.GetAniversariantes(
-                    mes);
+                    periodoInicialString,
+                    periodoFinalString);
 
                 if (data != null && data.Count() > 0)
                     return new ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>
@@ -154,7 +157,7 @@
 
                 return new ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>
                 {
-                    Message = $"Não há registros de Pessoas Físicas que realizam aniversário em {mes}.",
+                    Message = $"Não há registros de Pessoas Físicas que realizam aniversário no período de {periodoInicialString} a {periodoFinalString}.",
                     StatusCode = HttpStatusCode.NotFound,
                 };
             }

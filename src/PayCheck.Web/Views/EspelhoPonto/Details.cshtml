@@ -26,7 +26,7 @@
                 <div class="modal-body">Você deseja realmente confirmar a realização da frequência?</div>
                 <div class="modal-footer">
                     <button class="btn btn-danger" type="button" data-dismiss="modal">Cancelar</button>
-                    <a class="btn btn-success" asp-controller="EspelhoPonto" asp-action="ConfirmarRealizacaoFrequencia" asp-route-guid=@Model.Guid>Confirmar</a>
+                    <a class="btn btn-success" asp-controller="EspelhoPonto" asp-action="ConfirmarRealizacaoFrequencia" asp-route-id=@Model.Guid>Confirmar</a>
                 </div>
             </div>
         </div>
@@ -245,19 +245,30 @@
         </div>
     </div>
 
-    <!-- Page Heading aria-hidden="true" -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Espelho de Ponto</h1>
-        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#modeloClassicoModal">
-            <i class="fas fa-print fa-sm text-white-50"></i> Modelo Clássico
-        </a>
-        @*        <a class="btn btn-warning btn-block" href="#" data-toggle="modal" data-target="#confirmacaoModal">
-        *<i class="fa fa-camera-retro fa-sm fa-fw mr-2 text-gray-400"></i>https://fontawesome.com/v4/icon/calendar-check-o *@
-        <!-- <i class="fa fa-calendar-check mr-2" aria-hidden="true"></i>*-->
+    <!-- Page Heading -->
+    <div class="row d-sm-flex align-items-center justify-content-between mb-4">
+        <div class="col-sm-8 col-6">
+            <h1 class="h3 mb-0 text-gray-800">Espelho de Ponto</h1>
+        </div>
+        <div class="col-sm-4 col-6 text-right">
+            <a class="btn btn-secondary btn-icon-split pull-right" asp-action="Index">
+                <span class="icon text-white-50">
+                    <i class="fas fa-arrow-left"></i>
+                </span>
+                <span class="text">Voltar</span>
+            </a>
+
+            <button id="btnSalvar" class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#modeloClassicoModal">
+                <span class="icon text-white">
+                    <i class="fas fa-print fa-sm text-white-50"></i>
+                </span>
+                <span class="text"> Modelo Clássico</span>
+            </button>
+        </div>
     </div>
 
     <div class="row">
-        <div class="col-xl-9 col-md-9 mb-9">
+        <div class="col-xl-6 col-md-6 mb-6">
             <label for="txtRazaoSocial">Razão Social</label>
             <input asp-for=Matricula.Empregador.RazaoSocial type="text" readonly class="form-control" id="txtRazaoSocial">
         </div>
@@ -266,19 +277,19 @@
             <label for="txtCnpj">CNPJ</label>
             <input asp-for=Matricula.Empregador.CnpjFormatado type="text" readonly class="form-control" id="txtCnpj">
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-xl-3 col-md-4 mb-4">
+        <div class="col-xl-3 col-md-3 mb-3">
             <label for="txtMatricula">Matrícula</label>
             <input asp-for=Matricula.Matricula type="text" readonly class="form-control" id="txtMatricula">
         </div>
+    </div>
 
-        <div class="col-xl-7 col-md-6 mb-4">
+    <div class="row">
+        <div class="col-xl-9 col-md-9 mb-9">
             <label for="txtNome">Nome</label>
             <input asp-for=Matricula.Colaborador.Nome type="text" readonly class="form-control" id="txtNome">
         </div>
-        <div class="col-xl-2 col-md-2 mb-4">
+        <div class="col-xl-3 col-md-3 mb-3">
             <label for="txtCompetencia">Competência</label>
             <input asp-for=CompetenciaFormatada type="text" readonly class="form-control" id="txtCompetencia">
         </div>
@@ -511,7 +522,7 @@
     <div class="row">
         <div class="col-xl-12 col-md-12 mb-12">
             @if (Model.DataConfirmacao != null &&
-                Model.DataConfirmacao.HasValue)
+            Model.DataConfirmacao.HasValue)
             {
                 string textAlert = string.Concat(
                 "Espelho de Ponto aceito em ",
@@ -544,14 +555,5 @@
                 </div>
             }
         </div>
-    </div>
-
-    <div>
-        <a class="btn btn-secondary btn-icon-split" asp-action="Index">
-            <span class="icon text-white-50">
-                <i class="fas fa-arrow-left"></i>
-            </span>
-            <span class="text">Voltar</span>
-        </a>
     </div>
 </div>

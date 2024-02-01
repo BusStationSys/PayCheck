@@ -1,6 +1,4 @@
-﻿@model IEnumerable<DemonstrativoPagamentoViewModel>
-
-@{
+﻿@{
     ViewData["Title"] = "Index";
 
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -8,94 +6,114 @@
 
 <!-- Begin Page Content -->
 <div class="container-fluid">
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Demonstrativo de Pagamento</h1>
+    <!-- DataTales Example -->
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div class="row">
+                <div class="col-sm-12 col-md-12">
+                    <h5 class="m-0 font-weight-bold text-success"><span>Demonstrativo de Pagamento</span></h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered dt-responsive nowrap" id="tblDemonstrativosPagamento" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>
+                                Guid
+                            </th>
+                            <th align="center">
+                                Competência
+                            </th>
+                            <th align="center">
+                                Matrícula
+                            </th>
+                            <th>
+                                Empregador
+                            </th>
+                            <th>
+                                Colaborador
+                            </th>
+                            <th align="center">
+                                Ações
+                            </th>
+                        </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
     </div>
-
-    <table class="table">
-
-        <thead>
-
-            <tr>
-                @*
-                <th class="hidden-xs col-md-2 col-lg-1">SBB</th>
-                <th class="hidden-xs col-md-2 col-lg-1">RP</th>
-                <th class="col-xs-4 col-sm-6 col-md-4 col-lg-4">Nome</th>
-                <th class="hidden-xs hidden-sm hidden-md col-lg-3 text-center">Nascimento</th>
-                <th class="col-xs-8 col-sm-6 col-md-4 col-lg-3 text-center">Ações</th>
-                <th>
-                @Html.DisplayNameFor(model => model.Guid)
-                </th>
-                *@
-
-                <th class="col-xs-3 col-sm-3 col-md-2 col-lg-2">
-                    @Html.DisplayNameFor(model => model.Competencia)
-                </th>
-                <th class="col-xs-3 col-sm-3 col-md-2 col-lg-2">
-                    @Html.DisplayNameFor(model => model.NumeroMatricula)
-                </th>
-                <th class="hidden-xs hidden-sm col-md-4 col-lg-4">
-                    @Html.DisplayNameFor(model => model.RazaoSocialEmpregador)
-                </th>
-                <th class="col-xs-6 col-sm-6 col-md-4 col-lg-4">
-                    @Html.DisplayNameFor(model => model.NomeColaborador)
-                </th>
-                <th>
-
-                </th>
-            </tr>
-        </thead>
-
-        <tbody>
-            @if (Model != null)
-            {
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        @*                <td>
-                @Html.DisplayFor(modelItem => item.Guid)
-                </td>*@
-                        <td>
-                            @Convert.ToDateTime(
-                                string.Concat(
-                                    item.Competencia.Substring(6,2),
-                                    "/",
-                                    item.Competencia.Substring(4,2),
-                                    "/",
-                                    item.Competencia.Substring(0,4))).ToString("MM/yyyy")
-                        </td>
-                        <td>
-                            @item.NumeroMatricula
-                        </td>
-                        <td>
-                            @item.RazaoSocialEmpregador
-                        </td>
-                        <td>
-                            @item.NomeColaborador
-                        </td>
-                        <td>
-                            @*                    @Html.ActionLink("Edit", "Edit", new { id=item.Guid }) |
-
-                    @Html.ActionLink("Details", "Details", new { id=item.Guid }) |
-
-                    @Html.ActionLink("Delete", "Delete", new { id=item.Guid })*@
-
-                            @Html.ActionLink("Detalhes", "Details", new { guid = item.Guid }, new { @class = "btn btn-success btn-xs" })
-
-                            @*<a href="@Url.Action("your action", "your controller", new { id = item.Id }" class="btn btn-success btn-xs">Delete</a>*@
-                        </td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="4" class="text-center">
-                        Nenhum registro encontrado.
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
 </div>
+
+@section Styles {
+    <!-- Custom styles for this page -->
+    <link href="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/datatables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+}
+
+@section Scripts {
+    <!-- Page level plugins -->
+
+    <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/datatables.bootstrap4.min.js"></script>
+
+    <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/js/demo/datatables-demo.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#tblDemonstrativosPagamento').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json"
+                },
+                "lengthMenu": [10, 25, 50, 100],
+                "orderMulti": false,
+                "pageLength": 10,
+                "paging": true,
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "/DemonstrativoPagamento/GetDataTable",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "guid", "title": "Guid" },
+                    { "data": "competencia", "name": "Competencia", "title": "Competência" },
+                    { "data": "numeroMatricula", "name": "NumeroMatricula", "title": "Matrícula" },
+                    { "data": "empregador", "name": "Empregador", "title": "Empregador" },
+                    {
+                        "data": "colaborador", "name": "Colaborador", "title": "Colaborador",
+                        "render": function (data, type, row) {
+                            return '<a href="/DemonstrativoPagamento/Details/' + row.guid + '">' + data + '</a>';
+                        }
+                    },
+                    {
+                        "data": null,
+                        "render": function (data, type, row) {
+                            return '<a href="/DemonstrativoPagamento/Details/' + row.guid + '" class="btn btn-success btn-xs"><i class="fas fa-fw fa-file-alt"></i></a>';
+                        }
+                    }
+                ],
+                "columnDefs": [
+                    { "className": "dt-center", "targets": [1, 2, 5] },
+
+                    { "targets": [1, 2, 3, 4], orderable: true, searchable: true },
+                    { "targets": [1, 2, 3, 4, 5], visible: true },
+
+                    { "width": "12%", "targets": 1 },
+                    { "width": "12%", "targets": 2 },
+                    { "width": "34%", "targets": 3 },
+                    { "width": "34%", "targets": 4 },
+                    { "width": "8%", "targets": 5 },
+
+                    { "targets": '_all', orderable: false, searchable: false, visible: false }
+                ],
+                "responsive": true
+            });
+        });
+    </script>
+}

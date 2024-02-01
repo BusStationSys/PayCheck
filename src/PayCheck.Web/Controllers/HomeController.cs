@@ -88,7 +88,8 @@ public class HomeController : Controller
         }
 
         ViewData["Aniversariantes"] = this.LoadAniversariantes(
-            DateTime.Now.Month);
+            DateTime.Now,
+            DateTime.Now);
 
         ViewData["AniversariantesEmpresa"] = this.LoadAniversariantesEmpresa(
             DateTime.Now.Month);
@@ -117,9 +118,12 @@ public class HomeController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    private IEnumerable<dynamic> LoadAniversariantes(int mes)
+    private IEnumerable<dynamic> LoadAniversariantes(DateTime periodoInicial, DateTime periodoFinal)
     {
-        string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/getAniversariantes/{mes}";
+        string periodoInicialString = periodoInicial.ToString("MMdd");
+        string periodoFinalString = periodoFinal.ToString("MMdd");
+
+        string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/getAniversariantes/{periodoInicialString}/{periodoFinalString}";
 
         var pessoasFisicas = default(IEnumerable<PessoaFisicaResponseDto>);
 

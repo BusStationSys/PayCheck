@@ -84,6 +84,7 @@
         /// 
         /// </summary>
         /// <returns></returns>
+        [HttpGet()]
         public IActionResult Index()
         {
             return View();
@@ -94,6 +95,7 @@
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [HttpGet()]
         public IActionResult Details(Guid? id)
         {
             if (id == null)     // Se não encontrar os Dados do Colaborador ou é porque não existe o registro ou é porque está logado como UserMain.
