@@ -45,6 +45,9 @@ builder.Services.AddScoped<IPessoaFisicaBusiness>(
 builder.Services.AddScoped<IPessoaJuridicaBusiness>(
     provider => new PessoaJuridicaBusiness(unitOfWork));
 
+builder.Services.AddScoped<IPublicacaoBusiness>(
+    provider => new PublicacaoBusiness(unitOfWork));
+
 builder.Services.AddScoped<IUsuarioBusiness>(
     provider => new UsuarioBusiness(unitOfWork));
 
