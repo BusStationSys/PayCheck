@@ -35,10 +35,10 @@
             {
                 cfg.CreateMap<PessoaJuridicaRequestCreateDto, PessoaJuridicaResponseDto>().ReverseMap();
                 cfg.CreateMap<PessoaJuridicaRequestUpdateDto, PessoaJuridicaResponseDto>().ReverseMap();
-                cfg.CreateMap<PessoaJuridicaRequestCreateDto, PessoaJuridicaViewModel>().ReverseMap();
-                cfg.CreateMap<PessoaJuridicaRequestUpdateDto, PessoaJuridicaViewModel>().ReverseMap();
+                cfg.CreateMap<PessoaJuridicaRequestCreateDto, PessoaJuridicaModel>().ReverseMap();
+                cfg.CreateMap<PessoaJuridicaRequestUpdateDto, PessoaJuridicaModel>().ReverseMap();
 
-                cfg.CreateMap<PessoaJuridicaResponseDto, PessoaJuridicaViewModel>().ReverseMap();
+                cfg.CreateMap<PessoaJuridicaResponseDto, PessoaJuridicaModel>().ReverseMap();
             });
 
             this._mapper = new Mapper(
@@ -88,7 +88,7 @@
         {
             string requestUri = @$"{this._httpClient.BaseAddress}/PessoaJuridica";
 
-            var pessoasJuridicasViewModel = default(IEnumerable<PessoaJuridicaViewModel>);
+            var pessoasJuridicas = default(IEnumerable<PessoaJuridicaModel>);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -101,13 +101,13 @@
                     var data = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>>(
                         dataJson).Data;
 
-                    pessoasJuridicasViewModel = this._mapper.Map<IEnumerable<PessoaJuridicaViewModel>>(
+                    pessoasJuridicas = this._mapper.Map<IEnumerable<PessoaJuridicaModel>>(
                         data);
                 }
             }
 
             return View(
-                pessoasJuridicasViewModel);
+                pessoasJuridicas);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@
 
             string requestUri = @$"{this._httpClient.BaseAddress}/PessoaJuridica/{id}";
 
-            var pessoaJuridicaViewModel = default(PessoaJuridicaViewModel);
+            var pessoaJuridica = default(PessoaJuridicaModel);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -138,23 +138,23 @@
                     var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
                         dataJson).Data;
 
-                    pessoaJuridicaViewModel = this._mapper.Map<PessoaJuridicaViewModel>(
+                    pessoaJuridica = this._mapper.Map<PessoaJuridicaModel>(
                         data);
 
-                    pessoaJuridicaViewModel.Bairro = data.Pessoa.Bairro;
-                    pessoaJuridicaViewModel.Cep = data.Pessoa.Cep;
-                    pessoaJuridicaViewModel.Cidade = data.Pessoa.Cidade;
-                    pessoaJuridicaViewModel.Complemento = data.Pessoa.Complemento;
-                    pessoaJuridicaViewModel.Email = data.Pessoa.Email;
-                    pessoaJuridicaViewModel.Endereco = data.Pessoa.Endereco;
-                    pessoaJuridicaViewModel.Numero = data.Pessoa.Numero;
-                    pessoaJuridicaViewModel.Telefone = data.Pessoa.Telefone;
-                    pessoaJuridicaViewModel.Uf = data.Pessoa.Uf;
+                    pessoaJuridica.Bairro = data.Pessoa.Bairro;
+                    pessoaJuridica.Cep = data.Pessoa.Cep;
+                    pessoaJuridica.Cidade = data.Pessoa.Cidade;
+                    pessoaJuridica.Complemento = data.Pessoa.Complemento;
+                    pessoaJuridica.Email = data.Pessoa.Email;
+                    pessoaJuridica.Endereco = data.Pessoa.Endereco;
+                    pessoaJuridica.Numero = data.Pessoa.Numero;
+                    pessoaJuridica.Telefone = data.Pessoa.Telefone;
+                    pessoaJuridica.Uf = data.Pessoa.Uf;
                 }
             }
 
             return View("Details",
-                pessoaJuridicaViewModel);
+                pessoaJuridica);
         }
 
         /// <summary>
@@ -167,11 +167,11 @@
         {
             if (id == null)
                 return View(
-                    new PessoaJuridicaViewModel());
+                    new PessoaJuridicaModel());
 
             string requestUri = @$"{this._httpClient.BaseAddress}/PessoaJuridica/{id}";
 
-            var pessoaJuridicaViewModel = default(PessoaJuridicaViewModel);
+            var pessoaJuridica = default(PessoaJuridicaModel);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -184,23 +184,23 @@
                     var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
                         dataJson).Data;
 
-                    pessoaJuridicaViewModel = this._mapper.Map<PessoaJuridicaViewModel>(
+                    pessoaJuridica = this._mapper.Map<PessoaJuridicaModel>(
                         data);
 
-                    pessoaJuridicaViewModel.Bairro = data.Pessoa.Bairro;
-                    pessoaJuridicaViewModel.Cep = data.Pessoa.Cep;
-                    pessoaJuridicaViewModel.Cidade = data.Pessoa.Cidade;
-                    pessoaJuridicaViewModel.Complemento = data.Pessoa.Complemento;
-                    pessoaJuridicaViewModel.Email = data.Pessoa.Email;
-                    pessoaJuridicaViewModel.Endereco = data.Pessoa.Endereco;
-                    pessoaJuridicaViewModel.Numero = data.Pessoa.Numero;
-                    pessoaJuridicaViewModel.Telefone = data.Pessoa.Telefone;
-                    pessoaJuridicaViewModel.Uf = data.Pessoa.Uf;
+                    pessoaJuridica.Bairro = data.Pessoa.Bairro;
+                    pessoaJuridica.Cep = data.Pessoa.Cep;
+                    pessoaJuridica.Cidade = data.Pessoa.Cidade;
+                    pessoaJuridica.Complemento = data.Pessoa.Complemento;
+                    pessoaJuridica.Email = data.Pessoa.Email;
+                    pessoaJuridica.Endereco = data.Pessoa.Endereco;
+                    pessoaJuridica.Numero = data.Pessoa.Numero;
+                    pessoaJuridica.Telefone = data.Pessoa.Telefone;
+                    pessoaJuridica.Uf = data.Pessoa.Uf;
                 }
             }
 
             return View("Edit",
-                pessoaJuridicaViewModel);
+                pessoaJuridica);
         }
 
         /// <summary>
@@ -209,7 +209,7 @@
         /// <param name="vm"></param>
         /// <returns></returns>
         [HttpPost()]
-        public IActionResult Edit(PessoaJuridicaViewModel vm)
+        public IActionResult Edit(PessoaJuridicaModel model)
         {
             ViewBag.ErrorMessage = null;
             ViewBag.SuccessMessage = null;
@@ -252,7 +252,7 @@
                 ViewBag.ValidateMessage = errorMessageHtml.ToString();
 
                 return View(
-                    vm);
+                    model);
             }
 
             bool isNew = false;
@@ -260,13 +260,13 @@
             var createDto = default(PessoaJuridicaRequestCreateDto);
             var updateDto = default(PessoaJuridicaRequestUpdateDto);
 
-            if (vm.Guid is null ||
-                vm.Guid == Guid.Empty)
+            if (model.Guid is null ||
+                model.Guid == Guid.Empty)
             {
                 isNew = true;
 
                 createDto = this._mapper.Map<PessoaJuridicaRequestCreateDto>(
-                    vm);
+                    model);
 
                 createDto.Cnpj = createDto.Cnpj.Replace(
                     ".",
@@ -278,27 +278,27 @@
 
                 createDto.Pessoa = new PessoaRequestCreateDto()
                 {
-                    Bairro = vm.Bairro,
+                    Bairro = model.Bairro,
 
-                    Cep = !string.IsNullOrEmpty(vm.Cep) ?
-                        vm.Cep.Replace(
+                    Cep = !string.IsNullOrEmpty(model.Cep) ?
+                        model.Cep.Replace(
                             "-",
                             string.Empty) :
                         string.Empty,
 
-                    Cidade = vm.Cidade,
-                    Complemento = vm.Complemento,
-                    Email = vm.Email,
-                    Endereco = vm.Endereco,
-                    Numero = vm.Numero,
-                    Telefone = vm.Telefone,
-                    Uf = vm.Uf,
+                    Cidade = model.Cidade,
+                    Complemento = model.Complemento,
+                    Email = model.Email,
+                    Endereco = model.Endereco,
+                    Numero = model.Numero,
+                    Telefone = model.Telefone,
+                    Uf = model.Uf,
                 };
             }
             else
             {
                 updateDto = this._mapper.Map<PessoaJuridicaRequestUpdateDto>(
-                    vm);
+                    model);
 
                 updateDto.Cnpj = updateDto.Cnpj.Replace(
                     ".",
@@ -311,21 +311,21 @@
                 if (updateDto.Pessoa is null)
                     updateDto.Pessoa = new PessoaRequestUpdateDto();
 
-                updateDto.Pessoa.Bairro = vm.Bairro;
+                updateDto.Pessoa.Bairro = model.Bairro;
 
-                updateDto.Pessoa.Cep = !string.IsNullOrEmpty(vm.Cep) ?
-                    vm.Cep.Replace(
+                updateDto.Pessoa.Cep = !string.IsNullOrEmpty(model.Cep) ?
+                    model.Cep.Replace(
                         "-",
                         string.Empty) :
                     string.Empty;
 
-                updateDto.Pessoa.Cidade = vm.Cidade;
-                updateDto.Pessoa.Complemento = vm.Complemento;
-                updateDto.Pessoa.Email = vm.Email;
-                updateDto.Pessoa.Endereco = vm.Endereco;
-                updateDto.Pessoa.Numero = vm.Numero;
-                updateDto.Pessoa.Telefone = vm.Telefone;
-                updateDto.Pessoa.Uf = vm.Uf;
+                updateDto.Pessoa.Cidade = model.Cidade;
+                updateDto.Pessoa.Complemento = model.Complemento;
+                updateDto.Pessoa.Email = model.Email;
+                updateDto.Pessoa.Endereco = model.Endereco;
+                updateDto.Pessoa.Numero = model.Numero;
+                updateDto.Pessoa.Telefone = model.Telefone;
+                updateDto.Pessoa.Uf = model.Uf;
             }
 
             string requestUri = @$"{this._httpClient.BaseAddress}/PessoaJuridica";
@@ -361,7 +361,7 @@
                 ViewBag.ErrorMessage = $"<p>{apiResponseDto.Message}</p>";
 
             return View(
-                vm);
+                model);
         }
 
         /// <summary>
@@ -373,7 +373,7 @@
         {
             string requestUri = @$"{this._httpClient.BaseAddress}/PessoaJuridica";
 
-            var pessoasJuridicas = default(IEnumerable<PessoaJuridicaViewModel>);
+            var pessoasJuridicas = default(IEnumerable<PessoaJuridicaModel>);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -386,7 +386,7 @@
                     var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>>(
                         dataJson).Data;
 
-                    pessoasJuridicas = this._mapper.Map<IEnumerable<PessoaJuridicaViewModel>>(
+                    pessoasJuridicas = this._mapper.Map<IEnumerable<PessoaJuridicaModel>>(
                         source);
                 }
             }
