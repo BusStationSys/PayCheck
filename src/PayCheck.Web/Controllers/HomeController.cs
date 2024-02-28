@@ -94,6 +94,9 @@ public class HomeController : Controller
         ViewData["AniversariantesEmpresa"] = this.LoadAniversariantesEmpresa(
             DateTime.Now.Month);
 
+        ViewData["SobreNos"] = this.LoadSobreNos(
+            DateTime.Now);
+
         return View();
     }
 
@@ -140,26 +143,32 @@ public class HomeController : Controller
             }
         }
 
-        var aniversariantes = from aniversariante in pessoasFisicas
-                              where aniversariante.DataNascimento != null
-                              select new
-                              {
-                                  aniversariante.Guid,
-                                  aniversariante.Nome,
-                                  DataNascimentoOrdenado = Convert.ToDateTime(
-                                      aniversariante.DataNascimento).ToString("MMdd"),
-                                  DataNascimentoString = Convert.ToDateTime(
-                                      aniversariante.DataNascimento).ToString("dd/MM"),
-                                  Indice = Convert.ToDouble(
-                                      Math.Round(
-                                          (Convert.ToDateTime(
-                                              Convert.ToDateTime(
-                                                  aniversariante.DataNascimento).ToString("dd/MM") + "/" + DateTime.Now.Year) - DateTime.Now).TotalDays, 2)),
-                              };
+        if (pessoasFisicas != null &&
+            pessoasFisicas.Count() > 0)
+        {
+            var aniversariantes = from aniversariante in pessoasFisicas
+                                  where aniversariante.DataNascimento != null
+                                  select new
+                                  {
+                                      aniversariante.Guid,
+                                      aniversariante.Nome,
+                                      DataNascimentoOrdenado = Convert.ToDateTime(
+                                          aniversariante.DataNascimento).ToString("MMdd"),
+                                      DataNascimentoString = Convert.ToDateTime(
+                                          aniversariante.DataNascimento).ToString("dd/MM"),
+                                      Indice = Convert.ToDouble(
+                                          Math.Round(
+                                              (Convert.ToDateTime(
+                                                  Convert.ToDateTime(
+                                                      aniversariante.DataNascimento).ToString("dd/MM") + "/" + DateTime.Now.Year) - DateTime.Now).TotalDays, 2)),
+                                  };
 
-        return aniversariantes.OrderBy(
-            a => a.DataNascimentoOrdenado)
-                .ThenBy(a => a.Nome).ToList();
+            return aniversariantes.OrderBy(
+                a => a.DataNascimentoOrdenado)
+                    .ThenBy(a => a.Nome).ToList();
+        }
+
+        return null;
     }
 
     private IEnumerable<dynamic> LoadAniversariantesEmpresa(int mes)
@@ -202,5 +211,49 @@ public class HomeController : Controller
             a => a.DataAdmissaoOrdenada)
                 .ThenByDescending(a => a.DataAdmissao)
                 .ThenBy(a => a.Nome).ToList();
+    }
+
+    private IEnumerable<dynamic> LoadSobreNos(DateTime dataAtual)
+    {
+        string dataAtualString = dataAtual.ToString("yyyy-MM-dd");
+
+        string requestUri = @$"{this._httpClient.BaseAddress}/Publicacao/getSobreNos/{dataAtualString}";
+
+        var publicacoes = default(IEnumerable<PublicacaoResponseDto>);
+
+        using (var webApiHelper = new WebApiHelper(
+            requestUri,
+            this._tokenBearer))
+        {
+            string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+
+            if (dataJson.IsValidJson())
+            {
+                publicacoes = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PublicacaoResponseDto>>>(
+                    dataJson).Data;
+            }
+        }
+
+        if (publicacoes != null &&
+            publicacoes.Count() > 0)
+        {
+            var sobreNos = from sn in publicacoes
+                                  //where aniversariante.DataNascimento != null
+                                  select new
+                                  {
+                                      sn.Id,
+                                      sn.Resumo,
+                                      sn.Titulo,
+                                      sn.Texto,
+                                  };
+
+            return sobreNos.ToList();
+
+            //return aniversariantes.OrderBy(
+            //    a => a.DataNascimentoOrdenado)
+            //        .ThenBy(a => a.Nome).ToList();
+        }
+
+        return null;
     }
 }
