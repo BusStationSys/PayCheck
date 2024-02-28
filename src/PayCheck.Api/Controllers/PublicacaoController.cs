@@ -135,6 +135,44 @@
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="dataAtualString"></param>
+        /// <returns></returns>
+        [HttpGet("getSobreNos/{dataAtualString}")]
+        public ApiResponseDto<IEnumerable<PublicacaoResponseDto>> GetSobreNos(string dataAtualString)
+        {
+            try
+            {
+                var data = this._business.GetSobreNos(
+                    dataAtualString);
+
+                if (data != null &&
+                    data.Count() > 0)
+                    return new ApiResponseDto<IEnumerable<PublicacaoResponseDto>>
+                    {
+                        Data = data,
+                        Success = true,
+                        StatusCode = HttpStatusCode.OK,
+                    };
+
+                return new ApiResponseDto<IEnumerable<PublicacaoResponseDto>>
+                {
+                    Message = $"Não há registros *Sobre Nós* para serem exibidos em {dataAtualString}.",
+                    StatusCode = HttpStatusCode.NotFound,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponseDto<IEnumerable<PublicacaoResponseDto>>
+                {
+                    Message = ex.Message,
+                    StatusCode = HttpStatusCode.InternalServerError,
+                };
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="createDto"></param>
         /// <returns></returns>
         [HttpPost]
