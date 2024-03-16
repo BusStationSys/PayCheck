@@ -135,6 +135,43 @@
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("getImage/{id}")]
+        public ApiResponseDto<PublicacaoResponseDto> GetImage(int id)
+        {
+            try
+            {
+                var data = this._business.GetImage(
+                    id);
+
+                if (data != null)
+                    return new ApiResponseDto<PublicacaoResponseDto>
+                    {
+                        Data = data,
+                        Success = true,
+                        StatusCode = HttpStatusCode.OK,
+                    };
+
+                return new ApiResponseDto<PublicacaoResponseDto>
+                {
+                    Message = $"Não há registro Imagem do Id {id}.",
+                    StatusCode = HttpStatusCode.NotFound,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponseDto<PublicacaoResponseDto>
+                {
+                    Message = ex.Message,
+                    StatusCode = HttpStatusCode.InternalServerError,
+                };
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="dataAtualString"></param>
         /// <returns></returns>
         [HttpGet("getSobreNos/{dataAtualString}")]
