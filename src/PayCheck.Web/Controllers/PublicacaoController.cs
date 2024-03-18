@@ -1,5 +1,6 @@
 ﻿namespace PayCheck.Web.Controllers
 {
+    using System.IO;
     using System.Text;
     using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
@@ -14,7 +15,7 @@
     [Authorize]
     public class PublicacaoController : Controller
     {
-        private readonly string _folderName = "Arquivos";
+        private readonly string _folderName = "Uploads";
 
         private readonly string _tokenBearer;
 
@@ -193,7 +194,7 @@
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost()]
-        public IActionResult Edit(PublicacaoModel model)
+        public IActionResult Edit(PublicacaoModel model, List<IFormFile> files, List<IFormFile> images)
         {
             ViewBag.ErrorMessage = null;
             ViewBag.SuccessMessage = null;
@@ -226,6 +227,32 @@
                     model);
             }
 
+            //  Faz a validação da Imagem.
+            if (string.IsNullOrEmpty(
+                model.NomeImagem))
+            {
+                string validateMessage = this.ValidateImage(
+                    images);
+
+                if (!string.IsNullOrEmpty(validateMessage))
+                {
+                    var errorMessageHtml = new StringBuilder();
+
+                    errorMessageHtml.Append("<p></p>");
+
+                    errorMessageHtml.Append("<p style=\"text-align:justify\">");
+
+                    errorMessageHtml.Append($@"- {validateMessage}.");
+
+                    errorMessageHtml.Append("</p>");
+
+                    ViewBag.ValidateMessage = errorMessageHtml.ToString();
+
+                    return View(
+                        model);
+                }
+            }
+
             bool isNew = false;
 
             var createDto = default(PublicacaoRequestCreateDto);
@@ -235,13 +262,34 @@
             {
                 isNew = true;
 
+                model.ConteudoImagem = this.GetContentImage(
+                    images?.FirstOrDefault());
+                model.NomeImagem = images?.FirstOrDefault().FileName;
+
                 createDto = this._mapper.Map<PublicacaoRequestCreateDto>(
                     model);
+
+                createDto.ExtensaoImagem = new FileInfo(
+                    model.NomeImagem).Extension.Replace(
+                        ".",
+                        string.Empty);
             }
             else
             {
+                if (images?.Count > 0)
+                {
+                    model.ConteudoImagem = this.GetContentImage(
+                        images?.FirstOrDefault());
+                    model.NomeImagem = images?.FirstOrDefault().FileName;
+                }
+
                 updateDto = this._mapper.Map<PublicacaoRequestUpdateDto>(
                     model);
+
+                updateDto.ExtensaoImagem = new FileInfo(
+                    model.NomeImagem).Extension.Replace(
+                        ".",
+                        string.Empty);
             }
 
             string requestUri = @$"{this._httpClient.BaseAddress}/Publicacao";
@@ -280,35 +328,35 @@
                 model);
         }
 
-        //[HttpGet()]
-        //public IActionResult UploadFile()
-        //{
-        //    return View();
-        //}
-
-        //[HttpPost()]
-        //public IActionResult UploadFile(IFormFile file)
-        //{
-        //    try
-        //    {
-        //        if (file.Length > 0)
-        //        {
-
-        //        }
-
-        //        return View();
-        //    }
-        //    catch (Exception)
-        //    {
-
-        //        return View();
-        //    }
-        //}
-
-        [HttpGet()]
-        public IActionResult UploadFile()
+        private byte[] GetContentImage(IFormFile image)
         {
-            return View();
+            try
+            {
+                if (image != null)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        image.CopyTo(
+                            memoryStream);
+
+                        return memoryStream.ToArray();
+                    }
+                }
+
+                return Array.Empty<byte>();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        private string ValidateImage(List<IFormFile> images)
+        {
+            if (images?.Count == 0)
+                return "É necessário indicar pelo menos 1 arquivo.";
+
+            return string.Empty;
         }
 
         /// <summary>
@@ -317,79 +365,103 @@
         /// <param name="files"></param>
         /// <returns></returns>
         [HttpPost()]
-        public async Task<IActionResult> SendFile(List<IFormFile> files)
+        public async Task<IActionResult> SendFile(List<IFormFile> files, PublicacaoModel model)
         {
-            var returnView = View("Edit");
+            ViewBag.ErrorMessage = null;
+            ViewBag.SuccessMessage = null;
+            ViewBag.ValidateMessage = null;
 
-            var filesLength = files.Sum(f => f.Length);
+            var errorMessageHtml = new StringBuilder();
 
-            var tempFileName = Path.GetTempFileName();
-
-            //  Processa os arquivos enviados.
-            foreach (var file in files)
+            if (files?.Count > 0)
             {
-                //  Verifica se existe um arquivo (ou mais) e se não está vazio.
-                if (file == null ||
-                    file.Length == 0)
-                {
-                    //retorna a viewdata com erro
-                    returnView.ViewData["Erro"] = "Erro: Arquivo(s) não selecionado(s)";
+                var filesLength = files.Sum(f => f.Length);
 
-                    return returnView;
+                var tempFileName = Path.GetTempFileName();
+
+                //  Processa os arquivos enviados.
+                foreach (var file in files)
+                {
+                    //  Verifica se existe um arquivo (ou mais) e se não está vazio.
+                    if (file?.Length == 0)
+                    {
+                        //retorna a viewdata com erro
+                        errorMessageHtml.Append("Arquivo(s) não selecionado(s)");
+                    }
+
+                    // < define a pasta onde vamos salvar os arquivos >
+                    string subFolderName = @"Images\Received";
+
+                    // Define um Guid para o arquivo enviado.
+                    var guidPublicacao = Guid.NewGuid().ToString("N").ToUpper();
+
+                    string fileName = $@"{guidPublicacao}";
+
+                    //verifica qual o tipo de arquivo : jpg, gif, png, pdf ou tmp
+                    if (file.FileName.Contains(".jpg"))
+                        fileName = $@"{fileName}.jpg";
+
+                    else if (file.FileName.Contains(".gif"))
+                        fileName = $@"{fileName}.gif";
+
+                    else if (file.FileName.Contains(".png"))
+                        fileName = $@"{fileName}.png";
+
+                    else if (file.FileName.Contains(".pdf"))
+                        fileName = $@"{fileName}.pdf";
+
+                    else if (file.FileName.Contains(".rtf"))
+                        fileName = $@"{fileName}.rtf";
+
+                    else
+                        fileName = $@"{fileName}.tmp";
+
+                    //< obtém o caminho físico da pasta wwwroot >
+                    string webRootPath = this._webHostEnvironment.WebRootPath;
+
+                    // monta o caminho onde vamos salvar o arquivo : 
+                    // ~\wwwroot\Arquivos\Arquivos_Usuario\Recebidos
+                    string pathDestFileName = $@"{webRootPath}\{this._folderName}\{subFolderName}\{fileName}";
+
+                    // incluir a pasta Recebidos e o nome do arquivo enviado : 
+                    // ~\wwwroot\Arquivos\Arquivos_Usuario\Recebidos\
+                    //string caminhoDestinoArquivoOriginal = caminhoDestinoArquivo + "\\Recebidos\\" + fileName;
+
+                    //copia o arquivo para o local de destino original
+                    //using (var fileStream = new FileStream(
+                    //    pathDestFileName,
+                    //    FileMode.Create))
+                    //{
+                    //    await file.CopyToAsync(
+                    //        fileStream);
+
+                    //    model.ConteudoImagem = fileStream.ToArray();
+                    //    model.NomeImagem = files.FirstOrDefault().FileName;
+                    //}
+
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await file.CopyToAsync(
+                            memoryStream);
+
+                        model.ConteudoImagem = memoryStream.ToArray();
+                        model.NomeImagem = files.FirstOrDefault().FileName;
+                    }
                 }
 
-                // < define a pasta onde vamos salvar os arquivos >
-                string subFolderName = @"Publicacoes\Recebidos";
+                //returnView.ViewData["Resultado"] = $"{files.Count} arquivo(s) foi(ram) enviado(s) ao servidor com tamanho total de {filesLength} bytes.";
 
-                // Define um Guid para o arquivo enviado.
-                var guidPublicacao = Guid.NewGuid().ToString("N").ToUpper();
-
-                string fileName = $@"{guidPublicacao}";
-
-                //verifica qual o tipo de arquivo : jpg, gif, png, pdf ou tmp
-                if (file.FileName.Contains(".jpg"))
-                    fileName = $@"{fileName}.jpg";
-
-                else if (file.FileName.Contains(".gif"))
-                    fileName = $@"{fileName}.gif";
-
-                else if (file.FileName.Contains(".png"))
-                    fileName = $@"{fileName}.png";
-
-                else if (file.FileName.Contains(".pdf"))
-                    fileName = $@"{fileName}.pdf";
-
-                else if (file.FileName.Contains(".rtf"))
-                    fileName = $@"{fileName}.rtf";
-
-                else
-                    fileName = $@"{fileName}.tmp";
-
-                //< obtém o caminho físico da pasta wwwroot >
-                string webRootPath = this._webHostEnvironment.WebRootPath;
-
-                // monta o caminho onde vamos salvar o arquivo : 
-                // ~\wwwroot\Arquivos\Arquivos_Usuario\Recebidos
-                string pathDestFileName = $@"{webRootPath}\{this._folderName}\{subFolderName}\{fileName}";
-
-                // incluir a pasta Recebidos e o nome do arquivo enviado : 
-                // ~\wwwroot\Arquivos\Arquivos_Usuario\Recebidos\
-                //string caminhoDestinoArquivoOriginal = caminhoDestinoArquivo + "\\Recebidos\\" + fileName;
-                //copia o arquivo para o local de destino original
-                using (var fileStream = new FileStream(
-                    pathDestFileName,
-                    FileMode.Create))
-                {
-                    await file.CopyToAsync(
-                        fileStream);
-                }
+                //monta a ViewData que será exibida na view como resultado do envio 
             }
+            else
+                errorMessageHtml.Append("Para realizar o upload é necessário informar pelo menos 1 arquivo.");
 
-            returnView.ViewData["Resultado"] = $"{files.Count} arquivo(s) foi(ram) enviado(s) ao servidor com tamanho total de {filesLength} bytes.";
+            if (errorMessageHtml.Length > 0)
+                ViewBag.ValidateMessage = errorMessageHtml.ToString();
 
-            //monta a ViewData que será exibida na view como resultado do envio 
-
-            return returnView;
+            return View(
+                "Edit",
+                model);
         }
 
         /// <summary>

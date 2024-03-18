@@ -23,102 +23,74 @@
                     <h6 class="m-0 font-weight-bold text-warning text-uppercase mb-1"><i class="fas fa-fw fa-comment"></i><span>Sobre Nós</span></h6>
                 </div>
 
-                @*                 @if (sobreNos != null && sobreNos.Count() > 0)
-                {
                 <div class="card-body">
-
-                @foreach (var item in sobreNos)
-                {
-                <div class="px-3 py-5 bg-gradient-warning text-white">
-                <h6 class="bg-transparent border-warning small font-weight-bold">
-                @string.Concat(
-                item.Titulo,
-                "/",
-                item.Resumo)
-                </h6>
-                </div>
-                }
-                </div>
-                } *@
-
-                <div class="card-body">
-                    @* <div id="carouselSobreNos" class="carousel slide carousel-dark w-75 mx-auto" data-ride="carousel"> *@
                     <div id="carouselSobreNos" class="carousel slide carousel-dark mx-auto" data-ride="carousel">
-                        <!-- Indicators -->
-                        <ul class="carousel-indicators my-4">
-                            <li data-target="#carouselSobreNos" data-slide-to="0" class="active"></li>
-                            <li data-target="#carouselSobreNos" data-slide-to="1"></li>
-                            <li data-target="#carouselSobreNos" data-slide-to="2"></li>
-                        </ul>
-
                         <!-- The slideshow -->
                         <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img class="d-block w-100" style="height: 475px; max-height: 475px;" src="~/Theme/startbootstrap-sb-admin-2-gh-pages/img/download.jpg" alt="Los Angeles Los Angeles Los Angeles Los Angeles">
+                            @if (sobreNos != null && sobreNos.Count() > 0)
+                            {
+                                int dataSlideTo = 0;
 
-@*                                 <div class="carousel-caption d-none d-md-block bg-gradient-dark text-white mb-4">
-                                    <h2>Copa Sul-Americana</h2>
-                                    <p>We had such a great time in LA!</p>
-                                </div> *@
+                                <!-- Indicators -->
+                                <ul class="carousel-indicators my-4">
 
-                                <div class="carousel-caption d-none d-md-block bg-gradient-warning text-white mb-4">
-                                    <h2 class="font-weight-bold text-white text-uppercase mb-10"><span>Agro é Pop</span></h2>
+                                    @foreach (var item in sobreNos)
+                                    {
+                                        if (dataSlideTo == 0)
+                                        {
+                                            <li data-target="#carouselSobreNos" data-slide-to=" + @dataSlideTo + " class="active"></li>
+                                        }
+                                        else
+                                        {
+                                            <li data-target="#carouselSobreNos" data-slide-to=" + @dataSlideTo + "></li>
+                                        }
 
-                                    <p class="font-weight-bold text-white mb-10">Agronegócio sustenta o país.</p>
+                                        dataSlideTo++;
+                                    }
+
+@*                                     <li data-target="#carouselSobreNos" data-slide-to="0" class="active"></li>
+                                    <li data-target="#carouselSobreNos" data-slide-to="1"></li>
+                                    <li data-target="#carouselSobreNos" data-slide-to="2"></li> *@
+                                </ul>
+
+                                var divClass = "carousel-item active";
+
+                                foreach (var item in sobreNos)
+                                {
+                                    <div class="' + @divClass + '">
+                                        <img class="d-block w-100" style="height: 475px; max-height: 475px;" src="@Url.Action("RenderImage", "Home", new { @id = item.Id } )" />
+
+                                        <div class="carousel-caption d-none d-md-block bg-gradient-secondary text-white mb-4">
+                                            <h2 class="font-weight-bold text-white text-uppercase mb-10" style="text-align:center"><span>@item.Titulo</span></h2>
+
+                                            @* <p class="font-weight-bold text-white mb-10" style="text-align:justify">@item.Resumo</p> *@
+                                            <p class="font-weight-bold text-white mb-10">@item.Resumo</p>
+                                        </div>
+                                    </div>
+
+                                    divClass = "carousel-item";
+                                }
+
+                                <!-- Left and right controls -->
+                                <a class="carousel-control-prev" href="#carouselSobreNos" data-slide="prev">
+                                    <span class="carousel-control-prev-icon text-black"></span>
+                                </a>
+
+                                <a class="carousel-control-next" href="#carouselSobreNos" data-slide="next">
+                                    <span class="carousel-control-next-icon text-black"></span>
+                                </a>
+                            }
+                            else
+                            {
+                                <div class="carousel-item active">
+                                    <img class="d-block w-100" style="height: 475px; max-height: 475px;" src="~/Theme/startbootstrap-sb-admin-2-gh-pages/img/ImageNotAvailable.png" alt="">
+
+                                    <div class="carousel-caption d-none d-md-block bg-transparent text-white" style="margin-bottom: 17%; margin-top: 17%">
+                                        <h3 class="font-weight-bold text-white text-uppercase mb-10"><span>Não há publicações a serem exibidas.</span></h3>
+                                    </div>
                                 </div>
-
-                            </div>
-                            <div class="carousel-item">
-                                @* <div class="d-flex justify-content-center d-block w-100"> *@
-                                <img class="d-block w-100" style="height: 475px; max-height: 475px;" src="~/Theme/startbootstrap-sb-admin-2-gh-pages/img/433041-0005-in.jpg" alt="Chicago Chicago Chicago Chicago">
-
-                                <div class="carousel-caption d-none d-md-block bg-gradient-warning text-white mb-4">
-                                    <h2 class="font-weight-bold text-white text-uppercase mb-10"><span>Mundial de Clubes</span></h2>
-
-                                    <p class="font-weight-bold text-white mb-10">Esse dia foi punk.</p>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                @* <div class="d-flex justify-content-center d-block w-100"> *@
-
-                                @*                                     <div class="carousel-caption">
-                                <h3>Los Angeles</h3>
-                                <p>We had such a great time in LA!</p>
-                                </div> *@
-                                @* </div> *@
-
-                                <img class="d-block w-100" style="height: 475px; max-height: 475px;" src="~/theme/startbootstrap-sb-admin-2-gh-pages/img/download.jpg" alt="Chicago Chicago Chicago Chicago">
-                                @*                                 <div class="carousel-caption d-none d-md-block bg-dark mb-4">
-                                <h5>First slide label</h5>
-                                <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-                                </div> *@
-
-                                <div class="carousel-caption d-none d-md-block bg-gradient-warning text-white mb-4">
-                                    <h2 class="font-weight-bold text-white text-uppercase mb-10"><span>Copa Sul-Americana</span></h2>
-
-                                    <p class="font-weight-bold text-white mb-10">Septième édition de la Copa Sudamericana.</p>
-                                </div>
-                            </div>
+                            }
                         </div>
-
-                        <!-- Left and right controls -->
-
-                        <a class="carousel-control-prev" href="#carouselSobreNos" data-slide="prev">
-                            <span class="carousel-control-prev-icon text-black"></span>
-                        </a>
-                        <a class="carousel-control-next" href="#carouselSobreNos" data-slide="next">
-                            <span class="carousel-control-next-icon text-black"></span>
-                        </a>
-
-                        @*                         <button class="carousel-control-prev border-0" type="button" data-target="#carouselSobreNos" data-slide="prev">
-                        <span class="carousel-control-prev-icon text-black" aria-hidden="true"></span>
-                        @*                             <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next border-0" type="button" data-target="#carouselSobreNos" data-slide="next">
-                        <span class="carousel-control-next-icon text-black" aria-hidden="true"></span>
-                        @*                             <span class="visually-hidden">Next</span>
-                        </button> *@
-
                     </div>
                 </div>
             </div>
@@ -186,28 +158,6 @@
                     <div class="card-footer bg-transparent border-danger font-weight-bold text-uppercase text-gray-800">@string.Concat("Não foram encontrados Aniversariantes de Empresa para o mês ", DateTime.Now.Month.ToString("00"), ".")</div>
                 }
             </div>
-
-            <!-- Illustrations -->
-            @* <div class="card shadow mb-4">
-            <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-fw fa-building"></i><span>Aniversariantes de Empresa</span></h6>
-            </div>
-            <div class="card-body">
-            <div class="text-center">
-            <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
-            src="img/undraw_posting_photo.svg" alt="...">
-            </div>
-            <p>
-            Add some quality, svg illustrations to your project courtesy of <a target="_blank" rel="nofollow" href="https://undraw.co/">unDraw</a>, a
-            constantly updated collection of beautiful svg images that you can use
-            completely free and without attribution!
-            </p>
-            <a target="_blank" rel="nofollow" href="https://undraw.co/">
-            Browse Illustrations on
-            unDraw &rarr;
-            </a>
-            </div>
-            </div> *@
         </div>
     </div>
 </div>

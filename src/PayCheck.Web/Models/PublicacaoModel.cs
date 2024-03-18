@@ -2,6 +2,8 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 using ARVTech.DataAccess.Enums;
 
 public class PublicacaoModel
@@ -14,24 +16,17 @@ public class PublicacaoModel
     [StringLength(150, ErrorMessage = "O Título não pode exceder 150 caracteres.", MinimumLength = 0)]
     public string Titulo { get; set; }
 
+    [Required(ErrorMessage = "É necessário o preenchimento do Resumo.")]
     [DataType(DataType.MultilineText)]
     public string Resumo { get; set; }
 
     [DataType(DataType.MultilineText)]
-    public string Texto { get; set; }
-
-    //[Display(Name = "Extensão da Imagem")]
-    //[EnumDataType(typeof(ExtensaoImagemEnum))]
-    //public ExtensaoImagemEnum ExtensaoImagem { get; set; }
+    public string? Texto { get; set; }
 
     [Display(Name = "Caminho da Imagem")]
     public string? NomeImagem { get; set; }
 
     public byte[]? ConteudoImagem { get; set; }
-
-    //[Display(Name = "Extensão do Arquivo")]
-    //[EnumDataType(typeof(ExtensaoArquivoEnum))]
-    //public ExtensaoArquivoEnum ExtensaoArquivo { get; set; }
 
     [Display(Name = "Caminho do Arquivo")]
     public string? NomeArquivo { get; set; }

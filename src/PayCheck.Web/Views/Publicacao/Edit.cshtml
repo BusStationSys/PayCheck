@@ -1,5 +1,4 @@
-﻿@using ARVTech.DataAccess.Enums
-@model PublicacaoModel
+﻿@model PublicacaoModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -16,7 +15,7 @@
     <div class="alert alert-warning alert-dismissible" style="display: none;"></div>
     <div class="text-center" style="display: none;"></div>
 
-    @using (Html.BeginForm("Edit", "Publicacao", FormMethod.Post, new { @class = "user" }))
+    @using (Html.BeginForm("Edit", "Publicacao", FormMethod.Post, new { @class = "user", @enctype = "multipart/form-data" }))
     {
         @if (ViewBag.ErrorMessage != null)
         {
@@ -86,7 +85,9 @@
         @Html.AntiForgeryToken()
 
         <div class="row">
-            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.Id, new { @id = "hdnId" })
+            @Html.HiddenFor(model => model.ConteudoImagem, new { @id = "hdnConteudoImagem" })
+            @Html.HiddenFor(model => model.NomeImagem, new { @id = "hdnImagem" })
 
             <div class="col-xl-2 col-sm-2 col-md-2">
                 <div class="form-group">
@@ -153,53 +154,93 @@
                 </div>
             </div>
         </div>
-    }
 
-    <div class="row">
-        <div class="col-xl-6 col-sm-6 col-md-6">
-            @using (Html.BeginForm("SendFile", "Publicacao", FormMethod.Post, new { enctype = "multipart/form-data" }))
-            {
+        <div class="row">
+            <div class="col-xl-6 col-sm-6 col-md-6">
                 <div class="form-group">
+
                     <label class="control-label" for="fupImagem">
                         @Html.DisplayNameFor(model => model.NomeImagem)
                     </label>
 
                     <div class="input-group">
-                        @Html.TextBox("files", "", new { @class = "form-control", @id = "fupImagem", @type = "file" })
+                        @Html.TextBox("images", "NomeImagem", new { @class = "form-control", @name = "NomeImagem", @id = "fupImagem", @type = "file" })
 
-                        <input type="submit" value="Upload da Imagem" />
+                        @*                         <button type="submit" class="btn btn-warning btn-icon-split">
+                    <span class="icon text-white">
+                    <i class="fas fa-upload"></i>
+                    </span>
+                    <span class="text">Upload</span>
+                    </button> *@
 
-                        <span class="input-group-btn">
-                            <button id="btnLimparArquivo" type="button" class="btn btn-default">Limpar</button>
-                        </span>
+                        <button type="button" id="btnLimparImagem" class="btn btn-danger btn-icon-split">
+                            <span class="icon text-white">
+                                <i class="fas fa-times"></i>
+                            </span>
+                            <span class="text">Limpar</span>
+                        </button>
                     </div>
                 </div>
-            }
-        </div>
+            </div>
 
-        <div class="col-xl-6 col-sm-6 col-md-6">
-            @using (Html.BeginForm("SendFile", "Publicacao", FormMethod.Post, new { enctype = "multipart/form-data" }))
-            {
+            <div class="col-xl-6 col-sm-6 col-md-6">
                 <div class="form-group">
                     <label class="control-label" for="fupArquivo">
                         @Html.DisplayNameFor(model => model.NomeArquivo)
                     </label>
 
                     <div class="input-group">
-                        @* <input id="fupArquivo" name="files" class="form-control" type="file"> *@
-
                         @Html.TextBox("files", "", new { @class = "form-control", @id = "fupArquivo", @type = "file" })
 
-                        <input type="submit" value="Upload do Arquivo" />
+                        <button type="submit" class="btn btn-warning btn-icon-split">
+                            <span class="icon text-white">
+                                <i class="fas fa-upload"></i>
+                            </span>
+                            <span class="text">Upload</span>
+                        </button>
 
-                        <span class="input-group-btn">
-                            <button id="btnLimparArquivo" type="button" class="btn btn-default">Limpar</button>
-                        </span>
+                        <button type="button" id="btnLimparArquivo" class="btn btn-danger btn-icon-split">
+                            <span class="icon text-white">
+                                <i class="fas fa-times"></i>
+                            </span>
+                            <span class="text">Limpar</span>
+                        </button>
                     </div>
                 </div>
-            }
+            </div>
         </div>
+    }
+
+    @*     <div class="row">
+    <div class="col-xl-12 col-sm-12 col-md-12">
+    @using (Html.BeginForm("SendFile", "Publicacao", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+    <div class="form-group">
+    <label class="control-label" for="fupImagem">
+    @Html.DisplayNameFor(model => model.NomeImagem)
+    </label>
+
+    <div class="input-group">
+    @Html.TextBox("files", "", new { @class = "form-control", @name = "NomeImagem", @id = "fupImagem", @type = "file" })
+
+    <button type="submit" class="btn btn-warning btn-icon-split">
+    <span class="icon text-white">
+    <i class="fas fa-upload"></i>
+    </span>
+    <span class="text">Upload</span>
+    </button>
+
+    <button type="button" id="btnLimparImagem" class="btn btn-danger btn-icon-split">
+    <span class="icon text-white">
+    <i class="fas fa-times"></i>
+    </span>
+    <span class="text">Limpar</span>
+    </button>
     </div>
+    </div>
+    }
+    </div>
+    </div> *@
 </div>
 
 @*https://igorescobar.github.io/jQuery-Mask-Plugin/docs.html*@
@@ -218,7 +259,7 @@
                         '@Url.Action(
                             "Index",
                 "Publicacao")')
-                                                }, 4000);
+                                                                                                                                                                                                                                                }, 4000);
             }
         });
 
@@ -236,12 +277,11 @@
             // $('#imgMarca').attr("src", '../Content/img/logo-white.png');
 
             $("#fupImagem").val('');
+            $("#hdnConteudoImagem").val('');
+            $("#hdnImagem").val('');
         });
 
         $(document).on('change', '#fupArquivo', function () {
-
-            alert('1');
-
             //Get count of selected files
             var countFiles = $(this)[0].files.length;
 
@@ -253,9 +293,6 @@
 
             if (extension == "pdf" || extension == "rtf") {
                 if (typeof (FileReader) != "undefined") {
-
-                    debugger;
-
                     //loop for each file selected for uploaded.
                     for (var i = 0; i < countFiles; i++) {
 
@@ -284,8 +321,6 @@
 
         $(document).on('change', '#fupImagem', function () {
 
-            alert('2');
-
             //Get count of selected files
             var countFiles = $(this)[0].files.length;
 
@@ -295,11 +330,12 @@
             // var imgMarca = $("#imgMarca");
             // imgMarca.empty();
 
-            if (extension == "jpg" || extension == "bmp") {
+            if (extension == "bmp" ||
+                extension == "jpeg" ||
+                extension == "jpg" ||
+                extension == "png" ||
+                extension == "svg") {
                 if (typeof (FileReader) != "undefined") {
-
-                    debugger;
-
                     //loop for each file selected for uploaded.
                     for (var i = 0; i < countFiles; i++) {
 
@@ -313,16 +349,20 @@
                             //$('#imgMarca').attr('src', e.target.result);
                         }
 
-                        //imgMarca.show();
+                        //  imgMarca.show();
+
+                        var path = $(this)[0].files[i];
+
+                        $('#hdnImagem').val(
+                            path.name);
 
                         reader.readAsDataURL($(this)[0].files[i]);
                     }
-
                 } else {
                     alert("This browser does not support FileReader.");
                 }
             } else {
-                alert("Selecione apenas arquivos Bmp ou Jpg.");
+                alert("Selecione apenas arquivos Bmp, Jpeg, Jpg, Png ou Svg.");
             }
         });
     </script>

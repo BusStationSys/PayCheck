@@ -247,8 +247,6 @@
         {
             try
             {
-                updateDto.Id = (int)updateDto.Id;
-
                 var data = this._business.SaveData(
                     updateDto: updateDto);
 

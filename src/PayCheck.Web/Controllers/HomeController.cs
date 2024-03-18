@@ -137,10 +137,8 @@ public class HomeController : Controller
             string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
             if (dataJson.IsValidJson())
-            {
                 pessoasFisicas = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>>(
                     dataJson).Data;
-            }
         }
 
         if (pessoasFisicas != null &&
@@ -168,7 +166,7 @@ public class HomeController : Controller
                     .ThenBy(a => a.Nome).ToList();
         }
 
-        return null;
+        return Enumerable.Empty<dynamic>();
     }
 
     private IEnumerable<dynamic> LoadAniversariantesEmpresa(int mes)
@@ -238,20 +236,63 @@ public class HomeController : Controller
             publicacoes.Count() > 0)
         {
             var sobreNos = from sn in publicacoes
-                                  //where aniversariante.DataNascimento != null
-                                  select new
-                                  {
-                                      sn.Id,
-                                      sn.Resumo,
-                                      sn.Titulo,
-                                      sn.Texto,
-                                  };
+                           select new
+                           {
+                               sn.Id,
+                               sn.Resumo,
+                               sn.Titulo,
+                               sn.Texto,
+                               sn.ConteudoImagem,
+                               sn.ExtensaoImagem,
+                           };
 
             return sobreNos.ToList();
+        }
 
-            //return aniversariantes.OrderBy(
-            //    a => a.DataNascimentoOrdenado)
-            //        .ThenBy(a => a.Nome).ToList();
+        return Enumerable.Empty<dynamic>();
+    }
+
+    public IActionResult RenderImage(int id)
+    {
+        string requestUri = @$"{this._httpClient.BaseAddress}/Publicacao/getImage/{id}";
+
+        var publicacao = default(PublicacaoResponseDto);
+
+        using (var webApiHelper = new WebApiHelper(
+            requestUri,
+            this._tokenBearer))
+        {
+            string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+
+            if (dataJson.IsValidJson())
+                publicacao = JsonConvert.DeserializeObject<ApiResponseDto<PublicacaoResponseDto>>(
+                    dataJson).Data;
+        }
+
+        if (publicacao != null)
+        {
+            string contentType = "image/png";
+
+            if (publicacao.ExtensaoArquivo == "bmp")
+                contentType = "image/bmp";
+            else if (publicacao.ExtensaoArquivo == "gif")
+                contentType = "image/gif";
+            else if (publicacao.ExtensaoArquivo == "jpeg" ||
+                publicacao.ExtensaoArquivo == "jpg")
+                contentType = "image/jpeg";
+            else if (publicacao.ExtensaoArquivo == "svg")
+                contentType = "image/svg+xml";
+
+            var base64String = Convert.ToBase64String(
+                publicacao.ConteudoImagem);
+
+            var arrayImage = Convert.FromBase64String(
+                base64String);
+
+            return this.File(
+                arrayImage,
+                contentType,
+                publicacao.NomeImagem);
         }
 
         return null;
