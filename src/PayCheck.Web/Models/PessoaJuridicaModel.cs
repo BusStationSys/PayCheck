@@ -52,7 +52,7 @@ public class PessoaJuridicaModel
     public UnidadeNegocioEnum? IdUnidadeNegocio { get; set; }
 
     [Display(Name = "Unidade de Negócio")]
-    public string DescricaoUnidadeNegocio { get; set; }
+    public string? DescricaoUnidadeNegocio { get; set; }
 
     [Display(Name = "Número")]
     [StringLength(10, ErrorMessage = "O Número não pode exceder 10 caracteres.", MinimumLength = 0)]
