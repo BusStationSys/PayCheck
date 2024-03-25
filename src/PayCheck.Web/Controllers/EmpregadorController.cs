@@ -38,7 +38,25 @@
                 cfg.CreateMap<PessoaJuridicaRequestCreateDto, PessoaJuridicaModel>().ReverseMap();
                 cfg.CreateMap<PessoaJuridicaRequestUpdateDto, PessoaJuridicaModel>().ReverseMap();
 
-                cfg.CreateMap<PessoaJuridicaResponseDto, PessoaJuridicaModel>().ReverseMap();
+                cfg.CreateMap<MatriculaDemonstrativoPagamentoResponseDto, DemonstrativoPagamentoViewModel>()
+                    .ForMember(
+                        dest => dest.NumeroMatricula,
+                        opt => opt.MapFrom(
+                            src => src.Matricula.Matricula))
+                    .ForMember(
+                        dest => dest.NomeColaborador,
+                        opt => opt.MapFrom(
+                            src => src.Matricula.Colaborador.Nome))
+                    .ForMember(
+                        dest => dest.RazaoSocialEmpregador,
+                        opt => opt.MapFrom(
+                            src => src.Matricula.Empregador.RazaoSocial)).ReverseMap();
+
+                cfg.CreateMap<PessoaJuridicaResponseDto, PessoaJuridicaModel>()
+                    .ForMember(
+                        dest => dest.DescricaoUnidadeNegocio,
+                        opt => opt.MapFrom(
+                            src => src.UnidadeNegocio.Descricao)).ReverseMap();
             });
 
             this._mapper = new Mapper(
@@ -398,10 +416,11 @@
                             pessoaJuridica.Guid,
                             Cnpj = Convert.ToInt64(
                                 pessoaJuridica.Cnpj).ToString(@"00\.000\.000\/0000\-00"),
+                            UnidadeNegocio = pessoaJuridica.DescricaoUnidadeNegocio,
+                            pessoaJuridica.RazaoSocial,
                             DataFundacao = pessoaJuridica.DataFundacao.HasValue ?
                                 pessoaJuridica.DataFundacao.Value.ToString("dd/MM/yyyy") :
                                 "__/__/____",
-                            pessoaJuridica.RazaoSocial,
                         };
 
             var draw = Request.Form["draw"].FirstOrDefault();
@@ -450,6 +469,9 @@
                             searchValue,
                             StringComparison.OrdinalIgnoreCase) ||
                         td.DataFundacao.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        td.UnidadeNegocio.Contains(
                             searchValue,
                             StringComparison.OrdinalIgnoreCase) ||
                         string.IsNullOrEmpty(searchValue));

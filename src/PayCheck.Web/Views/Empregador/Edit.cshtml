@@ -1,4 +1,7 @@
-﻿@model PessoaJuridicaModel
+﻿@using ARVTech.DataAccess.Enums
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@model PessoaJuridicaModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -17,6 +20,8 @@
 
     @using (Html.BeginForm("Edit", "Empregador", FormMethod.Post, new { @class = "user" }))
     {
+        var bandeirasComerciais = Enum.GetValues(typeof(UnidadeNegocioEnum)).OfType<UnidadeNegocioEnum>().Select(m => new { Text = m.ToString(), Value = (int)m }).ToList();
+
         @if (ViewBag.ErrorMessage != null)
         {
             <div class="alert alert-danger alert-dismissible">
@@ -94,17 +99,34 @@
                         @Html.DisplayNameFor(model => model.Cnpj)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.Cnpj, "", new { @class = "form-control", @id="txtCnpj", @maxlength = "18", @placeholder = "XX.XXX.XXX/XXXX-XX" } )
+                    @Html.TextBoxFor(Model => Model.Cnpj, "", new { @class = "form-control", @id = "txtCnpj", @maxlength = "18", @placeholder = "XX.XXX.XXX/XXXX-XX" })
                 </div>
             </div>
 
-            <div class="col-xl-7 col-sm-6 col-md-8">
+            <div class="col-xl-2 col-sm-2 col-md-2">
+                <div class="form-group">
+                    <label class="control-label" for="ddlUnidadeNegocio">
+                        @Html.DisplayNameFor(model => model.IdUnidadeNegocio)
+                    </label>
+
+                    @Html.DropDownListFor(model => model.IdUnidadeNegocio, new SelectList(Enum.GetValues(typeof(UnidadeNegocioEnum)).Cast<UnidadeNegocioEnum>()
+                             .Select(g => new SelectListItem
+                                 {
+                                     Text = g.GetType().GetMember(g.ToString()).First().GetCustomAttribute<DisplayAttribute>().GetName(),
+                                     Value = g.ToString()
+                                 }),
+                                 "Value",
+                                 "Text"), new { @id = "ddlUnidadeNegocio", @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="col-xl-5 col-sm-4 col-md-5">
                 <div class="form-group">
                     <label class="control-label" for="txtRazaoSocial">
                         @Html.DisplayNameFor(model => model.RazaoSocial)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.RazaoSocial, new { @class = "form-control", @id="txtRazaoSocial", @maxlength="100", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.RazaoSocial, new { @class = "form-control", @id = "txtRazaoSocial", @maxlength = "100", @type = "text" })
                 </div>
             </div>
 
@@ -126,7 +148,7 @@
                         @Html.DisplayNameFor(model => model.Cep)
                     </label>
 
-                    @Html.TextBoxFor(Model => Model.Cep, "", new { @class="form-control", @id = "txtCep", @maxlength = "9", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Cep, "", new { @class = "form-control", @id = "txtCep", @maxlength = "9", @type = "text" })
                 </div>
             </div>
             <div class="col-md-5">
@@ -134,7 +156,7 @@
                     <label class="control-label" for="txtEndereco">
                         @Html.DisplayNameFor(model => model.Endereco)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Endereco, "", new { @class="form-control", @id="txtEndereco", @maxlenght="100", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Endereco, "", new { @class = "form-control", @id = "txtEndereco", @maxlenght = "100", @type = "text" })
                 </div>
             </div>
             <div class="col-md-2">
@@ -142,7 +164,7 @@
                     <label class="control-label" for="txtNumero">
                         @Html.DisplayNameFor(model => model.Numero)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Numero, "", new { @class="form-control", @id="txtNumero", @maxlenght="10", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Numero, "", new { @class = "form-control", @id = "txtNumero", @maxlenght = "10", @type = "text" })
                 </div>
             </div>
             <div class="col-md-3">
@@ -150,7 +172,7 @@
                     <label class="control-label" for="txtComplemento">
                         @Html.DisplayNameFor(model => model.Complemento)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Complemento, "", new { @class="form-control", @id="txtComplemento", @maxlenght="30", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Complemento, "", new { @class = "form-control", @id = "txtComplemento", @maxlenght = "30", @type = "text" })
                 </div>
             </div>
         </div>
@@ -161,7 +183,7 @@
                     <label class="control-label" for="txtBairro">
                         @Html.DisplayNameFor(model => model.Bairro)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Bairro, "", new { @class="form-control", @id="txtBairro", @maxlenght = "40", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Bairro, "", new { @class = "form-control", @id = "txtBairro", @maxlenght = "40", @type = "text" })
                 </div>
             </div>
 
@@ -170,7 +192,7 @@
                     <label class="control-label" for="txtCidade">
                         @Html.DisplayNameFor(model => model.Cidade)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Cidade, "", new { @class="form-control", @id="txtCidade", @maxlenght="60", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Cidade, "", new { @class = "form-control", @id = "txtCidade", @maxlenght = "60", @type = "text" })
                 </div>
             </div>
 
@@ -179,7 +201,7 @@
                     <label class="control-label" for="txtUf">
                         @Html.DisplayNameFor(model => model.Uf)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Uf, "", new { @class="form-control", @id="txtUf", @maxlenght="2", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Uf, "", new { @class = "form-control", @id = "txtUf", @maxlenght = "2", @type = "text" })
                 </div>
             </div>
         </div>
@@ -190,7 +212,7 @@
                     <label class="control-label" for="txtEmail">
                         @Html.DisplayNameFor(model => model.Email)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Email, "", new { @class="form-control", @id="txtEmail", @maxlenght="75", @type = "email" } )
+                    @Html.TextBoxFor(Model => Model.Email, "", new { @class = "form-control", @id = "txtEmail", @maxlenght = "75", @type = "email" })
                 </div>
             </div>
 
@@ -199,7 +221,7 @@
                     <label class="control-label" for="txtTelefone">
                         @Html.DisplayNameFor(model => model.Telefone)
                     </label>
-                    @Html.TextBoxFor(Model => Model.Telefone, "", new { @class="form-control", @id="txtTelefone", @maxlenght="30", @type = "text" } )
+                    @Html.TextBoxFor(Model => Model.Telefone, "", new { @class = "form-control", @id = "txtTelefone", @maxlenght = "30", @type = "text" })
                 </div>
             </div>
         </div>
@@ -224,8 +246,8 @@
                     window.location.replace(
                         '@Url.Action(
                             "Index",
-                            "Empregador")')
-                }, 4000);
+                "Empregador")')
+                                                                                }, 4000);
             }
         });
     </script>

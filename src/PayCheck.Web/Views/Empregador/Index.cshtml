@@ -36,10 +36,13 @@
                                 CNPJ
                             </th>
                             <th align="center">
-                                Fundação
+                                Unidade de Negócio
                             </th>
                             <th>
                                 Razão Social
+                            </th>
+                            <th align="center">
+                                Fundação
                             </th>
                             <th align="center">
                                 Ações
@@ -87,13 +90,14 @@
                 "columns": [
                     { "data": "guid", "title": "Guid" },
                     { "data": "cnpj", "name": "Cnpj", "title": "CNPJ" },
-                    { "data": "dataFundacao", "name": "DataFundacao", "title": "Fundação" },
+                    { "data": "unidadeNegocio", "name": "UnidadeNegocio", "title": "Unidade de Negócio" },
                     {
                         "data": "razaoSocial", "name": "RazaoSocial", "title": "Razão Social",
                         "render": function (data, type, row) {
                             return '<a href="/Empregador/Edit/' + row.guid + '">' + data + '</a>';
                         }
                     },
+                    { "data": "dataFundacao", "name": "DataFundacao", "title": "Fundação" },
                     {
                         "data": null,
                         "render": function (data, type, row) {
@@ -102,14 +106,15 @@
                     }
                 ],
                 "columnDefs": [
-                    { "className": "dt-center", "targets": [1, 2, 4] },
+                    { "className": "dt-center", "targets": [1, 2, 4, 5] },
 
-                    { "targets": [1, 2, 3], orderable: true, searchable: true },
-                    { "targets": [1, 2, 3, 4], visible: true },
+                    { "targets": [1, 2, 3, 4], orderable: true, searchable: true },
+                    { "targets": [1, 2, 3, 4, 5], visible: true },
 
                     { "width": "12%", "targets": 1 },
-                    { "width": "9%", "targets": 2 },
-                    { "width": "16%", "targets": 4 },
+                    { "width": "18%", "targets": 2 },
+                    { "width": "9%", "targets": 4 },
+                    { "width": "16%", "targets": 5 },
 
                     { "targets": '_all', orderable: false, searchable: false, visible: false }
                 ],
