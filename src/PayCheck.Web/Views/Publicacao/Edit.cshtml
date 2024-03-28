@@ -86,8 +86,12 @@
 
         <div class="row">
             @Html.HiddenFor(model => model.Id, new { @id = "hdnId" })
+            
             @Html.HiddenFor(model => model.ConteudoImagem, new { @id = "hdnConteudoImagem" })
             @Html.HiddenFor(model => model.NomeImagem, new { @id = "hdnImagem" })
+
+            @Html.HiddenFor(model => model.ConteudoArquivo, new { @id = "hdnConteudoArquivo" })
+            @Html.HiddenFor(model => model.NomeArquivo, new { @id = "hdnArquivo" })
 
             <div class="col-xl-2 col-sm-2 col-md-2">
                 <div class="form-group">
@@ -164,7 +168,7 @@
                     </label>
 
                     <div class="input-group">
-                        @Html.TextBox("images", "NomeImagem", new { @class = "form-control", @name = "NomeImagem", @id = "fupImagem", @type = "file" })
+                        @Html.TextBox("images", "NomeImagem", new { @class = "form-control", @id = "fupImagem", @name = "NomeImagem", @type = "file" })
 
                         @*                         <button type="submit" class="btn btn-warning btn-icon-split">
                     <span class="icon text-white">
@@ -190,14 +194,14 @@
                     </label>
 
                     <div class="input-group">
-                        @Html.TextBox("files", "", new { @class = "form-control", @id = "fupArquivo", @type = "file" })
+                        @Html.TextBox("files", "NomeArquivo", new { @class = "form-control", @id = "fupArquivo", @name = "NomeArquivo", @type = "file" })
 
-                        <button type="submit" class="btn btn-warning btn-icon-split">
-                            <span class="icon text-white">
-                                <i class="fas fa-upload"></i>
-                            </span>
-                            <span class="text">Upload</span>
-                        </button>
+                        @*                         <button type="submit" class="btn btn-warning btn-icon-split">
+                    <span class="icon text-white">
+                    <i class="fas fa-upload"></i>
+                    </span>
+                    <span class="text">Upload</span>
+                    </button> *@
 
                         <button type="button" id="btnLimparArquivo" class="btn btn-danger btn-icon-split">
                             <span class="icon text-white">
@@ -259,7 +263,7 @@
                         '@Url.Action(
                             "Index",
                 "Publicacao")')
-                                                                                                                                                                                                                                                }, 4000);
+                                                                                                                                                                                                                                                        }, 4000);
             }
         });
 
@@ -269,6 +273,8 @@
             // $('#imgMarca').attr("src", '../Content/img/logo-white.png');
 
             $("#fupArquivo").val('');
+            $("#hdnConteudoArquivo").val('');
+            $("#hdnArquivo").val('');
         });
 
         $(document).on('click', '#btnLimparImagem', function () {
@@ -307,6 +313,11 @@
                         }
 
                         //imgMarca.show();
+
+                        var path = $(this)[0].files[i];
+
+                        $('#hdnArquivo').val(
+                            path.name);
 
                         reader.readAsDataURL($(this)[0].files[i]);
                     }

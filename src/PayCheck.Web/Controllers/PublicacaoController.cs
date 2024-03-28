@@ -231,7 +231,7 @@
             if (string.IsNullOrEmpty(
                 model.NomeImagem))
             {
-                string validateMessage = this.ValidateImage(
+                string validateMessage = this.ValidateUpload(
                     images);
 
                 if (!string.IsNullOrEmpty(validateMessage))
@@ -262,7 +262,14 @@
             {
                 isNew = true;
 
-                model.ConteudoImagem = this.GetContentImage(
+                if (files?.FirstOrDefault().FileName != null)
+                {
+                    model.ConteudoArquivo = this.GetContentUpload(
+                        files?.FirstOrDefault());
+                    model.NomeArquivo = files?.FirstOrDefault().FileName;
+                }
+
+                model.ConteudoImagem = this.GetContentUpload(
                     images?.FirstOrDefault());
                 model.NomeImagem = images?.FirstOrDefault().FileName;
 
@@ -273,12 +280,26 @@
                     model.NomeImagem).Extension.Replace(
                         ".",
                         string.Empty);
+
+                if (!string.IsNullOrEmpty(
+                    model.NomeArquivo))
+                    createDto.ExtensaoArquivo = new FileInfo(
+                        model.NomeArquivo).Extension.Replace(
+                            ".",
+                            string.Empty);
             }
             else
             {
+                if (files?.Count > 0)
+                {
+                    model.ConteudoArquivo = this.GetContentUpload(
+                        files?.FirstOrDefault());
+                    model.NomeArquivo = files?.FirstOrDefault().FileName;
+                }
+
                 if (images?.Count > 0)
                 {
-                    model.ConteudoImagem = this.GetContentImage(
+                    model.ConteudoImagem = this.GetContentUpload(
                         images?.FirstOrDefault());
                     model.NomeImagem = images?.FirstOrDefault().FileName;
                 }
@@ -290,6 +311,12 @@
                     model.NomeImagem).Extension.Replace(
                         ".",
                         string.Empty);
+
+                if (!string.IsNullOrEmpty(model.NomeArquivo))
+                    updateDto.ExtensaoArquivo = new FileInfo(
+                        model.NomeArquivo).Extension.Replace(
+                            ".",
+                            string.Empty);
             }
 
             string requestUri = @$"{this._httpClient.BaseAddress}/Publicacao";
@@ -328,15 +355,15 @@
                 model);
         }
 
-        private byte[] GetContentImage(IFormFile image)
+        private byte[] GetContentUpload(IFormFile upload)
         {
             try
             {
-                if (image != null)
+                if (upload != null)
                 {
                     using (var memoryStream = new MemoryStream())
                     {
-                        image.CopyTo(
+                        upload.CopyTo(
                             memoryStream);
 
                         return memoryStream.ToArray();
@@ -351,118 +378,118 @@
             }
         }
 
-        private string ValidateImage(List<IFormFile> images)
+        private string ValidateUpload(List<IFormFile> upload)
         {
-            if (images?.Count == 0)
+            if (upload?.Count == 0)
                 return "É necessário indicar pelo menos 1 arquivo.";
 
             return string.Empty;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="files"></param>
-        /// <returns></returns>
-        [HttpPost()]
-        public async Task<IActionResult> SendFile(List<IFormFile> files, PublicacaoModel model)
-        {
-            ViewBag.ErrorMessage = null;
-            ViewBag.SuccessMessage = null;
-            ViewBag.ValidateMessage = null;
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="files"></param>
+        ///// <returns></returns>
+        //[HttpPost()]
+        //public async Task<IActionResult> SendFile(List<IFormFile> files, PublicacaoModel model)
+        //{
+        //    ViewBag.ErrorMessage = null;
+        //    ViewBag.SuccessMessage = null;
+        //    ViewBag.ValidateMessage = null;
 
-            var errorMessageHtml = new StringBuilder();
+        //    var errorMessageHtml = new StringBuilder();
 
-            if (files?.Count > 0)
-            {
-                var filesLength = files.Sum(f => f.Length);
+        //    if (files?.Count > 0)
+        //    {
+        //        var filesLength = files.Sum(f => f.Length);
 
-                var tempFileName = Path.GetTempFileName();
+        //        var tempFileName = Path.GetTempFileName();
 
-                //  Processa os arquivos enviados.
-                foreach (var file in files)
-                {
-                    //  Verifica se existe um arquivo (ou mais) e se não está vazio.
-                    if (file?.Length == 0)
-                    {
-                        //retorna a viewdata com erro
-                        errorMessageHtml.Append("Arquivo(s) não selecionado(s)");
-                    }
+        //        //  Processa os arquivos enviados.
+        //        foreach (var file in files)
+        //        {
+        //            //  Verifica se existe um arquivo (ou mais) e se não está vazio.
+        //            if (file?.Length == 0)
+        //            {
+        //                //retorna a viewdata com erro
+        //                errorMessageHtml.Append("Arquivo(s) não selecionado(s)");
+        //            }
 
-                    // < define a pasta onde vamos salvar os arquivos >
-                    string subFolderName = @"Images\Received";
+        //            // < define a pasta onde vamos salvar os arquivos >
+        //            string subFolderName = @"Images\Received";
 
-                    // Define um Guid para o arquivo enviado.
-                    var guidPublicacao = Guid.NewGuid().ToString("N").ToUpper();
+        //            // Define um Guid para o arquivo enviado.
+        //            var guidPublicacao = Guid.NewGuid().ToString("N").ToUpper();
 
-                    string fileName = $@"{guidPublicacao}";
+        //            string fileName = $@"{guidPublicacao}";
 
-                    //verifica qual o tipo de arquivo : jpg, gif, png, pdf ou tmp
-                    if (file.FileName.Contains(".jpg"))
-                        fileName = $@"{fileName}.jpg";
+        //            //verifica qual o tipo de arquivo : jpg, gif, png, pdf ou tmp
+        //            if (file.FileName.Contains(".jpg"))
+        //                fileName = $@"{fileName}.jpg";
 
-                    else if (file.FileName.Contains(".gif"))
-                        fileName = $@"{fileName}.gif";
+        //            else if (file.FileName.Contains(".gif"))
+        //                fileName = $@"{fileName}.gif";
 
-                    else if (file.FileName.Contains(".png"))
-                        fileName = $@"{fileName}.png";
+        //            else if (file.FileName.Contains(".png"))
+        //                fileName = $@"{fileName}.png";
 
-                    else if (file.FileName.Contains(".pdf"))
-                        fileName = $@"{fileName}.pdf";
+        //            else if (file.FileName.Contains(".pdf"))
+        //                fileName = $@"{fileName}.pdf";
 
-                    else if (file.FileName.Contains(".rtf"))
-                        fileName = $@"{fileName}.rtf";
+        //            else if (file.FileName.Contains(".rtf"))
+        //                fileName = $@"{fileName}.rtf";
 
-                    else
-                        fileName = $@"{fileName}.tmp";
+        //            else
+        //                fileName = $@"{fileName}.tmp";
 
-                    //< obtém o caminho físico da pasta wwwroot >
-                    string webRootPath = this._webHostEnvironment.WebRootPath;
+        //            //< obtém o caminho físico da pasta wwwroot >
+        //            string webRootPath = this._webHostEnvironment.WebRootPath;
 
-                    // monta o caminho onde vamos salvar o arquivo : 
-                    // ~\wwwroot\Arquivos\Arquivos_Usuario\Recebidos
-                    string pathDestFileName = $@"{webRootPath}\{this._folderName}\{subFolderName}\{fileName}";
+        //            // monta o caminho onde vamos salvar o arquivo : 
+        //            // ~\wwwroot\Arquivos\Arquivos_Usuario\Recebidos
+        //            string pathDestFileName = $@"{webRootPath}\{this._folderName}\{subFolderName}\{fileName}";
 
-                    // incluir a pasta Recebidos e o nome do arquivo enviado : 
-                    // ~\wwwroot\Arquivos\Arquivos_Usuario\Recebidos\
-                    //string caminhoDestinoArquivoOriginal = caminhoDestinoArquivo + "\\Recebidos\\" + fileName;
+        //            // incluir a pasta Recebidos e o nome do arquivo enviado : 
+        //            // ~\wwwroot\Arquivos\Arquivos_Usuario\Recebidos\
+        //            //string caminhoDestinoArquivoOriginal = caminhoDestinoArquivo + "\\Recebidos\\" + fileName;
 
-                    //copia o arquivo para o local de destino original
-                    //using (var fileStream = new FileStream(
-                    //    pathDestFileName,
-                    //    FileMode.Create))
-                    //{
-                    //    await file.CopyToAsync(
-                    //        fileStream);
+        //            //copia o arquivo para o local de destino original
+        //            //using (var fileStream = new FileStream(
+        //            //    pathDestFileName,
+        //            //    FileMode.Create))
+        //            //{
+        //            //    await file.CopyToAsync(
+        //            //        fileStream);
 
-                    //    model.ConteudoImagem = fileStream.ToArray();
-                    //    model.NomeImagem = files.FirstOrDefault().FileName;
-                    //}
+        //            //    model.ConteudoImagem = fileStream.ToArray();
+        //            //    model.NomeImagem = files.FirstOrDefault().FileName;
+        //            //}
 
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        await file.CopyToAsync(
-                            memoryStream);
+        //            using (var memoryStream = new MemoryStream())
+        //            {
+        //                await file.CopyToAsync(
+        //                    memoryStream);
 
-                        model.ConteudoImagem = memoryStream.ToArray();
-                        model.NomeImagem = files.FirstOrDefault().FileName;
-                    }
-                }
+        //                model.ConteudoImagem = memoryStream.ToArray();
+        //                model.NomeImagem = files.FirstOrDefault().FileName;
+        //            }
+        //        }
 
-                //returnView.ViewData["Resultado"] = $"{files.Count} arquivo(s) foi(ram) enviado(s) ao servidor com tamanho total de {filesLength} bytes.";
+        //        //returnView.ViewData["Resultado"] = $"{files.Count} arquivo(s) foi(ram) enviado(s) ao servidor com tamanho total de {filesLength} bytes.";
 
-                //monta a ViewData que será exibida na view como resultado do envio 
-            }
-            else
-                errorMessageHtml.Append("Para realizar o upload é necessário informar pelo menos 1 arquivo.");
+        //        //monta a ViewData que será exibida na view como resultado do envio 
+        //    }
+        //    else
+        //        errorMessageHtml.Append("Para realizar o upload é necessário informar pelo menos 1 arquivo.");
 
-            if (errorMessageHtml.Length > 0)
-                ViewBag.ValidateMessage = errorMessageHtml.ToString();
+        //    if (errorMessageHtml.Length > 0)
+        //        ViewBag.ValidateMessage = errorMessageHtml.ToString();
 
-            return View(
-                "Edit",
-                model);
-        }
+        //    return View(
+        //        "Edit",
+        //        model);
+        //}
 
         /// <summary>
         /// 
