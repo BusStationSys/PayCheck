@@ -14,8 +14,30 @@
 
 <!-- Begin Page Content -->
 <div class="container-fluid">
-    <!-- Content Row -->
-    <!-- px-3 py-5 bg-gradient-warning text-white-->
+    <!-- Modal -->
+    @* https://www.macoratti.net/18/06/mvc5_vmodal2.htm *@
+
+    <div class="modal fade" id="sobreNosModal" tabindex="-1" aria-labelledby="lblSobreNos" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lblSobreNos">Título</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <img src="news_image.jpg" class="img-fluid mb-3" alt="News Image">
+                    <p>Detailed description of the news article goes here.</p>
+                    <p>Additional information, quotes, etc.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row justify-content-center">
         <div class="col-xl-12 col-lg-12 col-md-12 mb-12">
             <div class="card shadow mb-4 border-left-warning shadow">
@@ -47,10 +69,6 @@
 
                                         dataSlideTo++;
                                     }
-
-@*                                     <li data-target="#carouselSobreNos" data-slide-to="0" class="active"></li>
-                                    <li data-target="#carouselSobreNos" data-slide-to="1"></li>
-                                    <li data-target="#carouselSobreNos" data-slide-to="2"></li> *@
                                 </ul>
 
                                 var divClass = "carousel-item active";
@@ -58,10 +76,14 @@
                                 foreach (var item in sobreNos)
                                 {
                                     <div class="' + @divClass + '">
-                                        <img class="d-block w-100" style="height: 475px; max-height: 475px;" src="@Url.Action("RenderImage", "Home", new { @id = item.Id } )" />
+                                        <a href="#">
+                                            <img class="d-block w-100" data-id="@item.Id" data-target="#sobreNosModal" data-toggle="modal" style="height: 475px; max-height: 475px;" src="@Url.Action("RenderImage", "Home", new { @id = item.Id } )" />
+                                        </a>
 
                                         <div class="carousel-caption d-none d-md-block bg-gradient-secondary text-white mb-4">
-                                            <h2 class="font-weight-bold text-white text-uppercase mb-10" style="text-align:center"><span>@item.Titulo</span></h2>
+                                            <h2 class="font-weight-bold text-white text-uppercase mb-10" style="text-align:center">
+                                                <span>@item.Titulo</span>
+                                            </h2>
 
                                             @* <p class="font-weight-bold text-white mb-10" style="text-align:justify">@item.Resumo</p> *@
                                             <p class="font-weight-bold text-white mb-10">@item.Resumo</p>
@@ -161,3 +183,15 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        });
+
+        $('img').click(function () {
+            alert($(this).attr('data-id'));
+        });
+    </script>
+}

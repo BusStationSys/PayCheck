@@ -8,7 +8,6 @@
 
 <!-- Begin Page Content -->
 <div class="container-fluid">
-    <!-- Logout Modal-->
     <!-- Page Heading -->
     <div class="alert alert-danger alert-dismissible" style="display: none;"></div>
     <div id="alertSuccess" class="alert alert-success alert-dismissible" style="display: none;"></div>
@@ -20,8 +19,6 @@
         @if (ViewBag.ErrorMessage != null)
         {
             <div class="alert alert-danger alert-dismissible">
-                @* <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a> *@
-
                 <i class="icon fa fa-ban"></i>
                 <strong>Erro</strong>
 
@@ -86,7 +83,7 @@
 
         <div class="row">
             @Html.HiddenFor(model => model.Id, new { @id = "hdnId" })
-            
+
             @Html.HiddenFor(model => model.ConteudoImagem, new { @id = "hdnConteudoImagem" })
             @Html.HiddenFor(model => model.NomeImagem, new { @id = "hdnImagem" })
 
@@ -170,13 +167,6 @@
                     <div class="input-group">
                         @Html.TextBox("images", "NomeImagem", new { @class = "form-control", @id = "fupImagem", @name = "NomeImagem", @type = "file" })
 
-                        @*                         <button type="submit" class="btn btn-warning btn-icon-split">
-                    <span class="icon text-white">
-                    <i class="fas fa-upload"></i>
-                    </span>
-                    <span class="text">Upload</span>
-                    </button> *@
-
                         <button type="button" id="btnLimparImagem" class="btn btn-danger btn-icon-split">
                             <span class="icon text-white">
                                 <i class="fas fa-times"></i>
@@ -196,13 +186,6 @@
                     <div class="input-group">
                         @Html.TextBox("files", "NomeArquivo", new { @class = "form-control", @id = "fupArquivo", @name = "NomeArquivo", @type = "file" })
 
-                        @*                         <button type="submit" class="btn btn-warning btn-icon-split">
-                    <span class="icon text-white">
-                    <i class="fas fa-upload"></i>
-                    </span>
-                    <span class="text">Upload</span>
-                    </button> *@
-
                         <button type="button" id="btnLimparArquivo" class="btn btn-danger btn-icon-split">
                             <span class="icon text-white">
                                 <i class="fas fa-times"></i>
@@ -214,37 +197,6 @@
             </div>
         </div>
     }
-
-    @*     <div class="row">
-    <div class="col-xl-12 col-sm-12 col-md-12">
-    @using (Html.BeginForm("SendFile", "Publicacao", FormMethod.Post, new { enctype = "multipart/form-data" }))
-    {
-    <div class="form-group">
-    <label class="control-label" for="fupImagem">
-    @Html.DisplayNameFor(model => model.NomeImagem)
-    </label>
-
-    <div class="input-group">
-    @Html.TextBox("files", "", new { @class = "form-control", @name = "NomeImagem", @id = "fupImagem", @type = "file" })
-
-    <button type="submit" class="btn btn-warning btn-icon-split">
-    <span class="icon text-white">
-    <i class="fas fa-upload"></i>
-    </span>
-    <span class="text">Upload</span>
-    </button>
-
-    <button type="button" id="btnLimparImagem" class="btn btn-danger btn-icon-split">
-    <span class="icon text-white">
-    <i class="fas fa-times"></i>
-    </span>
-    <span class="text">Limpar</span>
-    </button>
-    </div>
-    </div>
-    }
-    </div>
-    </div> *@
 </div>
 
 @*https://igorescobar.github.io/jQuery-Mask-Plugin/docs.html*@
@@ -263,7 +215,7 @@
                         '@Url.Action(
                             "Index",
                 "Publicacao")')
-                                                                                                                                                                                                                                                        }, 4000);
+                                                                                                                                                                                                                                                                }, 4000);
             }
         });
 

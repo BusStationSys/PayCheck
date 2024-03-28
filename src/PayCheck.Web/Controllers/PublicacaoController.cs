@@ -262,7 +262,8 @@
             {
                 isNew = true;
 
-                if (files?.FirstOrDefault().FileName != null)
+                if (files?.Count > 0 &&
+                    files?.FirstOrDefault().FileName != null)
                 {
                     model.ConteudoArquivo = this.GetContentUpload(
                         files?.FirstOrDefault());
