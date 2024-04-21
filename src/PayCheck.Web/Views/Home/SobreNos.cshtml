@@ -1,0 +1,29 @@
+﻿@model PayCheck.Web.Models.PublicacaoModel;
+
+@{
+    ViewData["Title"] = "Sobre Nós";
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="lblSobreNos">@Model.Titulo</h5>
+
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <img class="d-block w-100 imgSobreNos" style="height: 356px; max-height: 356px;" src="@Url.Action("RenderImage", "Home", new { @id = Model.Id } )" />
+
+            <p>@Model.Texto</p>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-danger" type="button" data-dismiss="modal">Fechar</button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Home Page";
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @{
@@ -15,28 +17,31 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
     <!-- Modal -->
+    <div class="modal fade" id="sobreNosModal" tabindex="-1" aria-hidden="true" aria-labelledby="lblSobreNos">
+    </div>
+
     @* https://www.macoratti.net/18/06/mvc5_vmodal2.htm *@
 
-    <div class="modal fade" id="sobreNosModal" tabindex="-1" aria-labelledby="lblSobreNos" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="lblSobreNos">Título</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <img src="news_image.jpg" class="img-fluid mb-3" alt="News Image">
-                    <p>Detailed description of the news article goes here.</p>
-                    <p>Additional information, quotes, etc.</p>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-danger" type="button" data-dismiss="modal">Fechar</button>
-                </div>
-            </div>
-        </div>
+    @*     <div class="modal fade" id="sobreNosModal" tabindex="-1" aria-labelledby="lblSobreNos" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+    <div class="modal-header">
+    <h5 class="modal-title" id="lblSobreNos">Título</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
     </div>
+    <div class="modal-body">
+    <img src="news_image.jpg" class="img-fluid mb-3" alt="News Image">
+    <p>Detailed description of the news article goes here.</p>
+    <p>Additional information, quotes, etc.</p>
+    </div>
+    <div class="modal-footer">
+    <button class="btn btn-danger" type="button" data-dismiss="modal">Fechar</button>
+    </div>
+    </div>
+    </div>
+    </div> *@
 
     <div class="row justify-content-center">
         <div class="col-xl-12 col-lg-12 col-md-12 mb-12">
@@ -77,7 +82,8 @@
                                 {
                                     <div class="' + @divClass + '">
                                         <a href="#">
-                                            <img class="d-block w-100" data-id="@item.Id" data-target="#sobreNosModal" data-toggle="modal" style="height: 475px; max-height: 475px;" src="@Url.Action("RenderImage", "Home", new { @id = item.Id } )" />
+                                            @* <img class="d-block w-100 imgSobreNos" data-id="@item.Id" data-target="#sobreNosModal" data-toggle="modal" style="height: 475px; max-height: 475px;" src="@Url.Action("RenderImage", "Home", new { @id = item.Id } )" /> *@
+                                            <img class="d-block w-100 imgSobreNos" data-id="@item.Id" style="height: 475px; max-height: 475px;" src="@Url.Action("RenderImage", "Home", new { @id = item.Id } )" />
                                         </a>
 
                                         <div class="carousel-caption d-none d-md-block bg-gradient-secondary text-white mb-4">
@@ -190,8 +196,12 @@
 
         });
 
-        $('img').click(function () {
-            alert($(this).attr('data-id'));
+        $('.imgSobreNos').click(function () {
+            var id = $(this).attr('data-id');
+
+            $("#sobreNosModal").load("SobreNos?id=" + id, function () {
+                $("#sobreNosModal").modal();
+            })
         });
     </script>
 }

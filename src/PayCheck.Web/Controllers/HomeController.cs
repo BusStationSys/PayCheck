@@ -3,10 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 using System.Security.Claims;
 using ARVTech.DataAccess.DTOs;
 using ARVTech.DataAccess.DTOs.UniPayCheck;
 using ARVTech.Shared.Extensions;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -24,6 +26,8 @@ public class HomeController : Controller
 
     private readonly HttpClient _httpClient;
 
+    private readonly Mapper _mapper;
+
     public HomeController(ILogger<HomeController> logger, IOptions<ExternalApis> externalApis)
     {
         this._logger = logger;
@@ -32,6 +36,19 @@ public class HomeController : Controller
 
         Uri baseAddress = new(
             externalApisValue.PayCheck);
+
+        var mapperConfiguration = new MapperConfiguration(cfg =>
+        {
+            //cfg.CreateMap<PublicacaoRequestCreateDto, PublicacaoResponseDto>().ReverseMap();
+            //cfg.CreateMap<PublicacaoRequestUpdateDto, PublicacaoResponseDto>().ReverseMap();
+            //cfg.CreateMap<PublicacaoRequestCreateDto, PublicacaoModel>().ReverseMap();
+            //cfg.CreateMap<PublicacaoRequestUpdateDto, PublicacaoModel>().ReverseMap();
+
+            cfg.CreateMap<PublicacaoResponseDto, PublicacaoModel>().ReverseMap();
+        });
+
+        this._mapper = new Mapper(
+            mapperConfiguration);
 
         this._httpClient = new HttpClient
         {
@@ -250,6 +267,35 @@ public class HomeController : Controller
         }
 
         return Enumerable.Empty<dynamic>();
+    }
+
+    public IActionResult SobreNos(int? id)
+    {
+        if (id is null)
+            return NotFound();
+
+        string requestUri = @$"{this._httpClient.BaseAddress}/Publicacao/{id}";
+
+        var publicacao = default(PublicacaoModel);
+
+        using (var webApiHelper = new WebApiHelper(
+            requestUri,
+            this._tokenBearer))
+        {
+            string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+
+            if (dataJson.IsValidJson())
+            {
+                var data = JsonConvert.DeserializeObject<ApiResponseDto<PublicacaoResponseDto>>(
+                    dataJson).Data;
+
+                publicacao = this._mapper.Map<PublicacaoModel>(
+                    data);
+            }
+        }
+
+        return View(
+            publicacao);
     }
 
     public IActionResult RenderImage(int id)

@@ -2,9 +2,6 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
-using ARVTech.DataAccess.Enums;
 
 public class PublicacaoModel
 {
