@@ -223,7 +223,8 @@
 
             //  Faz a validação da Imagem.
             if (string.IsNullOrEmpty(
-                model.NomeImagem))
+                model.NomeImagem) || 
+                    images?.Count() == 0)
             {
                 string validateMessage = this.ValidateUpload(
                     images);
@@ -376,7 +377,7 @@
         private string ValidateUpload(List<IFormFile> upload)
         {
             if (upload?.Count == 0)
-                return "É necessário indicar pelo menos 1 arquivo.";
+                return "É necessário indicar pelo menos 1 arquivo";
 
             return string.Empty;
         }
