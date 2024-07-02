@@ -1,0 +1,222 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@using ARVTech.DataAccess.Core.Enums
+@model RelatorioPendenciaDemonstrativoPagamentoModel
+
+@{
+    ViewData["Title"] = "Pendencias";
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    @using (Html.BeginForm("GetPendencias", "DemonstrativoPagamento", FormMethod.Post, new { @class = "user" }))
+    {
+        <!-- Page Heading -->
+        <div class="row d-sm-flex align-items-center justify-content-between mb-4">
+            <div class="col-sm-8 col-6">
+                <h1 class="h3 mb-0 text-gray-800">Pendências de Demonstrativo de Pagamento</h1>
+            </div>
+            <div class="col-sm-4 col-6 text-right">
+                <a class="btn btn-secondary btn-icon-split pull-right" asp-action="Index">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-arrow-left"></i>
+                    </span>
+                    <span class="text">Voltar</span>
+                </a>
+
+                <button id="btnVisualizar" class="btn btn-primary btn-icon-split" type="submit">
+                    <span class="icon text-white">
+                        <i class="fas fa-print fa-sm text-white-50"></i>
+                    </span>
+                    <span class="text"> Visualizar</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-2 col-md-3 col-sm-4 col-xs-6">
+                <div class="form-group">
+                    <label class="control-label" for="txtPeriodoInicial">
+                        Período
+                    </label>
+
+                    @*                         <label class="control-label" for="txtCompetenciaInicial">
+                @Html.DisplayNameFor(model => model.CompetenciaInicial)
+                </label> *@
+
+                    @Html.TextBoxFor(Model => Model.CompetenciaInicial, "{0:MM/yyyy}", new { @class = "form-control border-1 small", @id = "txtCompetenciaInicial", @maxlength = "7", @placeholder = "XX/XXXX" })
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-md-3 col-sm-4 col-xs-6">
+                <div class="form-group">
+                    <label class="control-label" for="txtCompetenciaFinal">
+                        &nbsp;
+                    </label>
+
+                    @*                         <label class="control-label" for="txtCompetenciaFinal">
+                @Html.DisplayNameFor(model => model.CompetenciaFinal)
+                </label> *@
+
+                    @Html.TextBoxFor(Model => Model.CompetenciaFinal, "{0:MM/yyyy}", new { @class = "form-control border-1 small", @id = "txtCompetenciaFinal", @maxlength = "7", @placeholder = "XX/XXXX" })
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-md-3 col-sm-4">
+                <div class="form-group">
+                    <label class="control-label" for="ddlSituacao">
+                        Situação
+                    </label>
+
+                    <select class="form-control form-control border-1 small" asp-for="Situacao" asp-items="@Html.GetEnumSelectList<SituacaoPendenciaDemonstrativoPagamentoEnum>()" id="ddlSituacao">
+                    </select>
+
+                    @*                     @Html.DropDownListFor(model => model.Situacao, new SelectList(Enum.GetValues(typeof(SituacaoPendenciaDemonstrativoPagamentoEnum)).Cast<SituacaoPendenciaDemonstrativoPagamentoEnum>()
+                .Select(g => new SelectListItem
+                {
+                Text = g.GetType().GetMember(g.ToString()).First().GetCustomAttribute<DisplayAttribute>().GetName(),
+                Value = g.ToString()
+                }),
+                "Value",
+                "Text"),
+                new
+                {
+                @id = "ddlSituacao",
+                @class = "form-control"
+                }) *@
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row mb-3">
+    </div>
+
+    <div class="card shadow mb-4">
+        @*         <div class="card-header py-3">
+        <div class="row">
+        <div class="col-sm-12 col-md-12">
+        <h5 class="m-0 font-weight-bold text-success"><span>Pendências de Demonstrativo de Pagamento</span></h5>
+        </div>
+        </div>
+        </div> *@
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered dt-responsive nowrap" id="tblPendencias" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>
+                                Guid
+                            </th>
+                            <th align="center">
+                                Competência
+                            </th>
+                            <th align="center">
+                                Matrícula
+                            </th>
+                            <th>
+                                Empregador
+                            </th>
+                            <th>
+                                Colaborador
+                            </th>
+                            <th align="center">
+                                Situação
+                            </th>
+                        </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <!-- Custom styles for this page -->
+    <link href="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/datatables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+}
+
+@section Scripts {
+    <!-- Page level plugins -->
+
+    <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/datatables.bootstrap4.min.js"></script>
+
+    <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/js/demo/datatables-demo.js"></script>
+
+    <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/moment.js/moment.min.js"></script>
+    <script src="~/theme/startbootstrap-sb-admin-2-gh-pages/vendor/moment.js/moment-with-locales.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#txtCompetenciaInicial').mask('00/0000');
+            $('#txtCompetenciaFinal').mask('00/0000');
+
+            let competenciaInicial = moment().subtract(1, 'months').endOf('month').format('YYYY-MM-01');;
+            let competenciaFinal = moment(competenciaInicial).format("YYYY-MM-") + moment(competenciaInicial).daysInMonth();
+
+            let dateCurrent = moment(competenciaInicial).format('MM/YYYY');
+
+            $('#txtCompetenciaInicial').val(
+                dateCurrent);
+
+            $('#txtCompetenciaFinal').val(
+                dateCurrent);
+
+            $('#tblPendencias').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json"
+                },
+                "lengthMenu": [10, 25, 50, 100],
+                "orderMulti": false,
+                "pageLength": 10,
+                "paging": true,
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "/DemonstrativoPagamento/GetDataTablePendencias",
+                    "type": "POST",
+                    "datatype": "json",
+                    "data": {
+                        "competenciaInicial": competenciaInicial,
+                        "competenciaFinal": competenciaFinal
+                    }
+                },
+                "columns": [
+                    { "data": "guid", "title": "Guid" },
+                    { "data": "competencia", "name": "Competencia", "title": "Competência" },
+                    { "data": "numeroMatricula", "name": "NumeroMatricula", "title": "Matrícula" },
+                    { "data": "empregador", "name": "Empregador", "title": "Empregador" },
+                    { "data": "colaborador", "name": "Colaborador", "title": "Colaborador" },
+                    {
+                        "data": null,
+                        "render": function (data, type, row) {
+                            return '<a href="/DemonstrativoPagamento/Details/' + row.guid + '" class="btn btn-success btn-xs"><i class="fas fa-fw fa-file-alt"></i></a>';
+                            // return '<h4><span class="badge badge-success"><i class="fas fa-fw fa-file-alt"></i></span></h4>';
+                        }
+                    }
+                ],
+                "columnDefs": [
+                    { "className": "dt-center", "targets": [1, 2, 5] },
+
+                    { "targets": [1, 2, 3, 4], orderable: true, searchable: true },
+                    { "targets": [1, 2, 3, 4, 5], visible: true },
+
+                    { "width": "12%", "targets": 1 },
+                    { "width": "12%", "targets": 2 },
+                    { "width": "34%", "targets": 3 },
+                    { "width": "34%", "targets": 4 },
+                    { "width": "8%", "targets": 5 },
+
+                    { "targets": '_all', orderable: false, searchable: false, visible: false }
+                ],
+                "responsive": true
+            });
+        });
+    </script>
+}

@@ -111,12 +111,12 @@
 
                     @Html.DropDownListFor(model => model.IdUnidadeNegocio, new SelectList(Enum.GetValues(typeof(UnidadeNegocioEnum)).Cast<UnidadeNegocioEnum>()
                              .Select(g => new SelectListItem
-                                 {
-                                     Text = g.GetType().GetMember(g.ToString()).First().GetCustomAttribute<DisplayAttribute>().GetName(),
-                                     Value = g.ToString()
-                                 }),
-                                 "Value",
-                                 "Text"), new { @id = "ddlUnidadeNegocio", @class = "form-control" })
+                {
+                    Text = g.GetType().GetMember(g.ToString()).First().GetCustomAttribute<DisplayAttribute>().GetName(),
+                    Value = g.ToString()
+                }),
+                             "Value",
+                             "Text"), new { @id = "ddlUnidadeNegocio", @class = "form-control" })
                 </div>
             </div>
 
@@ -246,8 +246,8 @@
                     window.location.replace(
                         '@Url.Action(
                             "Index",
-                "Empregador")')
-                                                                                }, 4000);
+                            "Empregador")')
+                }, 4000);
             }
         });
     </script>

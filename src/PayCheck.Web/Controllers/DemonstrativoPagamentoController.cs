@@ -136,6 +136,16 @@
         /// <summary>
         /// 
         /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Pendencias()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
         public IActionResult ConfirmarRecebimentoValores(Guid id)
@@ -208,6 +218,123 @@
 
             if (guidColaborador != null)
                 requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/getDemonstrativoPagamentoByGuidColaborador/{guidColaborador}";
+
+            var demonstrativosPagamento = default(IEnumerable<DemonstrativoPagamentoViewModel>);
+
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
+            {
+                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+
+                if (dataJson.IsValidJson())
+                {
+                    var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>>(
+                        dataJson).Data;
+
+                    demonstrativosPagamento = this._mapper.Map<IEnumerable<DemonstrativoPagamentoViewModel>>(
+                        source);
+                }
+            }
+
+            //  Retrieve data from WebApi
+            var query = from demonstrativoPagamento in demonstrativosPagamento
+                        select new
+                        {
+                            demonstrativoPagamento.Guid,
+                            Competencia = string.Concat(
+                                demonstrativoPagamento.Competencia.Substring(4, 2),
+                                "/",
+                                demonstrativoPagamento.Competencia.Substring(0, 4)),
+                            demonstrativoPagamento.NumeroMatricula,
+                            Empregador = demonstrativoPagamento.RazaoSocialEmpregador,
+                            Colaborador = demonstrativoPagamento.NomeColaborador,
+                        };
+
+            var draw = Request.Form["draw"].FirstOrDefault();
+            var length = Request.Form["length"].FirstOrDefault();
+
+            var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
+            var sortColumnDir = Request.Form["order[0][dir]"].FirstOrDefault();
+
+            var searchValue = Request.Form["search[value]"].FirstOrDefault() ?? string.Empty;
+            var start = Request.Form["start"].FirstOrDefault();
+
+            //  Paging Size (10, 20, 50, 100)
+            int pageSize = length != null ?
+                Convert.ToInt32(
+                    length) :
+                    0;
+
+            int skip = start != null ?
+                Convert.ToInt32(
+                    start) :
+                    0;
+
+            //  Sorting
+            if (!string.IsNullOrEmpty(sortColumn))
+            {
+                if (!string.IsNullOrEmpty(sortColumnDir) &&
+                    sortColumnDir.ToUpper() == "DESC")
+                    query = query.OrderByDescending(pf => pf.GetType().GetProperty(
+                        sortColumn).GetValue(
+                            pf,
+                            null));
+                else
+                    query = query.OrderBy(pf => pf.GetType().GetProperty(
+                        sortColumn).GetValue(
+                            pf,
+                            null));
+            }
+
+            //  Search
+            if (!string.IsNullOrEmpty(searchValue))
+                query = query.Where(
+                    td => td.Competencia.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                          td.NumeroMatricula.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        td.Empregador.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        td.Colaborador.Contains(
+                            searchValue,
+                            StringComparison.OrdinalIgnoreCase) ||
+                        string.IsNullOrEmpty(searchValue));
+
+            //  Total Number of Rows Count.
+            int recordsTotal = query.Count();
+
+            //  Paging.
+            var data = query.Skip(skip).Take(pageSize).ToList();
+
+            // Create a JSON response with the data and total count.
+            return new JsonResult(new
+            {
+                data,
+                draw,
+                recordsTotal,
+                recordsFiltered = recordsTotal,
+            });
+        }
+
+        [HttpPost()]
+        public IActionResult GetPendencias()
+        {
+            string periodoInicial = "01/" + HttpContext.Request.Form["txtPeriodoInicial"];
+            string periodoFinal = "01/" + HttpContext.Request.Form["txtPeriodoFinal"];
+
+            return this.GetDataTablePendencias(
+                periodoInicial,
+                periodoFinal);
+        }
+
+        [HttpPost()]
+        public IActionResult GetDataTablePendencias(string competenciaInicial, string competenciaFinal)
+        {
+            string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/getPendencias/{competenciaInicial}/{competenciaFinal}";
 
             var demonstrativosPagamento = default(IEnumerable<DemonstrativoPagamentoViewModel>);
 

@@ -29,11 +29,12 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Templating" Version="7.0.7" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="7.0.7" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="7.0.7" />
+    <PackageReference Include="Moment.js" Version="2.30.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Core\ARVTech.DataAccess.Core.csproj" />
     <ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.DTOs\ARVTech.DataAccess.DTOs.csproj" />
-    <ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Enums\ARVTech.DataAccess.Enums.csproj" />
   </ItemGroup>
 
   <ItemGroup>

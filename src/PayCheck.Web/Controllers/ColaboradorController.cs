@@ -36,10 +36,10 @@
             {
                 cfg.CreateMap<PessoaFisicaRequestCreateDto, PessoaFisicaResponseDto>().ReverseMap();
                 cfg.CreateMap<PessoaFisicaRequestUpdateDto, PessoaFisicaResponseDto>().ReverseMap();
-                cfg.CreateMap<PessoaFisicaRequestCreateDto, PessoaFisicaViewModel>().ReverseMap();
-                cfg.CreateMap<PessoaFisicaRequestUpdateDto, PessoaFisicaViewModel>().ReverseMap();
+                cfg.CreateMap<PessoaFisicaRequestCreateDto, PessoaFisicaModel>().ReverseMap();
+                cfg.CreateMap<PessoaFisicaRequestUpdateDto, PessoaFisicaModel>().ReverseMap();
 
-                cfg.CreateMap<PessoaFisicaResponseDto, PessoaFisicaViewModel>().ReverseMap();
+                cfg.CreateMap<PessoaFisicaResponseDto, PessoaFisicaModel>().ReverseMap();
             });
 
             this._mapper = new Mapper(
@@ -105,7 +105,7 @@
 
             string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/{id}";
 
-            var pessoaFisicaViewModel = default(PessoaFisicaViewModel);
+            var pessoaFisicaViewModel = default(PessoaFisicaModel);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -118,7 +118,7 @@
                     var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(
                         dataJson).Data;
 
-                    pessoaFisicaViewModel = this._mapper.Map<PessoaFisicaViewModel>(
+                    pessoaFisicaViewModel = this._mapper.Map<PessoaFisicaModel>(
                         data);
 
                     pessoaFisicaViewModel.Bairro = data.Pessoa.Bairro;
@@ -147,11 +147,11 @@
         {
             if (id == null)
                 return View(
-                    new PessoaFisicaViewModel());
+                    new PessoaFisicaModel());
 
             string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/{id}";
 
-            var pessoaFisicaViewModel = default(PessoaFisicaViewModel);
+            var pessoaFisicaViewModel = default(PessoaFisicaModel);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -164,7 +164,7 @@
                     var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(
                         dataJson).Data;
 
-                    pessoaFisicaViewModel = this._mapper.Map<PessoaFisicaViewModel>(
+                    pessoaFisicaViewModel = this._mapper.Map<PessoaFisicaModel>(
                         data);
 
                     pessoaFisicaViewModel.Bairro = data.Pessoa.Bairro;
@@ -189,7 +189,7 @@
         /// <param name="vm"></param>
         /// <returns></returns>
         [HttpPost()]
-        public IActionResult Edit(PessoaFisicaViewModel vm)
+        public IActionResult Edit(PessoaFisicaModel vm)
         {
             ViewBag.ErrorMessage = null;
             ViewBag.SuccessMessage = null;
@@ -347,7 +347,7 @@
         {
             string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica";
 
-            var pessoasFisicas = default(IEnumerable<PessoaFisicaViewModel>);
+            var pessoasFisicas = default(IEnumerable<PessoaFisicaModel>);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -360,7 +360,7 @@
                     var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>>(
                         dataJson).Data;
 
-                    pessoasFisicas = this._mapper.Map<IEnumerable<PessoaFisicaViewModel>>(
+                    pessoasFisicas = this._mapper.Map<IEnumerable<PessoaFisicaModel>>(
                         source);
                 }
             }

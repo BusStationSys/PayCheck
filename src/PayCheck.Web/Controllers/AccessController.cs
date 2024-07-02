@@ -45,7 +45,7 @@
             });
 
             this._mapper = new Mapper(
-                mapperConfiguration);
+                 mapperConfiguration);
 
             Uri baseAddress = new(
                 externalApis.Value.PayCheck);

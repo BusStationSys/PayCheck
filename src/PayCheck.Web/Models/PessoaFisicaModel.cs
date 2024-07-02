@@ -4,7 +4,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using PayCheck.Web.Models.CustomValidationAttribute;
 
-public class PessoaFisicaViewModel
+public class PessoaFisicaModel
 {
     [Key]
     public Guid? Guid { get; set; }
