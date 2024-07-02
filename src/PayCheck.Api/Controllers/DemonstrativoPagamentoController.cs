@@ -181,6 +181,48 @@
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="periodoInicial"></param>
+        /// <param name="periodoFinal"></param>
+        /// <returns></returns>
+        [HttpGet("getPendencias/{periodoInicial}/{periodoFinal}")]
+        public ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>> GetPendencias(string periodoInicial, string periodoFinal)
+        {
+            try
+            {
+                var data = this._business.GetPendencias(
+                    Convert.ToDateTime(
+                        periodoInicial),
+                    Convert.ToDateTime(
+                        periodoFinal));
+
+                if (data != null &&
+                    data.Count() > 0)
+                    return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
+                    {
+                        Data = data,
+                        Success = true,
+                        StatusCode = HttpStatusCode.OK,
+                    };
+
+                return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
+                {
+                    Message = $"Pendências de Demonstrativos de Pagamento não encontrados para o Período de {periodoInicial} a {periodoFinal}!",
+                    StatusCode = HttpStatusCode.NotFound,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
+                {
+                    Message = ex.Message,
+                    StatusCode = HttpStatusCode.InternalServerError,
+                };
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="guid"></param>
         /// <param name="updateDto"></param>
         /// <returns></returns>
