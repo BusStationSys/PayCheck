@@ -9,7 +9,7 @@
         /// 
         /// </summary>
         public DataAccess DataAccess { get; set; }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -46,7 +46,7 @@
         /// 
         /// </summary>
         public string DatabaseName { get; set; }
-        
+
         /// <summary>
         /// 
         /// </summary>
