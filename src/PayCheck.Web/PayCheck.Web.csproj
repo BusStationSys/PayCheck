@@ -5,8 +5,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <BaseOutputPath>bin\</BaseOutputPath>
-    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>bin\</BaseIntermediateOutputPath>
     <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -39,4 +40,5 @@
   <ItemGroup>
     <Folder Include="Views\Matricula\" />
   </ItemGroup>
+
 </Project>

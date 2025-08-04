@@ -7,6 +7,7 @@
 		<BaseIntermediateOutputPath>bin\</BaseIntermediateOutputPath>
 		<BaseOutputPath>bin\</BaseOutputPath>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
