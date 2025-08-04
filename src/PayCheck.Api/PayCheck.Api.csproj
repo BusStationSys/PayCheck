@@ -25,9 +25,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Application\ARVTech.DataAccess.Application.csproj" />
-		<ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Business\ARVTech.DataAccess.Business.csproj" />
 		<ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.DTOs\ARVTech.DataAccess.DTOs.csproj" />
+		<ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Service\ARVTech.DataAccess.Service.csproj" />
 		<ProjectReference Include="..\..\submodules\ARVTech.DataAccess\submodules\ARVTech.Shared\src\ARVTech.Shared.csproj" />
 	</ItemGroup>
 

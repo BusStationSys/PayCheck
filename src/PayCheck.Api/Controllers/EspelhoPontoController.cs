@@ -1,9 +1,9 @@
 ﻿namespace PayCheck.Api.Controllers
 {
     using System.Net;
-    using ARVTech.DataAccess.Business.UniPayCheck.Interfaces;
     using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Service.UniPayCheck.Interfaces;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -15,16 +15,18 @@
     [Authorize]
     public class EspelhoPontoController : ControllerBase
     {
-        private readonly IMatriculaEspelhoPontoBusiness _business;
+        private readonly IMatriculaEspelhoPontoService _service;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="business"></param>
+        /// <param name="service"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public EspelhoPontoController(IMatriculaEspelhoPontoBusiness business)
+        public EspelhoPontoController(IMatriculaEspelhoPontoService service)
         {
-            this._business = business ?? throw new ArgumentNullException(nameof(business));
+            this._service = service ?? throw new ArgumentNullException(
+                nameof(
+                    service));
 
             //var mapperConfiguration = new MapperConfiguration(cfg =>
             //{
@@ -46,7 +48,7 @@
         {
             try
             {
-                var data = this._business.Get(
+                var data = this._service.Get(
                     guid);
 
                 if (data != null)
@@ -82,7 +84,7 @@
         {
             try
             {
-                var data = this._business.GetAll();
+                var data = this._service.GetAll();
 
                 if (data != null && data.Count() > 0)
                     return new ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>>
@@ -118,7 +120,7 @@
         {
             try
             {
-                var data = this._business.GetByGuidColaborador(
+                var data = this._service.GetByGuidColaborador(
                     guidColaborador);
 
                 if (data != null &&
@@ -159,7 +161,7 @@
             {
                 updateDto.Guid = guid;
 
-                var data = this._business.SaveData(
+                var data = this._service.SaveData(
                     updateDto: updateDto);
 
                 return new ApiResponseDto<MatriculaEspelhoPontoResponseDto>

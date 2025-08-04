@@ -1,6 +1,6 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using System.Reflection
-@using ARVTech.DataAccess.Core.Enums
+@* @using ARVTech.DataAccess.Core.Enums *@
 @model RelatorioPendenciaDemonstrativoPagamentoModel
 
 @{
@@ -70,8 +70,8 @@
                         Situação
                     </label>
 
-                    <select class="form-control form-control border-1 small" asp-for="Situacao" asp-items="@Html.GetEnumSelectList<SituacaoPendenciaDemonstrativoPagamentoEnum>()" id="ddlSituacao">
-                    </select>
+@*                     <select class="form-control form-control border-1 small" asp-for="Situacao" asp-items="@Html.GetEnumSelectList<SituacaoPendenciaDemonstrativoPagamentoEnum>()" id="ddlSituacao">
+                    </select> *@
 
                     @*                     @Html.DropDownListFor(model => model.Situacao, new SelectList(Enum.GetValues(typeof(SituacaoPendenciaDemonstrativoPagamentoEnum)).Cast<SituacaoPendenciaDemonstrativoPagamentoEnum>()
                 .Select(g => new SelectListItem

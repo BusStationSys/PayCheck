@@ -1,4 +1,4 @@
-﻿@using ARVTech.DataAccess.Enums
+﻿@* @using ARVTech.DataAccess.Enums *@
 @using System.ComponentModel.DataAnnotations
 @using System.Reflection
 @model PessoaJuridicaModel
@@ -20,7 +20,7 @@
 
     @using (Html.BeginForm("Edit", "Empregador", FormMethod.Post, new { @class = "user" }))
     {
-        var bandeirasComerciais = Enum.GetValues(typeof(UnidadeNegocioEnum)).OfType<UnidadeNegocioEnum>().Select(m => new { Text = m.ToString(), Value = (int)m }).ToList();
+        //var bandeirasComerciais = Enum.GetValues(typeof(UnidadeNegocioEnum)).OfType<UnidadeNegocioEnum>().Select(m => new { Text = m.ToString(), Value = (int)m }).ToList();
 
         @if (ViewBag.ErrorMessage != null)
         {
@@ -104,7 +104,7 @@
             </div>
 
             <div class="col-xl-2 col-sm-2 col-md-2">
-                <div class="form-group">
+@*                 <div class="form-group">
                     <label class="control-label" for="ddlUnidadeNegocio">
                         @Html.DisplayNameFor(model => model.IdUnidadeNegocio)
                     </label>
@@ -117,7 +117,7 @@
                 }),
                              "Value",
                              "Text"), new { @id = "ddlUnidadeNegocio", @class = "form-control" })
-                </div>
+                </div> *@
             </div>
 
             <div class="col-xl-5 col-sm-4 col-md-5">

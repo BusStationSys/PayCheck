@@ -1,9 +1,9 @@
 ﻿namespace PayCheck.Api.Controllers
 {
     using System.Net;
-    using ARVTech.DataAccess.Business.UniPayCheck.Interfaces;
     using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Service.UniPayCheck.Interfaces;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -15,16 +15,18 @@
     [Route("api/[controller]")]
     public class MatriculaController : ControllerBase
     {
-        private readonly IMatriculaBusiness _business;
+        private readonly IMatriculaService _service;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="business"></param>
+        /// <param name="service"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public MatriculaController(IMatriculaBusiness business)
+        public MatriculaController(IMatriculaService service)
         {
-            this._business = business ?? throw new ArgumentNullException(nameof(business));
+            this._service = service ?? throw new ArgumentNullException(
+                nameof(
+                    service));
         }
 
         ///// <summary>
@@ -141,7 +143,7 @@
         {
             try
             {
-                var data = this._business.GetAniversariantesEmpresa(
+                var data = this._service.GetAniversariantesEmpresa(
                     mes);
 
                 if (data != null && data.Count() > 0)

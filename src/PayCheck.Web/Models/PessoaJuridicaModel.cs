@@ -2,7 +2,6 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
-using ARVTech.DataAccess.Enums;
 using PayCheck.Web.Models.CustomValidationAttribute;
 
 public class PessoaJuridicaModel
@@ -47,9 +46,9 @@ public class PessoaJuridicaModel
     [StringLength(100, ErrorMessage = "O Endereço não pode exceder 100 caracteres.")]
     public string Endereco { get; set; }
 
-    [Display(Name = "Unidade de Negócio")]
-    [Required(ErrorMessage = "É necessário o preenchimento da Unidade de Negócio.")]
-    public UnidadeNegocioEnum? IdUnidadeNegocio { get; set; }
+    //[Display(Name = "Unidade de Negócio")]
+    //[Required(ErrorMessage = "É necessário o preenchimento da Unidade de Negócio.")]
+    //public UnidadeNegocioEnum? IdUnidadeNegocio { get; set; }
 
     [Display(Name = "Unidade de Negócio")]
     public string? DescricaoUnidadeNegocio { get; set; }

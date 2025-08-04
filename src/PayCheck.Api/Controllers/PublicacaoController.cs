@@ -1,9 +1,9 @@
 ﻿namespace PayCheck.Api.Controllers
 {
     using System.Net;
-    using ARVTech.DataAccess.Business.UniPayCheck.Interfaces;
     using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Service.UniPayCheck.Interfaces;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -15,16 +15,18 @@
     [Route("api/[controller]")]
     public class PublicacaoController : ControllerBase
     {
-        private readonly IPublicacaoBusiness _business;
+        private readonly IPublicacaoService _service;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="business"></param>
+        /// <param name="service"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public PublicacaoController(IPublicacaoBusiness business)
+        public PublicacaoController(IPublicacaoService service)
         {
-            this._business = business ?? throw new ArgumentNullException(nameof(business));
+            this._service = service ?? throw new ArgumentNullException(
+                nameof(
+                    service));
         }
 
         /// <summary>
@@ -40,7 +42,7 @@
                 var apiResponse = this.GetPublicacao(
                     id);
 
-                this._business.Delete(
+                this._service.Delete(
                     id);
 
                 return new ApiResponseDto<PublicacaoResponseDto>
@@ -70,7 +72,7 @@
         {
             try
             {
-                var data = this._business.Get(
+                var data = this._service.Get(
                     id);
 
                 if (data != null)
@@ -106,7 +108,7 @@
         {
             try
             {
-                var data = this._business.GetAll();
+                var data = this._service.GetAll();
 
                 if (data != null && data.Count() > 0)
                     return new ApiResponseDto<IEnumerable<PublicacaoResponseDto>>
@@ -142,7 +144,7 @@
         {
             try
             {
-                var data = this._business.GetImage(
+                var data = this._service.GetImage(
                     id);
 
                 if (data != null)
@@ -179,7 +181,7 @@
         {
             try
             {
-                var data = this._business.GetSobreNos(
+                var data = this._service.GetSobreNos(
                     dataAtualString);
 
                 if (data != null &&
@@ -217,7 +219,7 @@
         {
             try
             {
-                var data = this._business.SaveData(
+                var data = this._service.SaveData(
                     createDto);
 
                 return new ApiResponseDto<PublicacaoResponseDto>
@@ -247,7 +249,7 @@
         {
             try
             {
-                var data = this._business.SaveData(
+                var data = this._service.SaveData(
                     updateDto: updateDto);
 
                 return new ApiResponseDto<PublicacaoResponseDto>

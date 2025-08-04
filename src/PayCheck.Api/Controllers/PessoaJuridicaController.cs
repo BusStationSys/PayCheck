@@ -1,9 +1,9 @@
 ﻿namespace PayCheck.Api.Controllers
 {
     using System.Net;
-    using ARVTech.DataAccess.Business.UniPayCheck.Interfaces;
     using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Service.UniPayCheck.Interfaces;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -15,16 +15,18 @@
     [Route("api/[controller]")]
     public class PessoaJuridicaController : ControllerBase
     {
-        private readonly IPessoaJuridicaBusiness _business;
+        private readonly IPessoaJuridicaService _service;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="business"></param>
+        /// <param name="service"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public PessoaJuridicaController(IPessoaJuridicaBusiness business)
+        public PessoaJuridicaController(IPessoaJuridicaService service)
         {
-            this._business = business ?? throw new ArgumentNullException(nameof(business));
+            this._service = service ?? throw new ArgumentNullException(
+                nameof(
+                    service));
         }
 
         /// <summary>
@@ -40,7 +42,7 @@
                 var apiResponse = this.GetPessoaJuridica(
                     guid);
 
-                this._business.Delete(
+                this._service.Delete(
                     guid);
 
                 return new ApiResponseDto<PessoaJuridicaResponseDto>
@@ -70,7 +72,7 @@
         {
             try
             {
-                var data = this._business.Get(
+                var data = this._service.Get(
                     guid);
 
                 if (data != null)
@@ -106,7 +108,7 @@
         {
             try
             {
-                var data = this._business.GetAll();
+                var data = this._service.GetAll();
 
                 if (data != null && data.Count() > 0)
                     return new ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>
@@ -142,7 +144,7 @@
         {
             try
             {
-                var data = this._business.SaveData(
+                var data = this._service.SaveData(
                     createDto);
 
                 return new ApiResponseDto<PessoaJuridicaResponseDto>
@@ -174,7 +176,7 @@
             {
                 updateDto.Guid = (Guid)updateDto.Guid;
 
-                var data = this._business.SaveData(
+                var data = this._service.SaveData(
                     updateDto: updateDto);
 
                 return new ApiResponseDto<PessoaJuridicaResponseDto>

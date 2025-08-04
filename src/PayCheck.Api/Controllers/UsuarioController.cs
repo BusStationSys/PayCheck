@@ -2,9 +2,9 @@
 {
     using System;
     using System.Net;
-    using ARVTech.DataAccess.Business.UniPayCheck.Interfaces;
     using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Service.UniPayCheck.Interfaces;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -15,16 +15,18 @@
     [ApiController]
     public class UsuarioController : ControllerBase
     {
-        private readonly IUsuarioBusiness _business;
+        private readonly IUsuarioService _service;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="business"></param>
+        /// <param name="service"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public UsuarioController(IUsuarioBusiness business)
+        public UsuarioController(IUsuarioService service)
         {
-            this._business = business ?? throw new ArgumentNullException(nameof(business));
+            this._service = service ?? throw new ArgumentNullException(
+                nameof(
+                    service));
         }
 
         /// <summary>
@@ -44,7 +46,7 @@
                 //var usuarioResponse = this._business.GetByUsername(
                 //    loginDto.CpfEmailUsername).FirstOrDefault();
 
-                var data = this._business.GetByUsername(
+                var data = this._service.GetByUsername(
                     loginDto.CpfEmailUsername).FirstOrDefault();
 
                 if (data is null)
@@ -57,7 +59,7 @@
                 }
                 else
                 {
-                    data = this._business.CheckPasswordValid(
+                    data = this._service.CheckPasswordValid(
                         data.Guid,
                         loginDto.Password);
 
@@ -102,7 +104,7 @@
             {
                 updateDto.Guid = guid;
 
-                var usuarioResponse = this._business.SaveData(
+                var usuarioResponse = this._service.SaveData(
                     updateDto: updateDto);
 
                 usuarioResponse.StatusCode = HttpStatusCode.NoContent;
@@ -155,7 +157,7 @@
         {
             try
             {
-                var usuarioResponse = this._business.SaveData(
+                var usuarioResponse = this._service.SaveData(
                     updateDto: updateDto);
 
                 usuarioResponse.StatusCode = HttpStatusCode.NoContent;

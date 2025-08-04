@@ -1,8 +1,8 @@
 using System.Reflection;
 using System.Text;
-using ARVTech.DataAccess.Business.UniPayCheck;
-using ARVTech.DataAccess.Business.UniPayCheck.Interfaces;
 using ARVTech.DataAccess.Infrastructure.UnitOfWork.SqlServer;
+using ARVTech.DataAccess.Service.UniPayCheck;
+using ARVTech.DataAccess.Service.UniPayCheck.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -38,26 +38,26 @@ builder.Configuration.AddJsonFile(
 //services.AddSingleton(provider => repository);
 //services.AddSingleton(provider => repository2);
 
-builder.Services.AddScoped<IMatriculaBusiness>(
-    provider => new MatriculaBusiness(unitOfWork));
+builder.Services.AddScoped<IMatriculaService>(
+    provider => new MatriculaService(unitOfWork));
 
-builder.Services.AddScoped<IMatriculaEspelhoPontoBusiness>(
-    provider => new MatriculaEspelhoPontoBusiness(unitOfWork));
+builder.Services.AddScoped<IMatriculaEspelhoPontoService>(
+    provider => new MatriculaEspelhoPontoService(unitOfWork));
 
-builder.Services.AddScoped<IMatriculaDemonstrativoPagamentoBusiness>(
-    provider => new MatriculaDemonstrativoPagamentoBusiness(unitOfWork));
+builder.Services.AddScoped<IMatriculaDemonstrativoPagamentoService>(
+    provider => new MatriculaDemonstrativoPagamentoService(unitOfWork));
 
-builder.Services.AddScoped<IPessoaFisicaBusiness>(
-    provider => new PessoaFisicaBusiness(unitOfWork));
+builder.Services.AddScoped<IPessoaFisicaService>(
+    provider => new PessoaFisicaService(unitOfWork));
 
-builder.Services.AddScoped<IPessoaJuridicaBusiness>(
-    provider => new PessoaJuridicaBusiness(unitOfWork));
+builder.Services.AddScoped<IPessoaJuridicaService>(
+    provider => new PessoaJuridicaService(unitOfWork));
 
-builder.Services.AddScoped<IPublicacaoBusiness>(
-    provider => new PublicacaoBusiness(unitOfWork));
+builder.Services.AddScoped<IPublicacaoService>(
+    provider => new PublicacaoService(unitOfWork));
 
-builder.Services.AddScoped<IUsuarioBusiness>(
-    provider => new UsuarioBusiness(unitOfWork));
+builder.Services.AddScoped<IUsuarioService>(
+    provider => new UsuarioService(unitOfWork));
 
 //builder.Services.AddControllers();
 builder.Services.AddControllers(
