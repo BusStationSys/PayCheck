@@ -204,38 +204,15 @@
         [HttpPost()]
         public IActionResult GetDataTable()
         {
-            var guidColaborador = default(Guid?);
-
-            if (TempData.Peek("GuidColaborador") != null &&
-                !string.IsNullOrEmpty(
-                    TempData.Peek("GuidColaborador").ToString()))
-            {
-                guidColaborador = Guid.Parse(
-                    TempData.Peek("GuidColaborador").ToString());
-            }
+            var guidColaborador = this.ObterGuidColaborador();
 
             string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento";
 
             if (guidColaborador != null)
                 requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/getDemonstrativoPagamentoByGuidColaborador/{guidColaborador}";
 
-            var demonstrativosPagamento = default(IEnumerable<DemonstrativoPagamentoViewModel>);
-
-            using (var webApiHelper = new WebApiHelper(
-                requestUri,
-                this._tokenBearer))
-            {
-                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
-
-                if (dataJson.IsValidJson())
-                {
-                    var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>>(
-                        dataJson).Data;
-
-                    demonstrativosPagamento = this._mapper.Map<IEnumerable<DemonstrativoPagamentoViewModel>>(
-                        source);
-                }
-            }
+            var demonstrativosPagamento = this.GetDemonstrativosPagamentoViewModel(
+                requestUri);
 
             //  Retrieve data from WebApi
             var query = from demonstrativoPagamento in demonstrativosPagamento
@@ -272,19 +249,35 @@
                     0;
 
             //  Sorting
+            //if (!string.IsNullOrEmpty(sortColumn))
+            //{
+            //    if (!string.IsNullOrEmpty(sortColumnDir) &&
+            //        sortColumnDir.ToUpper() == "DESC")
+            //        query = query.OrderByDescending(pf => pf.GetType().GetProperty(
+            //            sortColumn).GetValue(
+            //                pf,
+            //                null));
+            //    else
+            //        query = query.OrderBy(pf => pf.GetType().GetProperty(
+            //            sortColumn).GetValue(
+            //                pf,
+            //                null));
+            //}
+
             if (!string.IsNullOrEmpty(sortColumn))
             {
-                if (!string.IsNullOrEmpty(sortColumnDir) &&
-                    sortColumnDir.ToUpper() == "DESC")
-                    query = query.OrderByDescending(pf => pf.GetType().GetProperty(
-                        sortColumn).GetValue(
-                            pf,
-                            null));
-                else
-                    query = query.OrderBy(pf => pf.GetType().GetProperty(
-                        sortColumn).GetValue(
-                            pf,
-                            null));
+                var property = query.FirstOrDefault()?.GetType().GetProperty(
+                    sortColumn);
+
+                if (property != null)
+                {
+                    query = string.Equals(
+                        sortColumnDir.ToUpper(),
+                        "DESC",
+                        StringComparison.OrdinalIgnoreCase) ?
+                            query.OrderByDescending(pf => property.GetValue(pf, null)) :
+                            query.OrderBy(pf => property.GetValue(pf, null));
+                }
             }
 
             //  Search
@@ -308,7 +301,9 @@
             int recordsTotal = query.Count();
 
             //  Paging.
-            var data = query.Skip(skip).Take(pageSize).ToList();
+            var data = query.Skip(
+                skip).Take(
+                    pageSize).ToList();
 
             // Create a JSON response with the data and total count.
             return new JsonResult(new
@@ -458,6 +453,47 @@
 
                 return null;
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="requestUri"></param>
+        /// <returns></returns>
+        private IEnumerable<DemonstrativoPagamentoViewModel> GetDemonstrativosPagamentoViewModel(string requestUri)
+        {
+            using (var webApiHelper = new WebApiHelper(
+                requestUri,
+                this._tokenBearer))
+            {
+                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+
+                if (dataJson.IsValidJson())
+                {
+                    var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>>(
+                        dataJson).Data;
+
+                    return this._mapper.Map<IEnumerable<DemonstrativoPagamentoViewModel>>(
+                        source);
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the "GuidColaborador" value from TempData, if available and valid.
+        /// </summary>
+        /// <returns>A valid <see cref="Guid"/> if present and parsable; otherwise, <c>null</c>.</returns>
+        private Guid? ObterGuidColaborador()
+        {
+            var guidColaboradorString = TempData.Peek("GuidColaborador") as string;
+
+            return Guid.TryParse(
+                guidColaboradorString,
+                out var guidColaborador) ?
+                guidColaborador :
+                null;
         }
     }
 }
