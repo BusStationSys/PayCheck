@@ -92,6 +92,45 @@
         /// 
         /// </summary>
         /// <param name="guid"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("getNotificacoes/{guid}")]
+        public ApiResponseDto<IEnumerable<UsuarioNotificacaoResponseDto>> GetNotificacoes(Guid guid)
+        {
+            try
+            {
+                var data = this._service.GetNotificacoes(
+                    guidUsuario: guid);
+
+                if (data != null &&
+                    data.Count() > 0)
+                    return new ApiResponseDto<IEnumerable<UsuarioNotificacaoResponseDto>>
+                    {
+                        Data = data,
+                        Success = true,
+                        StatusCode = HttpStatusCode.OK,
+                    };
+
+                return new ApiResponseDto<IEnumerable<UsuarioNotificacaoResponseDto>>
+                {
+                    Message = $"Notificações não encontradas para o Usuário {guid}!",
+                    StatusCode = HttpStatusCode.NotFound,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponseDto<IEnumerable<UsuarioNotificacaoResponseDto>>
+                {
+                    Message = ex.Message,
+                    StatusCode = HttpStatusCode.InternalServerError,
+                };
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="guid"></param>
         /// <param name="updateDto"></param>
         /// <returns></returns>
         [Authorize]
@@ -143,8 +182,6 @@
         /// <returns></returns>
         [Authorize]
         [HttpPut("updatePassword/{guid}")]
-        //[HttpGet("getGruposByNumeroRemessa/{numeroRemessa}")]
-        //[HttpGet("getByNumeroRemessa/{numeroRemessa}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
