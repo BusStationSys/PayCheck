@@ -1,0 +1,52 @@
+﻿@model IEnumerable<UsuarioNotificacaoViewModel>
+
+<li class="nav-item dropdown no-arrow mx-1">
+    @{
+        var count = Model != null ?
+        Model.Count() :
+        0;
+    }
+
+    <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-bell fa-fw"></i>
+
+        @if (count > 0)
+        {
+            <span class="badge badge-danger badge-counter">
+                @($"{count}+")
+            </span>
+        }
+    </a>
+    @if (Model != null &&
+        Model.Any())
+    {
+        <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown" style="border-bottom:none; box-shadow:none;">
+            <h6 class="dropdown-header bg-success">
+                NOTIFICAÇÕES
+            </h6>
+            @foreach (var notificacao in Model)
+            {
+                @if (notificacao.Tipo == "DP" && @notificacao.GuidMatriculaDemonstrativoPagamento.HasValue)
+                {
+                    <a class="dropdown-item d-flex align-items-center" href="/DemonstrativoPagamento/Details/@notificacao.GuidMatriculaDemonstrativoPagamento.Value">
+                        <div class="mr-3">
+                            <div class="icon-circle bg-success">
+                                <i class="fas fa-fw fa-money-check text-white"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="small text-gray-500">@notificacao.DataEnvio.ToString("dd/MM/yyyy HH:mm:ss")</div>
+                            <span class="font-weight-bold">@notificacao.Conteudo</span>
+                        </div>
+                    </a>
+                }
+
+                <!--"fa-user-clock" :-->
+            }
+        </div>
+    }
+    @*     else
+    {
+        <p>Sem notificações.</p>
+    } *@
+</li>

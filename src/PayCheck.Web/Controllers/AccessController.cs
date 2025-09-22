@@ -158,10 +158,14 @@
                         TempData.Remove(
                             "ChangePasswordUsername");
 
+                        TempData.Remove(
+                            "ChangePasswordIdPerfilUsuario");
+
                         TempData["ChangePasswordGuidUsuario"] = guidUsuario;
                         TempData["ChangePasswordEmail"] = parameters["Email"];
                         TempData["ChangePasswordGuidColaborador"] = guidColaborador;
                         TempData["ChangePasswordUsername"] = parameters["Username"];
+                        TempData["ChangePasswordIdPerfilUsuario"] = parameters["IdPerfilUsuario"];
                     }
                     else
                     {
@@ -204,6 +208,7 @@
                     Password = alteracaoSenhaDto.Password,
                     ConfirmPassword = alteracaoSenhaDto.ConfirmPassword,
                     Username = TempData["ChangePasswordUsername"].ToString(),
+                    IdPerfilUsuario = int.Parse(TempData["ChangePasswordIdPerfilUsuario"].ToString()),
                 };
 
                 var usuarioResponse = default(UsuarioResponseDto);
@@ -231,9 +236,9 @@
 
                 ViewBag.SuccessMessage = $"Senha alterada para o usuário {usuarioResponse.Username}.";
 
-                //return RedirectToAction(
-                //    "Index",
-                //    "Home");
+                return RedirectToAction(
+                    "Index",
+                    "Home");
             }
             catch (Exception ex)
             {
@@ -295,6 +300,10 @@
                         TempData["GuidColaborador"].ToString(),
                         out Guid guidColaborador);
 
+                    int.TryParse(
+                        TempData["IdPerfilUsuario"].ToString(),
+                        out int idPerfilUsuario);
+
                     string dataAtualString = DateTime.Now.ToString("ddMMyyyyHHmmss");
 
                     string nomeColaborador = TempData["NomeColaborador"].ToString();
@@ -316,7 +325,10 @@
                     TempData.Remove(
                         "Username");
 
-                    var parametros = $"GuidUsuario={guidUsuario:N}&DataAtual={dataAtualString}&Email={activateViewModel.Email}&GuidColaborador={guidColaborador:N}&Username={username}";
+                    TempData.Remove(
+                        "IdPerfilUsuario");
+
+                    var parametros = $"GuidUsuario={guidUsuario:N}&DataAtual={dataAtualString}&Email={activateViewModel.Email}&GuidColaborador={guidColaborador:N}&Username={username}&IdPerfilUsuario={idPerfilUsuario.ToString()}";
 
                     string key = QueryStringCryptography.Encrypt(
                         parametros,
@@ -474,12 +486,14 @@ A Equipe de Suporte PayCheck®.";
                     TempData.Remove("NomeColaborador");
                     TempData.Remove("EmailColaborador");
                     TempData.Remove("Username");
+                    TempData.Remove("IdPerfilUsuario");
 
                     TempData["GuidUsuario"] = usuarioResponse.Guid;
                     TempData["GuidColaborador"] = usuarioResponse.Colaborador.Guid;
                     TempData["NomeColaborador"] = usuarioResponse.Colaborador.Nome;
                     TempData["EmailColaborador"] = usuarioResponse.Colaborador.Pessoa.Email;
                     TempData["Username"] = usuarioResponse.Username;
+                    TempData["IdPerfilUsuario"] = usuarioResponse.IdPerfilUsuario;
 
                     return RedirectToAction(
                         "LinkActivation",
@@ -531,6 +545,10 @@ A Equipe de Suporte PayCheck®.";
                             new Claim(
                                 $"{nameof(UsuarioResponseDto.Email)}Usuario",
                                 emailUsuario),
+
+                            new Claim(
+                                $"{nameof(UsuarioResponseDto.IdPerfilUsuario)}",
+                                usuarioResponse.IdPerfilUsuario.ToString()),
 
                             //new Claim("OtherProperty","OtherValue"),
                         };

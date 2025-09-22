@@ -115,7 +115,7 @@
         /// </summary>
         /// <param name="guidColaborador"></param>
         /// <returns></returns>
-        [HttpGet("getEspelhoPontoByGuidColaborador/{guidColaborador}")]
+        [HttpGet("Colaborador/{guidColaborador}")]
         public ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>> GetEspelhoPontoByGuidColaborador(Guid guidColaborador)
         {
             try

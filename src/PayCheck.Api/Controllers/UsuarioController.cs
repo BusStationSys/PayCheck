@@ -94,7 +94,7 @@
         /// <param name="guid"></param>
         /// <returns></returns>
         [Authorize]
-        [HttpGet("getNotificacoes/{guid}")]
+        [HttpGet("Notificacoes/{guid}")]
         public ApiResponseDto<IEnumerable<UsuarioNotificacaoResponseDto>> GetNotificacoes(Guid guid)
         {
             try

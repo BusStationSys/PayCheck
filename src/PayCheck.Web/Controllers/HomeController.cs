@@ -158,32 +158,30 @@ public class HomeController : Controller
                     dataJson).Data;
         }
 
-        if (pessoasFisicas != null &&
-            pessoasFisicas.Count() > 0)
-        {
-            var aniversariantes = from aniversariante in pessoasFisicas
-                                  where aniversariante.DataNascimento != null
-                                  select new
-                                  {
-                                      aniversariante.Guid,
-                                      aniversariante.Nome,
-                                      DataNascimentoOrdenado = Convert.ToDateTime(
-                                          aniversariante.DataNascimento).ToString("MMdd"),
-                                      DataNascimentoString = Convert.ToDateTime(
-                                          aniversariante.DataNascimento).ToString("dd/MM"),
-                                      Indice = Convert.ToDouble(
-                                          Math.Round(
-                                              (Convert.ToDateTime(
-                                                  Convert.ToDateTime(
-                                                      aniversariante.DataNascimento).ToString("dd/MM") + "/" + DateTime.Now.Year) - DateTime.Now).TotalDays, 2)),
-                                  };
+        if (pessoasFisicas is null ||
+            pessoasFisicas.Count() == 0)
+            return Enumerable.Empty<dynamic>();
 
-            return aniversariantes.OrderBy(
-                a => a.DataNascimentoOrdenado)
-                    .ThenBy(a => a.Nome).ToList();
-        }
+        var aniversariantes = from aniversariante in pessoasFisicas
+                                where aniversariante.DataNascimento != null
+                                select new
+                                {
+                                    aniversariante.Guid,
+                                    aniversariante.Nome,
+                                    DataNascimentoOrdenado = Convert.ToDateTime(
+                                        aniversariante.DataNascimento).ToString("MMdd"),
+                                    DataNascimentoString = Convert.ToDateTime(
+                                        aniversariante.DataNascimento).ToString("dd/MM"),
+                                    Indice = Convert.ToDouble(
+                                        Math.Round(
+                                            (Convert.ToDateTime(
+                                                Convert.ToDateTime(
+                                                    aniversariante.DataNascimento).ToString("dd/MM") + "/" + DateTime.Now.Year) - DateTime.Now).TotalDays, 2)),
+                                };
 
-        return Enumerable.Empty<dynamic>();
+        return aniversariantes.OrderBy(
+            a => a.DataNascimentoOrdenado)
+                .ThenBy(a => a.Nome).ToList();
     }
 
     private IEnumerable<dynamic> LoadAniversariantesEmpresa(int mes)
@@ -204,6 +202,10 @@ public class HomeController : Controller
                     dataJson).Data;
             }
         }
+
+        if (matriculas is null ||
+            matriculas.Count() == 0)
+            return Enumerable.Empty<dynamic>();
 
         var aniversariantes = from aniversarianteEmpresa in matriculas
                               select new

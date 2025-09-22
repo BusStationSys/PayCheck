@@ -107,7 +107,7 @@
         /// </summary>
         /// <param name="guidColaborador"></param>
         /// <returns></returns>
-        [HttpGet("getDemonstrativoPagamentoByGuidColaborador/{guidColaborador}")]
+        [HttpGet("Colaborador/{guidColaborador}")]
         public ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>> GetDemonstrativoPagamentoByGuidColaborador(Guid guidColaborador)
         {
             try

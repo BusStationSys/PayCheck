@@ -94,7 +94,7 @@
             </li>
 
             <!-- Divider -->
-            <hr class="sidebar-divider">
+            @*             <hr class="sidebar-divider">
 
             <div class="sidebar-heading">
                 Publicações
@@ -105,7 +105,7 @@
                     <i class="fas fa-fw fas fa-comment"></i>
                     <span>Sobre Nós</span>
                 </a>
-            </li>
+            </li> *@
 
             <!-- Divider -->
             <hr class="sidebar-divider">
@@ -160,7 +160,6 @@
             </div>
         </ul>
         <!-- End of Sidebar -->
-
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
 
@@ -202,7 +201,7 @@
                                  aria-labelledby="searchDropdown">
                                 <form class="form-inline mr-auto w-100 navbar-search">
                                     <div class="input-group">
-                                        <input type="text" class="form-control bg-light border-0 small" id="txtPeriodoInicial" maxlength="10" placeholder="XX/XX/XXXX" aria-describedby="basic-addon2"/>
+                                        <input type="text" class="form-control bg-light border-0 small" id="txtPeriodoInicial" maxlength="10" placeholder="XX/XX/XXXX" aria-describedby="basic-addon2" />
 
                                         <div class="input-group-append">
                                             <button class="btn btn-primary" type="button">
@@ -215,8 +214,9 @@
                         </li>
 
                         <!-- Nav Item - Alerts -->
-                        <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                        @await Component.InvokeAsync("AlertCenter")
+                        @*<li class="nav-item dropdown no-arrow mx-1">
+@*                             <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
@@ -262,8 +262,8 @@
                                     </div>
                                 </a>
                                 <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                            </div>
-                        </li>
+                            </div> *@
+                        @* </li> *@
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
@@ -378,26 +378,24 @@
 
                 </nav>
                 <!-- End of Topbar -->
-
                 @RenderBody()
 
-@*                 <!-- Begin Page Content -->
+                @*                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
                     <!-- Content Row -->
                     <div class="row">
                         <div class="container">
                             @* <main role="main" class="pb-3"> *@
-                                @* @RenderBody() *@
-                            @* </main> *@
-@*                         </div>
+                @* @RenderBody() *@
+                @* </main> *@
+                @*                         </div>
                     </div>
 
                 </div> *@
                 <!-- /.container-fluid -->
             </div>
             <!-- End of Main Content -->
-
             <!-- Footer -->
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
@@ -455,11 +453,11 @@
     <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/js/sb-admin-2.min.js"></script>
 
     <!-- Page level plugins -->
-    @* <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/vendor/chart.js/Chart.min.js"></script> *@
+    <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/vendor/chart.js/Chart.min.js"></script>
 
     <!-- Page level custom scripts -->
-@*     <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/js/demo/chart-area-demo.js"></script>
-    <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/js/demo/chart-pie-demo.js"></script> *@
+    <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/js/demo/chart-area-demo.js"></script>
+    <script src="~/Theme/startbootstrap-sb-admin-2-gh-pages/js/demo/chart-pie-demo.js"></script>
 
 </body>
 

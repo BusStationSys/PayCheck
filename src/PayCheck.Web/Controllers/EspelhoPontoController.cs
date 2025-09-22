@@ -207,7 +207,7 @@
             string requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto";
 
             if (guidColaborador != null)
-                requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/getEspelhoPontoByGuidColaborador/{guidColaborador}";
+                requestUri = @$"{this._httpClient.BaseAddress}/EspelhoPonto/Colaborador/{guidColaborador}";
 
             var espelhosPonto = default(IEnumerable<EspelhoPontoViewModel>);
 

@@ -209,7 +209,7 @@
             string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento";
 
             if (guidColaborador != null)
-                requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/getDemonstrativoPagamentoByGuidColaborador/{guidColaborador}";
+                requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/Colaborador/{guidColaborador}";
 
             var demonstrativosPagamento = this.GetDemonstrativosPagamentoViewModel(
                 requestUri);

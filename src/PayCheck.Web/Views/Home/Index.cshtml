@@ -17,8 +17,8 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
     <!-- Modal -->
-    <div class="modal fade" id="sobreNosModal" tabindex="-1" aria-hidden="true" aria-labelledby="lblSobreNos">
-    </div>
+    @*     <div class="modal fade" id="sobreNosModal" tabindex="-1" aria-hidden="true" aria-labelledby="lblSobreNos">
+    </div> *@
 
     @* https://www.macoratti.net/18/06/mvc5_vmodal2.htm *@
 
@@ -43,86 +43,79 @@
     </div>
     </div> *@
 
-    <div class="row justify-content-center">
-        <div class="col-xl-12 col-lg-12 col-md-12 mb-12">
-            <div class="card shadow mb-4 border-left-warning shadow">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-warning text-uppercase mb-1"><i class="fas fa-fw fa-comment"></i><span>Sobre Nós</span></h6>
-                </div>
+    <div class="row">
 
-                <div class="card-body">
-                    <div id="carouselSobreNos" class="carousel slide carousel-dark mx-auto" data-ride="carousel">
-                        <!-- The slideshow -->
-                        <div class="carousel-inner">
-                            @if (sobreNos != null && sobreNos.Count() > 0)
-                            {
-                                int dataSlideTo = 0;
-
-                                <!-- Indicators -->
-                                <ul class="carousel-indicators my-4">
-
-                                    @foreach (var item in sobreNos)
-                                    {
-                                        if (dataSlideTo == 0)
-                                        {
-                                            <li data-target="#carouselSobreNos" data-slide-to=" + @dataSlideTo + " class="active"></li>
-                                        }
-                                        else
-                                        {
-                                            <li data-target="#carouselSobreNos" data-slide-to=" + @dataSlideTo + "></li>
-                                        }
-
-                                        dataSlideTo++;
-                                    }
-                                </ul>
-
-                                var divClass = "carousel-item active";
-
-                                foreach (var item in sobreNos)
-                                {
-                                    <div class="' + @divClass + '">
-                                        <a href="#">
-                                            @* <img class="d-block w-100 imgSobreNos" data-id="@item.Id" data-target="#sobreNosModal" data-toggle="modal" style="height: 475px; max-height: 475px;" src="@Url.Action("RenderImage", "Home", new { @id = item.Id } )" /> *@
-                                            <img class="d-block w-100 imgSobreNos" data-id="@item.Id" style="height: 475px; max-height: 475px;" src="@Url.Action("RenderImage", "Home", new { @id = item.Id } )" />
-                                        </a>
-
-                                        <div class="carousel-caption d-none d-md-block bg-gradient-secondary text-white mb-4">
-                                            <h2 class="font-weight-bold text-white text-uppercase mb-10" style="text-align:center">
-                                                <span>@item.Titulo</span>
-                                            </h2>
-
-                                            @* <p class="font-weight-bold text-white mb-10" style="text-align:justify">@item.Resumo</p> *@
-                                            <p class="font-weight-bold text-white mb-10">@item.Resumo</p>
-                                        </div>
-                                    </div>
-
-                                    divClass = "carousel-item";
-                                }
-
-                                <!-- Left and right controls -->
-                                <a class="carousel-control-prev" href="#carouselSobreNos" data-slide="prev">
-                                    <span class="carousel-control-prev-icon text-black"></span>
-                                </a>
-
-                                <a class="carousel-control-next" href="#carouselSobreNos" data-slide="next">
-                                    <span class="carousel-control-next-icon text-black"></span>
-                                </a>
-                            }
-                            else
-                            {
-                                <div class="carousel-item active">
-                                    <img class="d-block w-100" style="height: 475px; max-height: 475px;" src="~/Theme/startbootstrap-sb-admin-2-gh-pages/img/ImageNotAvailable.png" alt="">
-
-                                    <div class="carousel-caption d-none d-md-block bg-transparent text-white" style="margin-bottom: 17%; margin-top: 17%">
-                                        <h3 class="font-weight-bold text-white text-uppercase mb-10"><span>Não há publicações a serem exibidas.</span></h3>
-                                    </div>
-                                </div>
-                            }
+        <!-- Area Chart -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-success">GRÁFICO DE EVOLUÇÃO SALARIAL</h6>
+                    @*                     <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Dropdown Header:</div>
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
                         </div>
+                    </div> *@
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="myAreaChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Pie Chart -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-success">COMPOSIÇÃO SALARIAL</h6>
+                    @* <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Dropdown Header:</div>
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div> *@
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="myPieChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-primary"></i> Direct
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-success"></i> Social
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-info"></i> Referral
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="row">
@@ -183,7 +176,7 @@
                 }
                 else
                 {
-                    <div class="card-footer bg-transparent border-danger font-weight-bold text-uppercase text-gray-800">@string.Concat("Não foram encontrados Aniversariantes de Empresa para o mês ", DateTime.Now.Month.ToString("00"), ".")</div>
+                    <div class="card-footer bg-transparent border-danger font-weight-bold text-gray-800">@string.Concat("Não foram encontrados Aniversariantes de Empresa para o mês ", DateTime.Now.Month.ToString("00"), ".")</div>
                 }
             </div>
         </div>
@@ -196,12 +189,12 @@
 
         });
 
-        $('.imgSobreNos').click(function () {
-            var id = $(this).attr('data-id');
+        // $('.imgSobreNos').click(function () {
+        //     var id = $(this).attr('data-id');
 
-            $("#sobreNosModal").load("SobreNos?id=" + id, function () {
-                $("#sobreNosModal").modal();
-            })
-        });
+        //     $("#sobreNosModal").load("SobreNos?id=" + id, function () {
+        //         $("#sobreNosModal").modal();
+        //     })
+        // });
     </script>
 }
