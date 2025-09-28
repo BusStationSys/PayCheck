@@ -186,7 +186,7 @@
         /// <param name="periodoInicial"></param>
         /// <param name="periodoFinal"></param>
         /// <returns></returns>
-        [HttpGet("getPendencias/{periodoInicial}/{periodoFinal}")]
+        [HttpGet("Pendencias/{periodoInicial}/{periodoFinal}")]
         public ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>> GetPendencias(string periodoInicial, string periodoFinal)
         {
             try
@@ -215,6 +215,46 @@
             catch (Exception ex)
             {
                 return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
+                {
+                    Message = ex.Message,
+                    StatusCode = HttpStatusCode.InternalServerError,
+                };
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="guidUsuario"></param>
+        /// <param name="quantidadeMesesRetroativos"></param>
+        /// <returns></returns>
+        [HttpGet("GraficoEvolucaoSalarial/{guidUsuario}/{quantidadeMesesRetroativos}")]
+        public ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>> GetGraficoEvolucaoSalarial(Guid guidUsuario, Int16 quantidadeMesesRetroativos)
+        {
+            try
+            {
+                var data = this._service.GetSalaryEvolutionChart(
+                    guidUsuario,
+                    quantidadeMesesRetroativos);
+
+                if (data != null &&
+                    data.Count() > 0)
+                    return new ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>>
+                    {
+                        Data = data,
+                        Success = true,
+                        StatusCode = HttpStatusCode.OK,
+                    };
+
+                return new ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>>
+                {
+                    Message = $"Gráfico de Evolução Salarial não encontrado para o Usuário {guidUsuario}!",
+                    StatusCode = HttpStatusCode.NotFound,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>>
                 {
                     Message = ex.Message,
                     StatusCode = HttpStatusCode.InternalServerError,

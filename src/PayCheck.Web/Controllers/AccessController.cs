@@ -328,7 +328,7 @@
                     TempData.Remove(
                         "IdPerfilUsuario");
 
-                    var parametros = $"GuidUsuario={guidUsuario:N}&DataAtual={dataAtualString}&Email={activateViewModel.Email}&GuidColaborador={guidColaborador:N}&Username={username}&IdPerfilUsuario={idPerfilUsuario.ToString()}";
+                    var parametros = $"GuidUsuario={guidUsuario:N}&DataAtual={dataAtualString}&Email={activateViewModel.Email}&GuidColaborador={guidColaborador:N}&Username={username}&IdPerfilUsuario={idPerfilUsuario}";
 
                     string key = QueryStringCryptography.Encrypt(
                         parametros,
@@ -518,35 +518,35 @@ A Equipe de Suporte PayCheck®.";
 
                     var claims = new List<Claim>
                         {
-                            new Claim(ClaimTypes.NameIdentifier, usuarioResponse.Guid.ToString()),
-                            new Claim(ClaimTypes.Name, nomeColaborador),
-                            new Claim(ClaimTypes.Email, emailUsuario),
+                            new (ClaimTypes.NameIdentifier, usuarioResponse.Guid.ToString()),
+                            new (ClaimTypes.Name, nomeColaborador),
+                            new (ClaimTypes.Email, emailUsuario),
 
-                            new Claim(
+                            new (
                                 $"{nameof(
                                     UsuarioResponseDto.Guid)}Usuario",
                                 usuarioResponse.Guid.ToString()),
 
-                            new Claim(
+                            new (
                                 $"{nameof(
                                     UsuarioResponseDto.Colaborador.Guid)}Colaborador",
                                 guidColaborador),
 
-                            new Claim(
+                            new (
                                 $"{nameof(
                                     UsuarioResponseDto.Colaborador.Nome)}Colaborador",
                                 nomeColaborador),
 
-                            new Claim(
+                            new (
                                 nameof(
                                     UsuarioResponseDto.Username),
                                 usuarioResponse.Username),
 
-                            new Claim(
+                            new (
                                 $"{nameof(UsuarioResponseDto.Email)}Usuario",
                                 emailUsuario),
 
-                            new Claim(
+                            new (
                                 $"{nameof(UsuarioResponseDto.IdPerfilUsuario)}",
                                 usuarioResponse.IdPerfilUsuario.ToString()),
 

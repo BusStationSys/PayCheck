@@ -10,7 +10,7 @@
     using Newtonsoft.Json;
     using PayCheck.Web.Models;
 
-    public class AlertCenterViewComponent : ViewComponent
+    public class SalaryEvolutionChartViewComponent : ViewComponent
     {
         private readonly string _tokenBearer;
 
@@ -22,7 +22,7 @@
 
         private readonly Uri _baseAddress;
 
-        public AlertCenterViewComponent(IOptions<ExternalApis> externalApis)
+        public SalaryEvolutionChartViewComponent(IOptions<ExternalApis> externalApis)
         {
             this._externalApis = externalApis.Value;
 
@@ -31,21 +31,11 @@
 
             var mapperConfiguration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<MatriculaDemonstrativoPagamentoResponseDto, DemonstrativoPagamentoViewModel>()
+                cfg.CreateMap<GraficoEvolucaoSalarialResponseDto, GraficoEvolucaoSalarialViewModel>()
                     .ForMember(
-                        dest => dest.NumeroMatricula,
+                        dest => dest.Competencia,
                         opt => opt.MapFrom(
-                            src => src.Matricula.Matricula))
-                    .ForMember(
-                        dest => dest.NomeColaborador,
-                        opt => opt.MapFrom(
-                            src => src.Matricula.Colaborador.Nome))
-                    .ForMember(
-                        dest => dest.RazaoSocialEmpregador,
-                        opt => opt.MapFrom(
-                            src => src.Matricula.Empregador.RazaoSocial)).ReverseMap();
-
-                cfg.CreateMap<UsuarioNotificacaoResponseDto, UsuarioNotificacaoViewModel>().ReverseMap();
+                            src => src.CompetenciaFormatada)).ReverseMap();
             });
 
             this._mapper = new Mapper(
@@ -95,7 +85,7 @@
             string requestUri = @$"{this._httpClient.BaseAddress}/Usuario/Notificacoes/{guid}";
 
             var usuarioNotificacaoResponse = default(
-                IEnumerable<UsuarioNotificacaoResponseDto>);
+                IEnumerable<GraficoEvolucaoSalarialResponseDto>);
 
             using (var webApiHelper = new WebApiHelper(
                 requestUri,
@@ -104,7 +94,7 @@
                 string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
                 if (dataJson.IsValidJson())
-                    usuarioNotificacaoResponse = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<UsuarioNotificacaoResponseDto>>>(
+                    usuarioNotificacaoResponse = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>>>(
                         dataJson).Data;
             }
 
