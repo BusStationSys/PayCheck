@@ -44,11 +44,9 @@
     </div> *@
 
     <div class="row">
-
         <!-- Area Chart -->
         <div class="col-xl-8 col-lg-7">
-            <div class="card shadow mb-4">
-
+            <div class="card shadow mb-4 border-left-success shadow">
                 <div class="card-header py-3 border-success">
                     <h6 class="m-0 font-weight-bold text-success">
                         <i class="fas fa-fw fa-chart-line"></i>
@@ -88,19 +86,38 @@
 
                 <!-- Card Body -->
                 <div class="card-body">
-                    <div class="chart-area">
-                        <canvas id="myAreaChart"></canvas>
-                    </div>
+                    @await Component.InvokeAsync("SalaryEvolutionChart")
                 </div>
             </div>
         </div>
 
+        @*
+                        
+                
+                    <h6 class="m-0 font-weight-bold text-success">
+                        <i class="fas fa-fw fa-chart-line"></i>
+                        <span> EVOLUÇÃO SALARIAL</span>
+                    </h6>
+                    <span>
+                        <small class="text-muted">* Últimos 6 meses</small>
+                    </span>
+                </div>
+        *@
+
         <!-- Pie Chart -->
         <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
+            <div class="card shadow mb-4 border-left-success shadow">
                 <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-success">COMPOSIÇÃO SALARIAL</h6>
+                @* <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between"> *@
+                <div class="card-header py-3 border-success">
+                    <h6 class="m-0 font-weight-bold text-success">
+                        <i class="fas fa-fw fa-chart-pie"></i>
+                        <span> COMPOSIÇÃO SALARIAL</span>
+                    </h6>
+                    <span>
+                        <small class="text-muted">* Mês Atual</small>
+                    </span>
+
                     @* <div class="dropdown no-arrow">
                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

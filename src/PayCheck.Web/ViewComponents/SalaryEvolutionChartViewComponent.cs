@@ -80,11 +80,13 @@
         {
             ClaimsPrincipal claimsPrincipal = HttpContext.User;
 
-            var guid = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponseDto.Guid)}Usuario").Value;
+            var guidUsuario = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponseDto.Guid)}Usuario").Value;
 
-            string requestUri = @$"{this._httpClient.BaseAddress}/Usuario/Notificacoes/{guid}";
+            var quantidadeMesesRetroativos = 6;
 
-            var usuarioNotificacaoResponse = default(
+            string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/GraficoEvolucaoSalarial/{guidUsuario}/{quantidadeMesesRetroativos}";
+
+            var graficoEvolucaoSalarialResponse = default(
                 IEnumerable<GraficoEvolucaoSalarialResponseDto>);
 
             using (var webApiHelper = new WebApiHelper(
@@ -94,12 +96,12 @@
                 string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
                 if (dataJson.IsValidJson())
-                    usuarioNotificacaoResponse = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>>>(
+                    graficoEvolucaoSalarialResponse = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>>>(
                         dataJson).Data;
             }
 
             return Task.FromResult<IViewComponentResult>(View(
-                this._mapper.Map<IEnumerable<UsuarioNotificacaoViewModel>>(usuarioNotificacaoResponse)));
+                this._mapper.Map<IEnumerable<GraficoEvolucaoSalarialViewModel>>(graficoEvolucaoSalarialResponse)));
         }
     }
 }
