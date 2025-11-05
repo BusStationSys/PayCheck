@@ -329,7 +329,12 @@
         [HttpPost()]
         public IActionResult GetDataTablePendencias(string competenciaInicial, string competenciaFinal)
         {
-            string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/Pendencias/{competenciaInicial}/{competenciaFinal}";
+            //  string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/Pendencias/{competenciaInicial}/{competenciaFinal}";
+
+            string requestUri = @$"{this._httpClient.BaseAddress}/DemonstrativoPagamento/Pendencias?" +
+                    $"periodoInicial={competenciaInicial:yyyy-MM-dd}&" +
+                    $"periodoFinal={competenciaFinal:yyyy-MM-dd}&" +
+                    $"situacao=0";
 
             var demonstrativosPagamento = default(IEnumerable<DemonstrativoPagamentoViewModel>);
 

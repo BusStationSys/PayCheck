@@ -1,0 +1,130 @@
+﻿@using Newtonsoft.Json
+@model IEnumerable<GraficoComposicaoSalarialViewModel>
+
+@* <div class="chart-pie pt-4 pb-2"> *@
+
+<div class="chart-pie">
+    <canvas id="graficoComposicaoSalarial"></canvas>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var ctx = document.getElementById("graficoComposicaoSalarial");
+
+        var labels = @Html.Raw(Json.Serialize(Model.Select(x => x.DescricaoEvento)));
+
+        var valores = @Html.Raw(Json.Serialize(Model.Select(x => Math.Abs(x.Valor))));
+
+        var cores = @Html.Raw(Json.Serialize(Model.Select(x => x.Cor)));
+
+        new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: valores,
+              //backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+              backgroundColor: cores,
+              hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
+              hoverBorderColor: "rgba(234, 236, 244, 1)",
+            }],
+          },
+          options: {
+              //responsive: true,
+              maintainAspectRatio: false,
+              tooltips: {
+                backgroundColor: "rgb(255,255,255)",
+                bodyFontColor: "#858796",
+                borderColor: '#dddfeb',
+                borderWidth: 1,
+                xPadding: 15,
+                yPadding: 15,
+                displayColors: false,
+                caretPadding: 10,
+                },
+            // legend: {
+            //   display: false
+            // },
+            cutoutPercentage: 80,
+          },
+        });
+    });
+</script>
+
+@*     <script>
+        const ctx = document.getElementById("graficoComposicaoSalarial");
+
+        // Dados vindos do servidor
+        const labels = @Html.Raw(Json.Serialize(Model.Select(x => x.DescricaoEvento)));
+
+        const valores = @Html.Raw(Json.Serialize(Model.Select(x => Math.Abs(x.Valor))));
+
+        const cores = @Html.Raw(Json.Serialize(Model.Select(x => x.Cor)));
+
+        /*
+        options: {
+            maintainAspectRatio: false,
+            tooltips: {
+              backgroundColor: "rgb(255,255,255)",
+              bodyFontColor: "#858796",
+              borderColor: '#dddfeb',
+              borderWidth: 1,
+              xPadding: 15,
+              yPadding: 15,
+              displayColors: false,
+              caretPadding: 10,
+            },
+            legend: {
+              display: false
+            },
+            cutoutPercentage: 80,
+          }
+        */
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: valores,
+                    backgroundColor: cores,
+                    borderWidth: 1
+                }]
+            },
+        options: {
+            maintainAspectRatio: false,
+            tooltips: {
+              backgroundColor: "rgb(255,255,255)",
+              bodyFontColor: "#858796",
+              borderColor: '#dddfeb',
+              borderWidth: 1,
+              xPadding: 15,
+              yPadding: 15,
+              displayColors: false,
+              caretPadding: 10,
+            },
+            // legend: {
+            //   display: false
+            // },
+            // cutoutPercentage: 80,
+          }
+
+            // options: {
+            //     plugins: {
+            //         legend: {
+            //             position: 'bottom',
+            //             labels: { boxWidth: 20 }
+            //         },
+            //         tooltip: {
+            //             callbacks: {
+            //                 label: function(context) {
+            //                     const label = context.label || '';
+            //                     const valor = context.parsed;
+            //                     return `${label}: R$ ${valor.toLocaleString('pt-BR')}`;
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
+        });
+    </script> *@
