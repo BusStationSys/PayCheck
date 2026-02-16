@@ -148,23 +148,8 @@
 
                 usuarioResponse.StatusCode = HttpStatusCode.NoContent;
 
-                //return StatusCode(
-                //    StatusCodes.Status204NoContent,
-                //    usuarioResponse);
-
                 return Ok(
                     usuarioResponse);
-
-                //return CreatedAtAction(
-                //    nameof(
-                //        this.GetAgente),
-                //    new
-                //    {
-                //        id = agenteResponseDto.CodigoAgente,
-                //    },
-                //    agenteResponseDto);
-
-                //return NoContent();
             }
             catch (Exception ex)
             {
@@ -199,23 +184,8 @@
 
                 usuarioResponse.StatusCode = HttpStatusCode.NoContent;
 
-                //return StatusCode(
-                //    StatusCodes.Status204NoContent,
-                //    usuarioResponse);
-
                 return Ok(
                     usuarioResponse);
-
-                //return CreatedAtAction(
-                //    nameof(
-                //        this.GetAgente),
-                //    new
-                //    {
-                //        id = agenteResponseDto.CodigoAgente,
-                //    },
-                //    agenteResponseDto);
-
-                //return NoContent();
             }
             catch (Exception ex)
             {
