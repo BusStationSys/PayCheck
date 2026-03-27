@@ -40,22 +40,23 @@
                     padding: {
                         left: 10,
                         right: 25,
-                        //top: 25,
-                        top: -10,
-                        //bottom: 0,
-                        bottom: -10,
+                        top: 25,
+                        bottom: 0,
                     },
                 },
 
                 scales: {
                     xAxes: [{
+                        time: {
+                            unit: 'date'
+                        },
                         gridLines: {
                             display: false,
                             drawBorder: false,
                         },
                         ticks: {
                             reverse: true,      //  ou false se quiser inverter.
-                            maxTicksLimit: 7,
+                            maxTicksLimit: 6,
                             autoSkip: false,    // mostra todas as labels
                         },
                     }],
@@ -71,7 +72,25 @@
                 legend: {
                     display: false,
                 }
-            }
+            },
+
+                tooltips: {
+      // backgroundColor: "rgb(255,255,255)",
+      // bodyFontColor: "#858796",
+      titleMarginBottom: 10,
+      // titleFontColor: '#6e707e',
+      titleFontSize: 14,
+      // borderColor: '#dddfeb',
+      borderWidth: 1,
+      xPadding: 15,
+      yPadding: 15,
+      displayColors: false,
+      intersect: false,
+      mode: 'index',
+      caretPadding: 10,
+      }
+    
+
         });
     });
 </script>
