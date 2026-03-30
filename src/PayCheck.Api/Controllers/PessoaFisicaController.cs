@@ -1,7 +1,5 @@
 ﻿namespace PayCheck.Api.Controllers
 {
-    using System.Net;
-    using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.DataAccess.Service.UniPayCheck.Interfaces;
     using Microsoft.AspNetCore.Authorization;
@@ -30,118 +28,140 @@
         }
 
         /// <summary>
-        /// 
+        /// Deletes an individual person by its unique identifier.
         /// </summary>
-        /// <param name="guid"></param>
-        /// <returns></returns>
+        /// <param name="guid">Unique identifier (GUID) of the individual person to be deleted.</param>
+        /// <returns>No content on success.</returns>
+        /// <response code="204">Individual person successfully deleted.</response>
+        /// <response code="404">Individual person not found.</response>
+        /// <response code="500">Internal server error.</response>
         [HttpDelete("{guid}")]
-        public ApiResponseDto<PessoaFisicaResponseDto> DeletePessoaFisica(Guid guid)
-        {
-            try
-            {
-                var apiResponse = this.GetPessoaFisica(
-                    guid);
-
-                this._service.Delete(
-                    guid);
-
-                return new ApiResponseDto<PessoaFisicaResponseDto>
-                {
-                    Data = apiResponse.Data,
-                    Success = true,
-                    StatusCode = HttpStatusCode.NoContent,
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponseDto<PessoaFisicaResponseDto>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="guid"></param>
-        /// <returns></returns>
-        [HttpGet("{guid}")]
-        public ApiResponseDto<PessoaFisicaResponseDto> GetPessoaFisica(Guid guid)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult DeletePessoaFisica(Guid guid)
         {
             try
             {
                 var data = this._service.Get(
                     guid);
 
-                if (data != null)
-                    return new ApiResponseDto<PessoaFisicaResponseDto>
-                    {
-                        Data = data,
-                        Success = true,
-                        StatusCode = HttpStatusCode.OK,
-                    };
+                if (data is null)
+                    return NotFound(
+                        new
+                        {
+                            Message = $"Pessoa Física {guid} não encontrada.",
+                        });
 
-                return new ApiResponseDto<PessoaFisicaResponseDto>
-                {
-                    Message = $"Pessoa Física {guid} não encontrada.",
-                    StatusCode = HttpStatusCode.NotFound,
-                };
+                this._service.Delete(
+                    guid);
+
+                return NoContent();
             }
             catch (Exception ex)
             {
-                return new ApiResponseDto<PessoaFisicaResponseDto>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        ex.Message,
+                    });
             }
         }
 
         /// <summary>
-        /// 
+        /// Retrieves an individual person by its unique identifier.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="guid">Unique identifier (GUID) of the individual person.</param>
+        /// <returns>Data of the found individual person.</returns>
+        /// <response code="200">Returns the requested individual person.</response>
+        /// <response code="404">Individual person not found.</response>
+        /// <response code="500">Internal server error.</response>
+        [HttpGet("{guid}")]
+        [ProducesResponseType(typeof(PessoaFisicaResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetPessoaFisica(Guid guid)
+        {
+            try
+            {
+                var data = this._service.Get(
+                    guid);
+
+                if (data is null)
+                    return NotFound(
+                        new
+                        {
+                            Message = $"Pessoa Física {guid} não encontrada.",
+                        });
+
+                return Ok(
+                    data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        ex.Message,
+                    });
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all registered individual persons.
+        /// </summary>
+        /// <returns>List of individual persons.</returns>
+        /// <response code="200">Returns the list of individual persons.</response>
+        /// <response code="404">No individual persons found.</response>
+        /// <response code="500">Internal server error.</response>
         [HttpGet]
-        public ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>> GetPessoasFisicas()
+        [ProducesResponseType(typeof(IEnumerable<PessoaFisicaResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetPessoasFisicas()
         {
             try
             {
                 var data = this._service.GetAll();
 
-                if (data != null && data.Count() > 0)
-                    return new ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>
-                    {
-                        Data = data,
-                        Success = true,
-                        StatusCode = HttpStatusCode.OK,
-                    };
+                if (data is null ||
+                    !data.Any())
+                    return NotFound(
+                        new
+                        {
+                            Message = "Não há registros de Pessoas Físicas.",
+                        });
 
-                return new ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>
-                {
-                    Message = "Não há registros de Pessoas Físicas.",
-                    StatusCode = HttpStatusCode.NotFound,
-                };
+                return Ok(
+                    data);
             }
             catch (Exception ex)
             {
-                return new ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        ex.Message,
+                    });
             }
         }
 
         /// <summary>
-        /// 
+        /// Retrieves individual persons whose birthdays fall within the specified period.
         /// </summary>
-        /// <param name="periodoInicialString">MMdd.</param>
-        /// <param name="periodoFinalString">MMdd.</param>
-        /// <returns></returns>
+        /// <param name="periodoInicialString">Start date in MMdd format.</param>
+        /// <param name="periodoFinalString">End date in MMdd format.</param>
+        /// <returns>List of individuals with birthdays in the specified period.</returns>
+        /// <response code="200">Returns the list of individuals with birthdays.</response>
+        /// <response code="404">No individuals with birthdays found.</response>
+        /// <response code="500">Internal server error.</response>
         [HttpGet("getAniversariantes/{periodoInicialString}/{periodoFinalString}")]
-        public ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>> GetAniversariantes(string periodoInicialString, string periodoFinalString)
+        [ProducesResponseType(typeof(IEnumerable<PessoaFisicaResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetAniversariantes(string periodoInicialString, string periodoFinalString)
         {
             try
             {
@@ -149,89 +169,135 @@
                     periodoInicialString,
                     periodoFinalString);
 
-                if (data != null && data.Count() > 0)
-                    return new ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>
-                    {
-                        Data = data,
-                        Success = true,
-                        StatusCode = HttpStatusCode.OK,
-                    };
+                if (data is null ||
+                    !data.Any())
+                    return NotFound(
+                        new
+                        {
+                            Message = $"Não há registros de Pessoas Físicas que realizam aniversário no período de {periodoInicialString} a {periodoFinalString}.",
+                        });
 
-                return new ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>
-                {
-                    Message = $"Não há registros de Pessoas Físicas que realizam aniversário no período de {periodoInicialString} a {periodoFinalString}.",
-                    StatusCode = HttpStatusCode.NotFound,
-                };
+                return Ok(
+                    data);
             }
             catch (Exception ex)
             {
-                return new ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        ex.Message,
+                    });
             }
         }
 
         /// <summary>
-        /// 
+        /// Creates a new individual person.
         /// </summary>
-        /// <param name="createDto"></param>
-        /// <returns></returns>
+        /// <param name="createDto">Data of the individual person to be created.</param>
+        /// <returns>Data of the created individual person.</returns>
+        /// <response code="201">Individual person successfully created.</response>
+        /// <response code="400">Invalid data or malformed request.</response>
+        /// <response code="500">Internal server error.</response>
         [HttpPost]
-        public ApiResponseDto<PessoaFisicaResponseDto> CreatePessoaFisica([FromBody] PessoaFisicaRequestCreateDto createDto)
+        [ProducesResponseType(typeof(PessoaFisicaResponseDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult CreatePessoaFisica([FromBody] PessoaFisicaRequestCreateDto createDto)
         {
+            if (createDto is null)
+                return BadRequest(
+                    new
+                    {
+                        Message = "Os dados da Pessoa Física são obrigatórios.",
+                    });
+
             try
             {
                 var data = this._service.SaveData(
                     createDto);
 
-                return new ApiResponseDto<PessoaFisicaResponseDto>
-                {
-                    Data = data,
-                    Success = true,
-                    StatusCode = HttpStatusCode.Created,
-                };
+                return CreatedAtAction(
+                    nameof(
+                        this.GetPessoaFisica),
+                    new
+                    {
+                        guid = data.Guid,
+                    },
+                    data);
             }
             catch (Exception ex)
             {
-                return new ApiResponseDto<PessoaFisicaResponseDto>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        ex.Message,
+                    });
             }
         }
 
         /// <summary>
-        /// 
+        /// Updates the data of an existing individual person identified by the specified GUID.
         /// </summary>
-        /// <param name="updateDto"></param>
-        /// <returns></returns>
-        [HttpPut]
-        public ApiResponseDto<PessoaFisicaResponseDto> UpdatePessoaFisica([FromBody] PessoaFisicaRequestUpdateDto updateDto)
+        /// <remarks>
+        /// This operation replaces the existing data of the specified individual person with the values provided in
+        /// the request body. The GUID in the route is used to identify the entity to update.
+        /// </remarks>
+        /// <param name="guid">Unique identifier (GUID) of the individual person to be updated.</param>
+        /// <param name="updateDto">Updated data of the individual person.</param>
+        /// <returns>Data of the updated individual person.</returns>
+        /// <response code="200">Individual person successfully updated.</response>
+        /// <response code="400">Invalid data or malformed request.</response>
+        /// <response code="404">Individual person not found.</response>
+        /// <response code="500">Internal server error.</response>
+        /// <returns>
+        /// An IActionResult that represents the result of the update operation. Returns status 200 (OK) with the updated
+        /// individual person data if successful; status 400 (Bad Request) if the input data is invalid; status 404 (Not Found)
+        /// if the specified individual person does not exist; or status 500 (Internal Server Error) if an unexpected error occurs.
+        /// </returns>
+        [HttpPut("{guid}")]
+        [ProducesResponseType(typeof(PessoaFisicaResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult UpdatePessoaFisica(Guid guid, [FromBody] PessoaFisicaRequestUpdateDto updateDto)
         {
+            if (updateDto is null)
+                return BadRequest(
+                    new
+                    {
+                        Message = "Os dados da Pessoa Física são obrigatórios.",
+                    });
+
             try
             {
-                updateDto.Guid = (Guid)updateDto.Guid;
+                var data = this._service.Get(
+                    guid);
 
-                var data = this._service.SaveData(
+                if (data is null)
+                    return NotFound(
+                        new
+                        {
+                            Message = $"Pessoa Física {guid} não encontrada.",
+                        });
+
+                updateDto.Guid = guid;
+
+                data = this._service.SaveData(
                     updateDto: updateDto);
 
-                return new ApiResponseDto<PessoaFisicaResponseDto>
-                {
-                    Data = data,
-                    Success = true,
-                    StatusCode = HttpStatusCode.NoContent,
-                };
+                return Ok(
+                    data);
             }
             catch (Exception ex)
             {
-                return new ApiResponseDto<PessoaFisicaResponseDto>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        ex.Message,
+                    });
             }
         }
     }
