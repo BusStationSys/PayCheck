@@ -1,7 +1,5 @@
 ﻿namespace PayCheck.Api.Controllers
 {
-    using System.Net;
-    using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.DataAccess.Service.UniPayCheck.Interfaces;
     using Microsoft.AspNetCore.Authorization;
@@ -30,169 +28,231 @@
         }
 
         /// <summary>
-        /// 
+        /// Deletes a legal entity by its unique identifier.
         /// </summary>
-        /// <param name="guid"></param>
-        /// <returns></returns>
+        /// <param name="guid">Unique identifier (GUID) of the legal entity to be deleted.</param>
+        /// <returns>No content on success.</returns>
+        /// <response code="204">Legal entity successfully deleted.</response>
+        /// <response code="404">Legal entity not found.</response>
+        /// <response code="500">Internal server error.</response>
         [HttpDelete("{guid}")]
-        public ApiResponseDto<PessoaJuridicaResponseDto> DeletePessoaJuridica(Guid guid)
-        {
-            try
-            {
-                var apiResponse = this.GetPessoaJuridica(
-                    guid);
-
-                this._service.Delete(
-                    guid);
-
-                return new ApiResponseDto<PessoaJuridicaResponseDto>
-                {
-                    Data = apiResponse.Data,
-                    Success = true,
-                    StatusCode = HttpStatusCode.NoContent,
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponseDto<PessoaJuridicaResponseDto>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="guid"></param>
-        /// <returns></returns>
-        [HttpGet("{guid}")]
-        public ApiResponseDto<PessoaJuridicaResponseDto> GetPessoaJuridica(Guid guid)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult DeletePessoaJuridica(Guid guid)
         {
             try
             {
                 var data = this._service.Get(
                     guid);
 
-                if (data != null)
-                    return new ApiResponseDto<PessoaJuridicaResponseDto>
-                    {
-                        Data = data,
-                        Success = true,
-                        StatusCode = HttpStatusCode.OK,
-                    };
+                if (data is null)
+                    return NotFound(
+                        new
+                        {
+                            Message = $"Pessoa Jurídica {guid} não encontrada.",
+                        });
 
-                return new ApiResponseDto<PessoaJuridicaResponseDto>
-                {
-                    Message = $"Pessoa Jurídica {guid} não encontrada.",
-                    StatusCode = HttpStatusCode.NotFound,
-                };
+                this._service.Delete(
+                    guid);
+
+                return NoContent();
             }
             catch (Exception ex)
             {
-                return new ApiResponseDto<PessoaJuridicaResponseDto>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        ex.Message,
+                    });
             }
         }
 
         /// <summary>
-        /// 
+        /// Retrieves a legal entity by its unique identifier.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="guid">Unique identifier (GUID) of the legal entity.</param>
+        /// <returns>Data of the found legal entity.</returns>
+        /// <response code="200">Returns the requested legal entity.</response>
+        /// <response code="404">Legal entity not found.</response>
+        /// <response code="500">Internal server error.</response>
+        [HttpGet("{guid}")]
+        [ProducesResponseType(typeof(PessoaFisicaResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetPessoaJuridica(Guid guid)
+        {
+            try
+            {
+                var data = this._service.Get(
+                    guid);
+
+                if (data is null)
+                    return NotFound(
+                        new
+                        {
+                            Message = $"Pessoa Jurídica {guid} não encontrada.",
+                        });
+
+                return Ok(
+                    data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        ex.Message,
+                    });
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all registered legal entities.
+        /// </summary>
+        /// <returns>List of legal entities.</returns>
+        /// <response code="200">Returns the list of legal entities.</response>
+        /// <response code="404">No legal entities found.</response>
+        /// <response code="500">Internal server error.</response>
         [HttpGet]
-        public ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>> GetPessoasJuridicas()
+        [ProducesResponseType(typeof(IEnumerable<PessoaJuridicaResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetPessoasJuridicas()
         {
             try
             {
                 var data = this._service.GetAll();
 
-                if (data != null && data.Count() > 0)
-                    return new ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>
-                    {
-                        Data = data,
-                        Success = true,
-                        StatusCode = HttpStatusCode.OK,
-                    };
+                if (data is null ||
+                    !data.Any())
+                    return NotFound(
+                        new
+                        {
+                            Message = "Não há registros de Pessoas Jurídicas.",
+                        });
 
-                return new ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>
-                {
-                    Message = "Não há registros de Pessoas Juridicas.",
-                    StatusCode = HttpStatusCode.NotFound,
-                };
+                return Ok(
+                    data);
             }
             catch (Exception ex)
             {
-                return new ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        ex.Message,
+                    });
             }
         }
 
         /// <summary>
-        /// 
+        /// Creates a new legal entity.
         /// </summary>
-        /// <param name="createDto"></param>
-        /// <returns></returns>
+        /// <remarks>
+        /// This operation creates a new legal entity record with the data provided
+        /// in the request body. On success, it returns the created entity data along
+        /// with the Location header containing the URL of the new resource.
+        /// </remarks>
+        /// <param name="createDto">Data of the legal entity to be created.</param>
+        /// <returns>Data of the created legal entity.</returns>
+        /// <response code="201">Legal entity successfully created.</response>
+        /// <response code="400">Invalid data or malformed request.</response>
+        /// <response code="500">Internal server error.</response>
         [HttpPost]
-        public ApiResponseDto<PessoaJuridicaResponseDto> InsertPessoaJuridica([FromBody] PessoaJuridicaRequestCreateDto createDto)
+        public IActionResult CreatePessoaJuridica([FromBody] PessoaJuridicaRequestCreateDto createDto)
         {
+            if (createDto is null)
+                return BadRequest(
+                    new
+                    {
+                        Message = "Os dados da Pessoa Jurídica são obrigatórios.",
+                    });
+
             try
             {
                 var data = this._service.SaveData(
                     createDto);
 
-                return new ApiResponseDto<PessoaJuridicaResponseDto>
-                {
-                    Data = data,
-                    Success = true,
-                    StatusCode = HttpStatusCode.Created,
-                };
+                return CreatedAtAction(
+                    nameof(
+                        this.GetPessoaJuridica),
+                    new
+                    {
+                        guid = data.Guid,
+                    },
+                    data);
             }
             catch (Exception ex)
             {
-                return new ApiResponseDto<PessoaJuridicaResponseDto>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        ex.Message,
+                    });
             }
         }
 
         /// <summary>
-        /// 
+        /// Updates the data of an existing legal entity.
         /// </summary>
-        /// <param name="updateDto"></param>
-        /// <returns></returns>
-        [HttpPut]
-        public ApiResponseDto<PessoaJuridicaResponseDto> UpdatePessoaJuridica([FromBody] PessoaJuridicaRequestUpdateDto updateDto)
+        /// <remarks>
+        /// This operation replaces the existing data of the specified legal entity
+        /// with the values provided in the request body. The GUID in the route is used
+        /// to identify the entity to update.
+        /// </remarks>
+        /// <param name="guid">Unique identifier (GUID) of the legal entity to be updated.</param>
+        /// <param name="updateDto">Updated data of the legal entity.</param>
+        /// <returns>Data of the updated legal entity.</returns>
+        /// <response code="200">Legal entity successfully updated.</response>
+        /// <response code="400">Invalid data or malformed request.</response>
+        /// <response code="404">Legal entity not found.</response>
+        /// <response code="500">Internal server error.</response>
+        [HttpPut("{guid}")]
+        [ProducesResponseType(typeof(PessoaFisicaResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult UpdatePessoaJuridica(Guid guid, [FromBody] PessoaJuridicaRequestUpdateDto updateDto)
         {
+            if (updateDto is null)
+                return BadRequest(
+                    new
+                    {
+                        Message = "Os dados da Pessoa Jurídica são obrigatórios.",
+                    });
+
             try
             {
-                updateDto.Guid = (Guid)updateDto.Guid;
+                var data = this._service.Get(
+                    guid);
 
-                var data = this._service.SaveData(
+                if (data is null)
+                    return NotFound(
+                        new
+                        {
+                            Message = $"Pessoa Jurídica {guid} não encontrada.",
+                        });
+
+                updateDto.Guid = guid;
+
+                data = this._service.SaveData(
                     updateDto: updateDto);
 
-                return new ApiResponseDto<PessoaJuridicaResponseDto>
-                {
-                    Data = data,
-                    Success = true,
-                    StatusCode = HttpStatusCode.NoContent,
-                };
+                return Ok(
+                    data);
             }
             catch (Exception ex)
             {
-                return new ApiResponseDto<PessoaJuridicaResponseDto>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        ex.Message,
+                    });
             }
         }
     }
