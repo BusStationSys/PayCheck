@@ -21,23 +21,6 @@
 
         private bool _disposedValue = false;
 
-        public WebApiHelper(string requestUri)
-        {
-            this._httpClient = new HttpClient();
-
-            this._requestUri = requestUri;
-        }
-
-        public WebApiHelper(string requestUri, string username, string password)
-        {
-            this._httpClient = new HttpClient();
-
-            this._requestUri = requestUri;
-
-            this._username = username;
-            this._password = password;
-        }
-
         public WebApiHelper(string requestUri, string token)
         {
             this._httpClient = new HttpClient();

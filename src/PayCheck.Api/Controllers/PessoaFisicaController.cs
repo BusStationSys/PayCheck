@@ -157,14 +157,32 @@
         /// <response code="200">Returns the list of individuals with birthdays.</response>
         /// <response code="404">No individuals with birthdays found.</response>
         /// <response code="500">Internal server error.</response>
-        [HttpGet("getAniversariantes/{periodoInicialString}/{periodoFinalString}")]
+        [HttpGet("aniversariantes")]
         [ProducesResponseType(typeof(IEnumerable<PessoaFisicaResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetAniversariantes(string periodoInicialString, string periodoFinalString)
+        public IActionResult GetAniversariantes(
+            [FromQuery] string periodoInicialString,
+            [FromQuery] string periodoFinalString)
         {
             try
             {
+                //  Validação dos parâmetros.
+                if (string.IsNullOrWhiteSpace(periodoInicialString) ||
+                    string.IsNullOrWhiteSpace(periodoFinalString))
+                    return BadRequest(
+                        new
+                        {
+                            Message = $"Os parâmetros {nameof(periodoInicialString)} e {nameof(periodoFinalString)} são obrigatórios.",
+                        });
+
+                //if (!IsValidMonthDay(periodoInicialString) || !IsValidMonthDay(periodoFinalString))
+                //    return BadRequest(
+                //        new 
+                //        { 
+                //            Message = "Formato de data inválido. Use o formato MM-dd (ex: 01-15).",
+                //        });
+
                 var data = this._service.GetAniversariantes(
                     periodoInicialString,
                     periodoFinalString);
@@ -299,6 +317,18 @@
                         ex.Message,
                     });
             }
+        }
+
+        private static bool IsValidMonthDay(string value)
+        {
+            // Formato esperado: MM-dd (ex: 01-15, 12-31)
+            if (value.Length != 5 || value[2] != '-')
+                return false;
+
+            return int.TryParse(value[..2], out int month)
+                && int.TryParse(value[3..], out int day)
+                && month >= 1 && month <= 12
+                && day >= 1 && day <= 31;
         }
     }
 }

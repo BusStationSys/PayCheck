@@ -17,6 +17,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
+    using PayCheck.Web.Infrastructure.Http.Interfaces;
     using PayCheck.Web.Models;
 
     public class AccessController : Controller
@@ -25,61 +26,86 @@
 
         private readonly IEmailService _emailService;
 
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientService _httpClientService;
 
         private readonly Mapper _mapper;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AccessController"/> class.
+        /// /// Initializes a new instance of the <see cref="AccessController"/> class.
         /// </summary>
-        /// <param name="emailService"></param>
-        /// <param name="externalApis"></param>
-        public AccessController(IEmailService emailService, IOptions<ExternalApis> externalApis)
+        /// <param name="emailService">The email service.</param>
+        /// <param name="httpClientService">The HTTP client service.</param>
+        /// <exception cref="Exception"></exception>
+        public AccessController(IEmailService emailService, IHttpClientService httpClientService)
         {
-            //this._baseAddress = new(
-            //    externalApis.Value.PayCheck);
-
             var mapperConfiguration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<LoginRequestDto, LoginViewModel>().ReverseMap();
             });
 
             this._mapper = new Mapper(
-                 mapperConfiguration);
+                mapperConfiguration);
 
-            Uri baseAddress = new(
-                externalApis.Value.PayCheck);
+            this._httpClientService = httpClientService;
 
-            this._httpClient = new HttpClient
+            //using (var webApiHelper = new WebApiHelper(
+            //        "auth",
+            //    "arvtech",
+            //    "(@rV73Ch)"))
+            //{
+            //    var authDto = new AuthRequestDto
+            //    {
+            //        Username = "arvtech",
+            //        Password = "(@rV73Ch)",
+            //    };
+
+            //    string authDtoJson = JsonConvert.SerializeObject(authDto,
+            //        Formatting.None,
+            //        new JsonSerializerSettings
+            //        {
+            //            NullValueHandling = NullValueHandling.Ignore,
+            //        });
+
+            //    authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
+            //        authDtoJson);
+
+            //    var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
+            //        authDtoJson);
+
+            //    this._tokenBearer = authResponse.Token;
+            //}
+
+            var authDto = new AuthRequestDto
             {
-                BaseAddress = baseAddress,
+                Username = "arvtech",
+                Password = "(@rV73Ch)"
             };
 
-            using (var webApiHelper = new WebApiHelper(
-                string.Concat(
-                    baseAddress,
-                    "/auth"),
-                "arvtech",
-                "(@rV73Ch)"))
-            {
-                var authDto = new AuthRequestDto
+            var json = JsonConvert.SerializeObject(
+                authDto,
+                Formatting.None,
+                new JsonSerializerSettings
                 {
-                    Username = "arvtech",
-                    Password = "(@rV73Ch)",
-                };
+                    NullValueHandling = NullValueHandling.Ignore
+                });
 
-                string authDtoJson = JsonConvert.SerializeObject(authDto,
-                    Formatting.None,
-                    new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore,
-                    });
+            // 🔐 Basic Auth (igual ao que o WebApiHelper fazia)
+            this._httpClientService.SetBasicAuthentication("arvtech", "(@rV73Ch)");
 
-                authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
-                    authDtoJson);
+            using (var httpResponseMessage = this._httpClientService.ExecuteAsync(
+                HttpMethod.Post,
+                "auth",
+                json).GetAwaiter().GetResult())
+            {
+                if (!httpResponseMessage.IsSuccessStatusCode)
+                    throw new Exception("Erro ao autenticar.");
 
-                var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
-                    authDtoJson);
+                var responseJson = httpResponseMessage.Content
+                    .ReadAsStringAsync()
+                    .GetAwaiter()
+                    .GetResult();
+
+                var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(responseJson);
 
                 this._tokenBearer = authResponse.Token;
             }
@@ -213,7 +239,7 @@
 
                 var usuarioResponse = default(UsuarioResponseDto);
 
-                string requestUri = @$"{this._httpClient.BaseAddress}/Usuario/{usuarioUpdateDto.Guid:N}";
+                string requestUri = @$"Usuario/{usuarioUpdateDto.Guid:N}";
 
                 using (var webApiHelper = new WebApiHelper(
                     requestUri,
@@ -446,31 +472,44 @@ A Equipe de Suporte PayCheck®.";
             var loginDto = this._mapper.Map<LoginRequestDto>(
                 vm);
 
-            string requestUri = @$"{this._httpClient.BaseAddress}/Usuario";
+            string requestUri = "Usuario";
 
             string fromBodyString = JsonConvert.SerializeObject(
                 loginDto,
                 Formatting.Indented);
 
-            //  string fromBodyString = JsonConvert.SerializeObject(loginDto,
-            //        Formatting.None,
-            //      new JsonSerializerSettings
-            //      {
-            //          NullValueHandling = NullValueHandling.Ignore,
-            //      });
-
             var apiResponseDto = default(ApiResponseDto<UsuarioResponseDto>);
 
-            using (var webApiHelper = new WebApiHelper(
-                requestUri,
-                this._tokenBearer))
-            {
-                fromBodyString = webApiHelper.ExecutePostWithAuthenticationByBearer(
-                    fromBodyString);
+            //using (var webApiHelper = new WebApiHelper(
+            //    requestUri,
+            //    this._tokenBearer))
+            //{
+            //    fromBodyString = webApiHelper.ExecutePostWithAuthenticationByBearer(
+            //        fromBodyString);
 
-                if (fromBodyString.IsValidJson())
-                    apiResponseDto = JsonConvert.DeserializeObject<ApiResponseDto<UsuarioResponseDto>>(
-                        fromBodyString);
+            //    if (fromBodyString.IsValidJson())
+            //        apiResponseDto = JsonConvert.DeserializeObject<ApiResponseDto<UsuarioResponseDto>>(
+            //            fromBodyString);
+            //}
+
+            this._httpClientService.SetBearerAuthentication(
+                this._tokenBearer);
+
+            using (var httpResponseMessage = await _httpClientService.ExecuteAsync(
+                HttpMethod.Post,
+                requestUri,
+                fromBodyString))
+            {
+                if (!httpResponseMessage.IsSuccessStatusCode)
+                    return StatusCode((int)httpResponseMessage.StatusCode);
+
+                var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
+
+                if (responseJson.IsValidJson())
+                {
+                    apiResponseDto = JsonConvert.DeserializeObject<
+                        ApiResponseDto<UsuarioResponseDto>>(responseJson);
+                }
             }
 
             if (apiResponseDto != null &&

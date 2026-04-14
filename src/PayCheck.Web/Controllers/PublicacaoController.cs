@@ -8,8 +8,8 @@
     using AutoMapper;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
+    using PayCheck.Web.Infrastructure.Http.Interfaces;
     using PayCheck.Web.Models;
 
     [Authorize]
@@ -17,21 +17,16 @@
     {
         private readonly string _tokenBearer;
 
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientService _httpClientService;
 
         private readonly Mapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PublicacaoController"/> class.
         /// </summary>
-        /// <param name="externalApis"></param>
-        public PublicacaoController(IOptions<ExternalApis> externalApis)
+        /// <param name="httpClientService">The HTTP client service.</param>
+        public PublicacaoController(IHttpClientService httpClientService)
         {
-            var externalApisValue = externalApis.Value;
-
-            Uri baseAddress = new(
-                externalApisValue.PayCheck);
-
             var mapperConfiguration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<PublicacaoRequestCreateDto, PublicacaoResponseDto>().ReverseMap();
@@ -45,36 +40,68 @@
             this._mapper = new Mapper(
                 mapperConfiguration);
 
-            this._httpClient = new HttpClient
+            this._httpClientService = httpClientService;
+
+            //using (var webApiHelper = new WebApiHelper(
+            //    string.Concat(
+            //        baseAddress,
+            //        "/auth"),
+            //    "arvtech",
+            //    "(@rV73Ch)"))
+            //{
+            //    var authDto = new AuthRequestDto
+            //    {
+            //        Username = "arvtech",
+            //        Password = "(@rV73Ch)",
+            //    };
+
+            //    string authDtoJson = JsonConvert.SerializeObject(authDto,
+            //        Formatting.None,
+            //        new JsonSerializerSettings
+            //        {
+            //            NullValueHandling = NullValueHandling.Ignore,
+            //        });
+
+            //    authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
+            //        authDtoJson);
+
+            //    var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
+            //        authDtoJson);
+
+            //    this._tokenBearer = authResponse.Token;
+            //}
+
+            var authDto = new AuthRequestDto
             {
-                BaseAddress = baseAddress,
+                Username = "arvtech",
+                Password = "(@rV73Ch)"
             };
 
-            using (var webApiHelper = new WebApiHelper(
-                string.Concat(
-                    baseAddress,
-                    "/auth"),
-                "arvtech",
-                "(@rV73Ch)"))
-            {
-                var authDto = new AuthRequestDto
+            var json = JsonConvert.SerializeObject(
+                authDto,
+                Formatting.None,
+                new JsonSerializerSettings
                 {
-                    Username = "arvtech",
-                    Password = "(@rV73Ch)",
-                };
+                    NullValueHandling = NullValueHandling.Ignore
+                });
 
-                string authDtoJson = JsonConvert.SerializeObject(authDto,
-                    Formatting.None,
-                    new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore,
-                    });
+            // 🔐 Basic Auth (igual ao que o WebApiHelper fazia)
+            this._httpClientService.SetBasicAuthentication("arvtech", "(@rV73Ch)");
 
-                authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
-                    authDtoJson);
+            using (var httpResponseMessage = this._httpClientService.ExecuteAsync(
+                HttpMethod.Post,
+                "auth",
+                json).GetAwaiter().GetResult())
+            {
+                if (!httpResponseMessage.IsSuccessStatusCode)
+                    throw new Exception("Erro ao autenticar.");
 
-                var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
-                    authDtoJson);
+                var responseJson = httpResponseMessage.Content
+                    .ReadAsStringAsync()
+                    .GetAwaiter()
+                    .GetResult();
+
+                var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(responseJson);
 
                 this._tokenBearer = authResponse.Token;
             }
@@ -87,7 +114,7 @@
         [HttpGet()]
         public IActionResult Index()
         {
-            string requestUri = @$"{this._httpClient.BaseAddress}/Publicacao";
+            string requestUri = "Publicacao";
 
             var publicacoes = default(IEnumerable<PublicacaoModel>);
 
@@ -122,7 +149,7 @@
             if (id == null)
                 return NotFound();
 
-            string requestUri = @$"{this._httpClient.BaseAddress}/Publicacao/{id}";
+            string requestUri = @$"Publicacao/{id}";
 
             var publicacao = default(PublicacaoModel);
 
@@ -158,7 +185,7 @@
                 return View(
                     new PublicacaoModel());
 
-            string requestUri = @$"{this._httpClient.BaseAddress}/Publicacao/{id}";
+            string requestUri = @$"Publicacao/{id}";
 
             var publicacao = default(PublicacaoModel);
 
@@ -223,7 +250,7 @@
 
             //  Faz a validação da Imagem.
             if (string.IsNullOrEmpty(
-                model.NomeImagem) || 
+                model.NomeImagem) ||
                     images?.Count() == 0)
             {
                 string validateMessage = this.ValidateUpload(
@@ -315,7 +342,7 @@
                             string.Empty);
             }
 
-            string requestUri = @$"{this._httpClient.BaseAddress}/Publicacao";
+            string requestUri = "Publicacao";
 
             string fromBodyString = JsonConvert.SerializeObject(
                 isNew ?
@@ -389,7 +416,7 @@
         [HttpPost()]
         public IActionResult GetDataTable()
         {
-            string requestUri = @$"{this._httpClient.BaseAddress}/Publicacao";
+            string requestUri = "Publicacao";
 
             var publicacoes = default(IEnumerable<PublicacaoModel>);
 
