@@ -1,9 +1,5 @@
 ﻿namespace PayCheck.Web.Controllers;
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Security.Claims;
 using ARVTech.DataAccess.DTOs;
 using ARVTech.DataAccess.DTOs.UniPayCheck;
 using ARVTech.Shared.Extensions;
@@ -15,19 +11,26 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PayCheck.Web.Infrastructure.Http.Interfaces;
 using PayCheck.Web.Models;
+using PayCheck.Web.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Security.Claims;
 
 [Authorize]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
 
-    private readonly string _tokenBearer;
+    //  private readonly string _tokenBearer;
 
     private readonly IHttpClientService _httpClientService;
 
+    private readonly IAuthService _authService;
+
     private readonly Mapper _mapper;
 
-    public HomeController(ILogger<HomeController> logger, IHttpClientService httpClientService)
+    public HomeController(ILogger<HomeController> logger, IHttpClientService httpClientService, IAuthService authService)
     {
         this._logger = logger;
 
@@ -46,67 +49,42 @@ public class HomeController : Controller
 
         this._httpClientService = httpClientService;
 
-        //using (var webApiHelper = new WebApiHelper(
-        //    "auth",
-        //    "arvtech",
-        //    "(@rV73Ch)"))
+        this._authService = authService;
+
+        //var authDto = new AuthRequestDto
         //{
-        //    var authDto = new AuthRequestDto
+        //    Username = "arvtech",
+        //    Password = "(@rV73Ch)"
+        //};
+
+        //var json = JsonConvert.SerializeObject(
+        //    authDto,
+        //    Formatting.None,
+        //    new JsonSerializerSettings
         //    {
-        //        Username = "arvtech",
-        //        Password = "(@rV73Ch)",
-        //    };
+        //        NullValueHandling = NullValueHandling.Ignore
+        //    });
 
-        //    string authDtoJson = JsonConvert.SerializeObject(authDto,
-        //        Formatting.None,
-        //        new JsonSerializerSettings
-        //        {
-        //            NullValueHandling = NullValueHandling.Ignore,
-        //        });
+        //// 🔐 Basic Auth (igual ao que o WebApiHelper fazia)
+        //this._httpClientService.SetBasicAuthentication("arvtech", "(@rV73Ch)");
 
-        //    authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
-        //        authDtoJson);
+        //using (var httpResponseMessage = this._httpClientService.ExecuteAsync(
+        //    HttpMethod.Post,
+        //    "auth",
+        //    json).GetAwaiter().GetResult())
+        //{
+        //    if (!httpResponseMessage.IsSuccessStatusCode)
+        //        throw new Exception("Erro ao autenticar.");
 
-        //    var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
-        //        authDtoJson);
+        //    var responseJson = httpResponseMessage.Content
+        //        .ReadAsStringAsync()
+        //        .GetAwaiter()
+        //        .GetResult();
+
+        //    var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(responseJson);
 
         //    this._tokenBearer = authResponse.Token;
         //}
-
-        var authDto = new AuthRequestDto
-        {
-            Username = "arvtech",
-            Password = "(@rV73Ch)"
-        };
-
-        var json = JsonConvert.SerializeObject(
-            authDto,
-            Formatting.None,
-            new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            });
-
-        // 🔐 Basic Auth (igual ao que o WebApiHelper fazia)
-        this._httpClientService.SetBasicAuthentication("arvtech", "(@rV73Ch)");
-
-        using (var httpResponseMessage = this._httpClientService.ExecuteAsync(
-            HttpMethod.Post,
-            "auth",
-            json).GetAwaiter().GetResult())
-        {
-            if (!httpResponseMessage.IsSuccessStatusCode)
-                throw new Exception("Erro ao autenticar.");
-
-            var responseJson = httpResponseMessage.Content
-                .ReadAsStringAsync()
-                .GetAwaiter()
-                .GetResult();
-
-            var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(responseJson);
-
-            this._tokenBearer = authResponse.Token;
-        }
     }
 
     public IActionResult Index()
@@ -132,11 +110,11 @@ public class HomeController : Controller
             DateTime.Now,
             DateTime.Now);
 
-        ViewData["AniversariantesEmpresa"] = this.LoadAniversariantesEmpresa(
+        ViewData["AniversariantesEmpresa"] = this.LoadAniversariantesEmpresaAsync(
             DateTime.Now.Month);
 
-        ViewData["SobreNos"] = this.LoadSobreNos(
-            DateTime.Now);
+        //ViewData["SobreNos"] = this.LoadSobreNosAsync(
+        //    DateTime.Now);
 
         return View();
     }
@@ -164,87 +142,91 @@ public class HomeController : Controller
 
     private async Task<IEnumerable<dynamic>> LoadAniversariantesAsync(DateTime periodoInicial, DateTime periodoFinal)
     {
+        var pessoasFisicas = default(IEnumerable<PessoaFisicaResponseDto>);
+
+        var tokenBearer = await this._authService.GetTokenAsync();
+
         string periodoInicialString = periodoInicial.ToString("MMdd");
         string periodoFinalString = periodoFinal.ToString("MMdd");
 
-        //  string requestUri = @$"{this._httpClient.BaseAddress}/PessoaFisica/getAniversariantes/{periodoInicialString}/{periodoFinalString}";
-        //  string requestUri = $"{this._httpClientService.BaseAddress}/PessoaFisica/aniversariantes?periodoInicialString={periodoInicialString}&periodoFinalString={periodoFinalString}";
-        string requestUri = $"PessoaFisica/aniversariantes?periodoInicialString={periodoInicialString}&periodoFinalString={periodoFinalString}";
-
-        var pessoasFisicas = default(IEnumerable<PessoaFisicaResponseDto>);
-
         //  Inicia o HttpClientSingleton de consumo da API.
         this._httpClientService.SetBearerAuthentication(
-            this._tokenBearer);
+            tokenBearer);
+
+        string requestUri = $"PessoaFisica/Aniversariantes?periodoInicialString={periodoInicialString}&periodoFinalString={periodoFinalString}";
 
         using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
             HttpMethod.Get,
             requestUri))
         {
             if (httpResponseMessage.IsSuccessStatusCode)
-            { 
-            
+            {
+                string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
+
+                //if (dataJson.IsValidJson())
+                //{
+                //    matriculas = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaResponseDto>>>(
+                //        dataJson).Data;
+                //}
             }
         }
 
-        //        using (var webApiHelper = new WebApiHelper(
-        //    requestUri,
-        //    this._tokenBearer))
-        //{
-        //    string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
-
-        //    if (dataJson.IsValidJson())
-        //        pessoasFisicas = JsonConvert.DeserializeObject<IEnumerable<PessoaFisicaResponseDto>>(
-        //            dataJson);
-        //}
-
         if (pessoasFisicas is null ||
-            pessoasFisicas.Count() == 0)
+            !pessoasFisicas.Any())
             return Enumerable.Empty<dynamic>();
 
         var aniversariantes = from aniversariante in pessoasFisicas
-                                where aniversariante.DataNascimento != null
-                                select new
-                                {
-                                    aniversariante.Guid,
-                                    aniversariante.Nome,
-                                    DataNascimentoOrdenado = Convert.ToDateTime(
-                                        aniversariante.DataNascimento).ToString("MMdd"),
-                                    DataNascimentoString = Convert.ToDateTime(
-                                        aniversariante.DataNascimento).ToString("dd/MM"),
-                                    Indice = Convert.ToDouble(
-                                        Math.Round(
-                                            (Convert.ToDateTime(
-                                                Convert.ToDateTime(
-                                                    aniversariante.DataNascimento).ToString("dd/MM") + "/" + DateTime.Now.Year) - DateTime.Now).TotalDays, 2)),
-                                };
+                              where aniversariante.DataNascimento != null
+                              select new
+                              {
+                                  aniversariante.Guid,
+                                  aniversariante.Nome,
+                                  DataNascimentoOrdenado = Convert.ToDateTime(
+                                      aniversariante.DataNascimento).ToString("MMdd"),
+                                  DataNascimentoString = Convert.ToDateTime(
+                                      aniversariante.DataNascimento).ToString("dd/MM"),
+                                  Indice = Convert.ToDouble(
+                                      Math.Round(
+                                          (Convert.ToDateTime(
+                                              Convert.ToDateTime(
+                                                  aniversariante.DataNascimento).ToString("dd/MM") + "/" + DateTime.Now.Year) - DateTime.Now).TotalDays, 2)),
+                              };
 
         return aniversariantes.OrderBy(
             a => a.DataNascimentoOrdenado).ThenBy(
                 a => a.Nome).ToList();
     }
 
-    private IEnumerable<dynamic> LoadAniversariantesEmpresa(int mes)
+    private async Task<IEnumerable<dynamic>> LoadAniversariantesEmpresaAsync(int mes)
     {
-        string requestUri = @$"Matricula/getAniversariantesEmpresa/{mes}";
-
         var matriculas = default(IEnumerable<MatriculaResponseDto>);
 
-        using (var webApiHelper = new WebApiHelper(
-            requestUri,
-            this._tokenBearer))
-        {
-            string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+        var tokenBearer = await this._authService.GetTokenAsync();
 
-            if (dataJson.IsValidJson())
+        //  Inicia o HttpClientSingleton de consumo da API.
+        this._httpClientService.SetBearerAuthentication(
+            tokenBearer);
+
+        string requestUri = @$"Matricula/AniversariantesEmpresa/{mes}";
+
+        using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+            HttpMethod.Get,
+            requestUri))
+        {
+            if (httpResponseMessage.IsSuccessStatusCode)
             {
-                matriculas = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaResponseDto>>>(
-                    dataJson).Data;
+                string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
+
+                if (dataJson.IsValidJson())
+                {
+                    matriculas = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaResponseDto>>>(
+                        dataJson).Data;
+                }
             }
         }
 
         if (matriculas is null ||
-            matriculas.Count() == 0)
+            !matriculas.Any())
             return Enumerable.Empty<dynamic>();
 
         var aniversariantes = from aniversarianteEmpresa in matriculas
@@ -265,90 +247,96 @@ public class HomeController : Controller
                               };
 
         return aniversariantes.OrderBy(
-            a => a.DataAdmissaoOrdenada)
-                .ThenByDescending(a => a.DataAdmissao)
-                .ThenBy(a => a.Nome).ToList();
+            a => a.DataAdmissaoOrdenada).ThenByDescending(
+                a => a.DataAdmissao).ThenBy(
+            a => a.Nome).ToList();
     }
 
-    private IEnumerable<dynamic> LoadSobreNos(DateTime dataAtual)
-    {
-        string dataAtualString = dataAtual.ToString("yyyy-MM-dd");
+    //private IEnumerable<dynamic> LoadSobreNosAsync(DateTime dataAtual)
+    //{
+    //    var tokenBearer = this._authService.GetTokenAsync().Result;
 
-        string requestUri = @$"Publicacao/getSobreNos/{dataAtualString}";
+    //    string dataAtualString = dataAtual.ToString("yyyy-MM-dd");
 
-        var publicacoes = default(IEnumerable<PublicacaoResponseDto>);
+    //    string requestUri = @$"Publicacao/getSobreNos/{dataAtualString}";
 
-        using (var webApiHelper = new WebApiHelper(
-            requestUri,
-            this._tokenBearer))
-        {
-            string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+    //    var publicacoes = default(IEnumerable<PublicacaoResponseDto>);
 
-            if (dataJson.IsValidJson())
-            {
-                publicacoes = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PublicacaoResponseDto>>>(
-                    dataJson).Data;
-            }
-        }
+    //    using (var webApiHelper = new WebApiHelper(
+    //        requestUri,
+    //        tokenBearer))
+    //    {
+    //        string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-        if (publicacoes != null &&
-            publicacoes.Count() > 0)
-        {
-            var sobreNos = from sn in publicacoes
-                           select new
-                           {
-                               sn.Id,
-                               sn.Resumo,
-                               sn.Titulo,
-                               sn.Texto,
-                               sn.ConteudoImagem,
-                               sn.ExtensaoImagem,
-                           };
+    //        if (dataJson.IsValidJson())
+    //        {
+    //            publicacoes = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PublicacaoResponseDto>>>(
+    //                dataJson).Data;
+    //        }
+    //    }
 
-            return sobreNos.ToList();
-        }
+    //    if (publicacoes != null &&
+    //        publicacoes.Count() > 0)
+    //    {
+    //        var sobreNos = from sn in publicacoes
+    //                       select new
+    //                       {
+    //                           sn.Id,
+    //                           sn.Resumo,
+    //                           sn.Titulo,
+    //                           sn.Texto,
+    //                           sn.ConteudoImagem,
+    //                           sn.ExtensaoImagem,
+    //                       };
 
-        return Enumerable.Empty<dynamic>();
-    }
+    //        return sobreNos.ToList();
+    //    }
 
-    public IActionResult SobreNos(int? id)
-    {
-        if (id is null)
-            return NotFound();
+    //    return Enumerable.Empty<dynamic>();
+    //}
 
-        string requestUri = @$"Publicacao/{id}";
+    //public async Task<IActionResult> SobreNos(int? id)
+    //{
+    //    if (id is null)
+    //        return NotFound();
 
-        var publicacao = default(PublicacaoModel);
+    //    var tokenBearer = await this._authService.GetTokenAsync();
 
-        using (var webApiHelper = new WebApiHelper(
-            requestUri,
-            this._tokenBearer))
-        {
-            string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+    //    string requestUri = @$"Publicacao/{id}";
 
-            if (dataJson.IsValidJson())
-            {
-                var data = JsonConvert.DeserializeObject<ApiResponseDto<PublicacaoResponseDto>>(
-                    dataJson).Data;
+    //    var publicacao = default(PublicacaoModel);
 
-                publicacao = this._mapper.Map<PublicacaoModel>(
-                    data);
-            }
-        }
+    //    using (var webApiHelper = new WebApiHelper(
+    //        requestUri,
+    //        tokenBearer))
+    //    {
+    //        string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-        return View(
-            publicacao);
-    }
+    //        if (dataJson.IsValidJson())
+    //        {
+    //            var data = JsonConvert.DeserializeObject<ApiResponseDto<PublicacaoResponseDto>>(
+    //                dataJson).Data;
+
+    //            publicacao = this._mapper.Map<PublicacaoModel>(
+    //                data);
+    //        }
+    //    }
+
+    //    return View(
+    //        publicacao);
+    //}
 
     public IActionResult RenderImage(int id)
     {
+        var tokenBearer = this._authService.GetTokenAsync().Result;
+
         string requestUri = @$"Publicacao/getImage/{id}";
 
         var publicacao = default(PublicacaoResponseDto);
 
         using (var webApiHelper = new WebApiHelper(
             requestUri,
-            this._tokenBearer))
+            tokenBearer))
         {
             string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 

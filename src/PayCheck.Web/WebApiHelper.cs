@@ -1,20 +1,15 @@
 ﻿namespace PayCheck.Web
 {
     using System;
-    using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
-    using ARVTech.Shared;
-    using Newtonsoft.Json;
 
     public class WebApiHelper : IDisposable
     {
         private readonly HttpClient _httpClient;
 
         private readonly string _requestUri;
-        private readonly string _username;
-        private readonly string _password;
         private readonly string _token;
 
         public readonly string _mediaTypes = @"application/json";
@@ -28,108 +23,6 @@
             this._requestUri = requestUri;
 
             this._token = token;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public string ExecuteGetWithoutAuthentication()
-        {
-            try
-            {
-                using (var httpRequestMessage = new HttpRequestMessage(
-                    HttpMethod.Get,
-                    this._requestUri))
-                {
-                    httpRequestMessage.Headers.Clear();
-
-                    using (var httpResponseMessage = this._httpClient.SendAsync(
-                        httpRequestMessage).Result)
-                    {
-                        var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
-
-                        try
-                        {
-                            httpResponseMessage.EnsureSuccessStatusCode();
-                        }
-                        catch
-                        {
-                            throw new Exception(
-                                string.Concat(
-                                    Convert.ToInt16(
-                                        httpResponseMessage.StatusCode),
-                                    " ",
-                                    httpResponseMessage.ReasonPhrase,
-                                    " ",
-                                    details));
-                        }
-
-                        return details;
-                    }
-                }
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public string ExecuteGetWithAuthenticationByBasic()
-        {
-            try
-            {
-                using (var httpRequestMessage = new HttpRequestMessage(
-                    HttpMethod.Get,
-                    this._requestUri))
-                {
-                    httpRequestMessage.Headers.Clear();
-
-                    httpRequestMessage.Headers.Accept.Add(
-                        new MediaTypeWithQualityHeaderValue(
-                            this._mediaTypes));
-
-                    httpRequestMessage.Headers.Add(
-                        "Authorization",
-                        $"Basic {Common.GetTokenBase64Encode(this._username, this._password)}");
-
-                    httpRequestMessage.Headers.Add(
-                        "Accept",
-                        "*/*");
-
-                    using (var httpResponseMessage = this._httpClient.SendAsync(
-                        httpRequestMessage).Result)
-                    {
-                        var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
-
-                        try
-                        {
-                            httpResponseMessage.EnsureSuccessStatusCode();
-                        }
-                        catch
-                        {
-                            throw new Exception(
-                                string.Concat(
-                                    Convert.ToInt16(
-                                        httpResponseMessage.StatusCode),
-                                    " ",
-                                    httpResponseMessage.ReasonPhrase,
-                                    " ",
-                                    details));
-                        }
-
-                        return details;
-                    }
-                }
-            }
-            catch
-            {
-                throw;
-            }
         }
 
         /// <summary>
@@ -157,71 +50,6 @@
                     httpRequestMessage.Headers.Add(
                         "Authorization",
                         $"Bearer {this._token}");
-
-                    using (var httpResponseMessage = this._httpClient.SendAsync(
-                        httpRequestMessage).Result)
-                    {
-                        var details = httpResponseMessage.Content.ReadAsStringAsync().Result;
-
-                        try
-                        {
-                            httpResponseMessage.EnsureSuccessStatusCode();
-                        }
-                        catch
-                        {
-                            throw new Exception(
-                                string.Concat(
-                                    Convert.ToInt16(
-                                        httpResponseMessage.StatusCode),
-                                    " ",
-                                    httpResponseMessage.ReasonPhrase,
-                                    " ",
-                                    details));
-                        }
-
-                        return details;
-                    }
-                }
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="content"></param>
-        /// <returns></returns>
-        public string ExecutePostWithAuthenticationByBasic(string content)
-        {
-            try
-            {
-                using (var httpRequestMessage = new HttpRequestMessage(
-                    HttpMethod.Post,
-                    this._requestUri))
-                {
-                    httpRequestMessage.Headers.Clear();
-
-                    httpRequestMessage.Headers.Accept.Add(
-                        new MediaTypeWithQualityHeaderValue(
-                            this._mediaTypes));
-
-                    httpRequestMessage.Headers.Add(
-                        "Authorization",
-                        $"Basic {Common.GetTokenBase64Encode(this._username, this._password)}");
-
-                    httpRequestMessage.Headers.Add(
-                        "Accept",
-                        "*/*");
-
-                    var stringContent = new StringContent(
-                        content,
-                        Encoding.UTF8,
-                        this._mediaTypes);
-
-                    httpRequestMessage.Content = stringContent;
 
                     using (var httpResponseMessage = this._httpClient.SendAsync(
                         httpRequestMessage).Result)
@@ -381,111 +209,6 @@
                 throw;
             }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public string ExecutePostWithoutAuthentication()
-        {
-            try
-            {
-                // Inclui o cabeçalho Accept que será enviado na requisição.
-                this._httpClient.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(
-                        this._mediaTypes));
-
-                //  Limpa o Header.
-                this._httpClient.DefaultRequestHeaders.Accept.Clear();
-
-                // Envio da requisição a fim de autenticar e obter o token de acesso.
-                var httpResponseMessage = this._httpClient.PostAsync(
-                    this._requestUri,
-                    null).Result;
-
-                if (httpResponseMessage.StatusCode == HttpStatusCode.OK)
-                {
-                    // Obtém o Token Gerado.
-                    return httpResponseMessage.Content.ReadAsStringAsync().Result;
-
-                    ////deserializa o token e data de expiração para o objeto Token
-                    //Token token = JsonConvert.DeserializeObject<Token>(conteudo);
-
-                    //// Associar o token aos headers do objeto
-                    //// do tipo HttpClient
-                    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
-                }
-                else
-                {
-                    throw new Exception(httpResponseMessage.StatusCode.ToString());
-                }
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        #region [ Métodos Assíncronos ]
-        public async Task<T> ExecuteGetWithAuthenticationByBearerAsync<T>()
-        {
-            using (var httpRequestMessage = new HttpRequestMessage(
-                HttpMethod.Get,
-                this._requestUri))
-            {
-                httpRequestMessage.Headers.Clear();
-
-                httpRequestMessage.Headers.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(
-                        this._mediaTypes));
-
-                httpRequestMessage.Headers.Add(
-                    "Accept",
-                    "*/*");
-
-                httpRequestMessage.Headers.Add(
-                    "Authorization",
-                    $"Bearer {this._token}");
-
-                using (var httpResponseMessage = await this._httpClient.SendAsync(
-                    httpRequestMessage))
-                {
-                    var details = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    try
-                    {
-                        httpResponseMessage.EnsureSuccessStatusCode();
-                    }
-                    catch
-                    {
-                        throw new Exception(
-                            string.Concat(
-                                Convert.ToInt16(
-                                    httpResponseMessage.StatusCode),
-                                " | ",
-                                httpResponseMessage.ReasonPhrase,
-                                " | ",
-                                details));
-                    }
-
-                    return JsonConvert.DeserializeObject<T>(
-                        details);
-                }
-            }
-
-            //using (var _response = await _httpClient.GetAsync(requestUri))
-            //{
-            //    if (!_response.IsSuccessStatusCode)
-            //    {
-            //        //if (_response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-            //        //    throw new InvalidOperationException("Acesso negado, você precisa estar autenticado para realizar essa requisição.");
-            //        throw new InvalidOperationException("Falha na execução HTTP/GET.");
-            //    }
-            //    var _result = await _response.Content.ReadAsStringAsync();
-            //    return JsonConvert.DeserializeObject<T>(_result);
-            //}
-        }
-        #endregion
 
         protected virtual void Dispose(bool disposing)
         {

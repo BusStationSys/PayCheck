@@ -4,6 +4,8 @@ using Microsoft.Extensions.Options;
 using PayCheck.Web;
 using PayCheck.Web.Infrastructure.Http;
 using PayCheck.Web.Infrastructure.Http.Interfaces;
+using PayCheck.Web.Services;
+using PayCheck.Web.Services.Interfaces;
 using System.Net;
 using System.Net.Http.Headers;
 
@@ -80,6 +82,8 @@ builder.Services.AddTransient<IEmailService>(
         mailSettings.SenderEmail,
         mailSettings.Username,
         mailSettings.Password));
+
+builder.Services.AddSingleton<IAuthService, AuthService>();
 
 var app = builder.Build();
 

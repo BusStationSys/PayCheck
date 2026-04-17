@@ -157,7 +157,7 @@
         /// <response code="200">Returns the list of individuals with birthdays.</response>
         /// <response code="404">No individuals with birthdays found.</response>
         /// <response code="500">Internal server error.</response>
-        [HttpGet("aniversariantes")]
+        [HttpGet("Aniversariantes")]
         [ProducesResponseType(typeof(IEnumerable<PessoaFisicaResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

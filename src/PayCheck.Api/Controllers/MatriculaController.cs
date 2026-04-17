@@ -138,7 +138,7 @@
         /// 
         /// </summary>
         /// <returns></returns>
-        [HttpGet("getAniversariantesEmpresa/{mes}")]
+        [HttpGet("AniversariantesEmpresa/{mes}")]
         public ApiResponseDto<IEnumerable<MatriculaResponseDto>> GetAniversariantesEmpresa(int mes)
         {
             try

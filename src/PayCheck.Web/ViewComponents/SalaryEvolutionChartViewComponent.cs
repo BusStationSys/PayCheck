@@ -9,12 +9,13 @@
     using Newtonsoft.Json;
     using PayCheck.Web.Infrastructure.Http.Interfaces;
     using PayCheck.Web.Models;
+    using PayCheck.Web.Services.Interfaces;
 
     public class SalaryEvolutionChartViewComponent : ViewComponent
     {
-        private readonly string _tokenBearer;
-
         private readonly IHttpClientService _httpClientService;
+
+        private readonly IAuthService _authService;
 
         private readonly Mapper _mapper;
 
@@ -22,8 +23,9 @@
         /// Initializes a new instance of the <see cref="SalaryEvolutionChartViewComponent"/> class.
         /// </summary>
         /// <param name="httpClientService">The HTTP client service.</param>
+        /// <param name="authService">The authentication service.</param>
         /// <exception cref="Exception"></exception>
-        public SalaryEvolutionChartViewComponent(IHttpClientService httpClientService)
+        public SalaryEvolutionChartViewComponent(IHttpClientService httpClientService, IAuthService authService)
         {
             var mapperConfiguration = new MapperConfiguration(cfg =>
             {
@@ -39,72 +41,20 @@
 
             this._httpClientService = httpClientService;
 
-            //using (var webApiHelper = new WebApiHelper(
-            //    string.Concat(
-            //        this._baseAddress,
-            //        "/auth"),
-            //    "arvtech",
-            //    "(@rV73Ch)"))
-            //{
-            //    var authDto = new AuthRequestDto
-            //    {
-            //        Username = "arvtech",
-            //        Password = "(@rV73Ch)",
-            //    };
-
-            //    string authDtoJson = JsonConvert.SerializeObject(authDto,
-            //        Formatting.None,
-            //        new JsonSerializerSettings
-            //        {
-            //            NullValueHandling = NullValueHandling.Ignore,
-            //        });
-
-            //    authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
-            //        authDtoJson);
-
-            //    var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
-            //        authDtoJson);
-
-            //    this._tokenBearer = authResponse.Token;
-            //}
-
-            var authDto = new AuthRequestDto
-            {
-                Username = "arvtech",
-                Password = "(@rV73Ch)"
-            };
-
-            var json = JsonConvert.SerializeObject(
-                authDto,
-                Formatting.None,
-                new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
-
-            // 🔐 Basic Auth (igual ao que o WebApiHelper fazia)
-            this._httpClientService.SetBasicAuthentication("arvtech", "(@rV73Ch)");
-
-            using (var httpResponseMessage = this._httpClientService.ExecuteAsync(
-                HttpMethod.Post,
-                "auth",
-                json).GetAwaiter().GetResult())
-            {
-                if (!httpResponseMessage.IsSuccessStatusCode)
-                    throw new Exception("Erro ao autenticar.");
-
-                var responseJson = httpResponseMessage.Content
-                    .ReadAsStringAsync()
-                    .GetAwaiter()
-                    .GetResult();
-
-                var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(responseJson);
-
-                this._tokenBearer = authResponse.Token;
-            }
+            this._authService = authService;
         }
 
-        public Task<IViewComponentResult> InvokeAsync()
+        /// <summary>
+        /// Invokes the view component asynchronously to retrieve and display the user's salary evolution chart for the
+        /// past six months.
+        /// </summary>
+        /// <remarks>This method retrieves the current user's identifier from the HTTP context, fetches
+        /// salary evolution data for the last six months from an external API, and maps the result to the view model
+        /// for rendering. The method requires the user to be authenticated and may return an empty chart if no data is
+        /// available.</remarks>
+        /// <returns>A task that represents the asynchronous operation. The task result contains an <see
+        /// cref="IViewComponentResult"/> that renders the salary evolution chart view with the relevant data.</returns>
+        public async Task<IViewComponentResult> InvokeAsync()
         {
             ClaimsPrincipal claimsPrincipal = HttpContext.User;
 
@@ -112,24 +62,39 @@
 
             var quantidadeMesesRetroativos = 6;
 
-            string requestUri = @$"DemonstrativoPagamento/GraficoEvolucaoSalarial/{guidUsuario}/{quantidadeMesesRetroativos}";
-
             var graficoEvolucaoSalarialResponse = default(
                 IEnumerable<GraficoEvolucaoSalarialResponseDto>);
 
-            using (var webApiHelper = new WebApiHelper(
-                requestUri,
-                this._tokenBearer))
-            {
-                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+            var tokenBearer = await this._authService.GetTokenAsync();
 
-                if (dataJson.IsValidJson())
-                    graficoEvolucaoSalarialResponse = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>>>(
-                        dataJson).Data;
+            //  Inicia o HttpClientSingleton de consumo da API.
+            this._httpClientService.SetBearerAuthentication(
+                tokenBearer);
+
+            string requestUri = @$"DemonstrativoPagamento/GraficoEvolucaoSalarial/{guidUsuario}/{quantidadeMesesRetroativos}";
+
+            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                HttpMethod.Get,
+                requestUri))
+            {
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    //var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
+
+                    //graficoEvolucaoSalarialResponse = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>>>(
+                    //    responseJson).Data;
+
+                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
+
+                    if (dataJson.IsValidJson())
+                        graficoEvolucaoSalarialResponse = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>>>(
+                            dataJson).Data;
+                }
             }
 
-            return Task.FromResult<IViewComponentResult>(View(
-                this._mapper.Map<IEnumerable<GraficoEvolucaoSalarialViewModel>>(graficoEvolucaoSalarialResponse)));
+            return View(
+                this._mapper.Map<IEnumerable<GraficoEvolucaoSalarialViewModel>>(
+                    graficoEvolucaoSalarialResponse));
         }
     }
 }

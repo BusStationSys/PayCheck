@@ -9,6 +9,7 @@
     using Newtonsoft.Json;
     using PayCheck.Web.Infrastructure.Http.Interfaces;
     using PayCheck.Web.Models;
+    using PayCheck.Web.Services.Interfaces;
 
     public class AlertCenterViewComponent : ViewComponent
     {
@@ -16,10 +17,16 @@
 
         private readonly IHttpClientService _httpClientService;
 
+        private readonly IAuthService _authService;
+
         private readonly Mapper _mapper;
 
-
-        public AlertCenterViewComponent(IHttpClientService httpClientService)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AlertCenterViewComponent"/> class.
+        /// </summary>
+        /// <param name="httpClientService">The service used to perform external HTTP calls required to retrieve alert data.</param>
+        /// <param name="authService">The service responsible for providing authentication information for the current user.</param>
+        public AlertCenterViewComponent(IHttpClientService httpClientService, IAuthService authService)
         {
             var mapperConfiguration = new MapperConfiguration(cfg =>
             {
@@ -45,95 +52,54 @@
 
             this._httpClientService = httpClientService;
 
-            //using (var webApiHelper = new WebApiHelper(
-            //    string.Concat(
-            //        this._baseAddress,
-            //        "/auth"),
-            //    "arvtech",
-            //    "(@rV73Ch)"))
-            //{
-            //    var authDto = new AuthRequestDto
-            //    {
-            //        Username = "arvtech",
-            //        Password = "(@rV73Ch)",
-            //    };
-
-            //    string authDtoJson = JsonConvert.SerializeObject(authDto,
-            //        Formatting.None,
-            //        new JsonSerializerSettings
-            //        {
-            //            NullValueHandling = NullValueHandling.Ignore,
-            //        });
-
-            //    authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
-            //        authDtoJson);
-
-            //    var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
-            //        authDtoJson);
-
-            //    this._tokenBearer = authResponse.Token;
-            //}
-
-            var authDto = new AuthRequestDto
-            {
-                Username = "arvtech",
-                Password = "(@rV73Ch)"
-            };
-
-            var json = JsonConvert.SerializeObject(
-                authDto,
-                Formatting.None,
-                new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
-
-            // 🔐 Basic Auth (igual ao que o WebApiHelper fazia)
-            this._httpClientService.SetBasicAuthentication("arvtech", "(@rV73Ch)");
-
-            using (var httpResponseMessage = this._httpClientService.ExecuteAsync(
-                HttpMethod.Post,
-                "auth",
-                json).GetAwaiter().GetResult())
-            {
-                if (!httpResponseMessage.IsSuccessStatusCode)
-                    throw new Exception("Erro ao autenticar.");
-
-                var responseJson = httpResponseMessage.Content
-                    .ReadAsStringAsync()
-                    .GetAwaiter()
-                    .GetResult();
-
-                var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(responseJson);
-
-                this._tokenBearer = authResponse.Token;
-            }
+            this._authService = authService;
         }
 
-        public Task<IViewComponentResult> InvokeAsync()
+        /// <summary>
+        /// Asynchronously invokes the user notifications view component.
+        /// </summary>
+        /// <remarks>
+        /// This method retrieves notifications for the authenticated user by calling a protected API.
+        /// The user must be authenticated in order for the notifications to be properly retrieved.
+        /// </remarks>
+        /// <returns>
+        /// A view component result that displays the current user's notifications. The result may be empty
+        /// if there are no notifications available.
+        /// </returns>
+        public async Task<IViewComponentResult> InvokeAsync()
         {
             ClaimsPrincipal claimsPrincipal = HttpContext.User;
 
             var guid = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponseDto.Guid)}Usuario").Value;
 
-            string requestUri = @$"Usuario/Notificacoes/{guid}";
-
             var usuarioNotificacaoResponse = default(
                 IEnumerable<UsuarioNotificacaoResponseDto>);
 
-            using (var webApiHelper = new WebApiHelper(
-                requestUri,
-                this._tokenBearer))
-            {
-                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+            var tokenBearer = await this._authService.GetTokenAsync();
 
-                if (dataJson.IsValidJson())
-                    usuarioNotificacaoResponse = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<UsuarioNotificacaoResponseDto>>>(
-                        dataJson).Data;
+            //  Inicia o HttpClientSingleton de consumo da API.
+            this._httpClientService.SetBearerAuthentication(
+                tokenBearer);
+
+            string requestUri = @$"Usuario/Notificacoes/{guid}";
+
+            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                HttpMethod.Get,
+                requestUri))
+            {
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
+
+                    if (dataJson.IsValidJson())
+                        usuarioNotificacaoResponse = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<UsuarioNotificacaoResponseDto>>>(
+                            dataJson).Data;
+                }
             }
 
-            return Task.FromResult<IViewComponentResult>(View(
-                this._mapper.Map<IEnumerable<UsuarioNotificacaoViewModel>>(usuarioNotificacaoResponse)));
+            return View(
+                this._mapper.Map<IEnumerable<UsuarioNotificacaoViewModel>>(
+                    usuarioNotificacaoResponse));
         }
     }
 }
