@@ -1,6 +1,5 @@
 ﻿namespace PayCheck.Web.Controllers
 {
-    using System.Text;
     using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared.Extensions;
@@ -10,6 +9,8 @@
     using Newtonsoft.Json;
     using PayCheck.Web.Infrastructure.Http.Interfaces;
     using PayCheck.Web.Models;
+    using PayCheck.Web.Services.Interfaces;
+    using System.Text;
 
     [Authorize]
     public class EmpregadorController : Controller
@@ -18,13 +19,16 @@
 
         private readonly IHttpClientService _httpClientService;
 
+        private readonly IAuthService _authService;
+
         private readonly Mapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmpregadorController"/> class.
         /// </summary>
         /// <param name="httpClientService">The HTTP client service.</param>
-        public EmpregadorController(IHttpClientService httpClientService)
+        /// <param name="authService">The authentication service.</param>
+        public EmpregadorController(IHttpClientService httpClientService, IAuthService authService)
         {
             var mapperConfiguration = new MapperConfiguration(cfg =>
             {
@@ -59,6 +63,8 @@
 
             this._httpClientService = httpClientService;
 
+            this._authService = authService;
+
             //using (var webApiHelper = new WebApiHelper(
             //    string.Concat(
             //        baseAddress,
@@ -88,40 +94,40 @@
             //    this._tokenBearer = authResponse.Token;
             //}
 
-            var authDto = new AuthRequestDto
-            {
-                Username = "arvtech",
-                Password = "(@rV73Ch)"
-            };
+            //var authDto = new AuthRequestDto
+            //{
+            //    Username = "arvtech",
+            //    Password = "(@rV73Ch)"
+            //};
 
-            var json = JsonConvert.SerializeObject(
-                authDto,
-                Formatting.None,
-                new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
+            //var json = JsonConvert.SerializeObject(
+            //    authDto,
+            //    Formatting.None,
+            //    new JsonSerializerSettings
+            //    {
+            //        NullValueHandling = NullValueHandling.Ignore
+            //    });
 
-            // 🔐 Basic Auth (igual ao que o WebApiHelper fazia)
-            this._httpClientService.SetBasicAuthentication("arvtech", "(@rV73Ch)");
+            //// 🔐 Basic Auth (igual ao que o WebApiHelper fazia)
+            //this._httpClientService.SetBasicAuthentication("arvtech", "(@rV73Ch)");
 
-            using (var httpResponseMessage = this._httpClientService.ExecuteAsync(
-                HttpMethod.Post,
-                "auth",
-                json).GetAwaiter().GetResult())
-            {
-                if (!httpResponseMessage.IsSuccessStatusCode)
-                    throw new Exception("Erro ao autenticar.");
+            //using (var httpResponseMessage = this._httpClientService.ExecuteAsync(
+            //    HttpMethod.Post,
+            //    "auth",
+            //    json).GetAwaiter().GetResult())
+            //{
+            //    if (!httpResponseMessage.IsSuccessStatusCode)
+            //        throw new Exception("Erro ao autenticar.");
 
-                var responseJson = httpResponseMessage.Content
-                    .ReadAsStringAsync()
-                    .GetAwaiter()
-                    .GetResult();
+            //    var responseJson = httpResponseMessage.Content
+            //        .ReadAsStringAsync()
+            //        .GetAwaiter()
+            //        .GetResult();
 
-                var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(responseJson);
+            //    var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(responseJson);
 
-                this._tokenBearer = authResponse.Token;
-            }
+            //    this._tokenBearer = authResponse.Token;
+            //}
         }
 
         /// <summary>
@@ -129,25 +135,34 @@
         /// </summary>
         /// <returns></returns>
         [HttpGet()]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            string requestUri = "PessoaJuridica";
-
             var pessoasJuridicas = default(IEnumerable<PessoaJuridicaModel>);
 
-            using (var webApiHelper = new WebApiHelper(
-                requestUri,
-                this._tokenBearer))
+            var tokenBearer = await this._authService.GetTokenAsync();
+
+            string requestUri = "PessoaJuridica";
+
+            //  Inicia o HttpClientSingleton de consumo da API.
+            this._httpClientService.SetBearerAuthentication(
+                tokenBearer);
+
+            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                HttpMethod.Get,
+                requestUri))
             {
-                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
-
-                if (dataJson.IsValidJson())
+                if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    var data = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>>(
-                        dataJson).Data;
+                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
 
-                    pessoasJuridicas = this._mapper.Map<IEnumerable<PessoaJuridicaModel>>(
-                        data);
+                    if (dataJson.IsValidJson())
+                    {
+                        var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>>(
+                            dataJson).Data;
+
+                        pessoasJuridicas = this._mapper.Map<IEnumerable<PessoaJuridicaModel>>(
+                            source);
+                    }
                 }
             }
 
@@ -161,40 +176,49 @@
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet()]
-        public IActionResult Details(Guid? id)
+        public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)     // Se não encontrar os Dados do Colaborador ou é porque não existe o registro ou é porque está logado como UserMain.
+            if (id is null)     // Se não encontrar os Dados do Colaborador ou é porque não existe o registro ou é porque está logado como UserMain.
                 return RedirectToAction(
                     "Index",
                     "Home");    // Em não existindo o registro, redireciona para a página inicial.
 
-            string requestUri = @$"PessoaJuridica/{id}";
-
             var pessoaJuridica = default(PessoaJuridicaModel);
 
-            using (var webApiHelper = new WebApiHelper(
-                requestUri,
-                this._tokenBearer))
+            var tokenBearer = await this._authService.GetTokenAsync();
+
+            string requestUri = @$"PessoaJuridica/{id}";
+
+            //  Inicia o HttpClientSingleton de consumo da API.
+            this._httpClientService.SetBearerAuthentication(
+                tokenBearer);
+
+            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                HttpMethod.Get,
+                requestUri))
             {
-                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
-
-                if (dataJson.IsValidJson())
+                if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
-                        dataJson).Data;
+                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
 
-                    pessoaJuridica = this._mapper.Map<PessoaJuridicaModel>(
-                        data);
+                    if (dataJson.IsValidJson())
+                    {
+                        var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
+                            dataJson).Data;
 
-                    pessoaJuridica.Bairro = data.Pessoa.Bairro;
-                    pessoaJuridica.Cep = data.Pessoa.Cep;
-                    pessoaJuridica.Cidade = data.Pessoa.Cidade;
-                    pessoaJuridica.Complemento = data.Pessoa.Complemento;
-                    pessoaJuridica.Email = data.Pessoa.Email;
-                    pessoaJuridica.Endereco = data.Pessoa.Endereco;
-                    pessoaJuridica.Numero = data.Pessoa.Numero;
-                    pessoaJuridica.Telefone = data.Pessoa.Telefone;
-                    pessoaJuridica.Uf = data.Pessoa.Uf;
+                        pessoaJuridica = this._mapper.Map<PessoaJuridicaModel>(
+                            data);
+
+                        pessoaJuridica.Bairro = data.Pessoa.Bairro;
+                        pessoaJuridica.Cep = data.Pessoa.Cep;
+                        pessoaJuridica.Cidade = data.Pessoa.Cidade;
+                        pessoaJuridica.Complemento = data.Pessoa.Complemento;
+                        pessoaJuridica.Email = data.Pessoa.Email;
+                        pessoaJuridica.Endereco = data.Pessoa.Endereco;
+                        pessoaJuridica.Numero = data.Pessoa.Numero;
+                        pessoaJuridica.Telefone = data.Pessoa.Telefone;
+                        pessoaJuridica.Uf = data.Pessoa.Uf;
+                    }
                 }
             }
 
@@ -205,42 +229,51 @@
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="guid"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet()]
-        public IActionResult Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
                 return View(
                     new PessoaJuridicaModel());
 
-            string requestUri = @$"PessoaJuridica/{id}";
-
             var pessoaJuridica = default(PessoaJuridicaModel);
 
-            using (var webApiHelper = new WebApiHelper(
-                requestUri,
-                this._tokenBearer))
+            var tokenBearer = await this._authService.GetTokenAsync();
+
+            string requestUri = @$"PessoaJuridica/{id}";
+
+            //  Inicia o HttpClientSingleton de consumo da API.
+            this._httpClientService.SetBearerAuthentication(
+                tokenBearer);
+
+            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                HttpMethod.Get,
+                requestUri))
             {
-                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
-
-                if (dataJson.IsValidJson())
+                if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
-                        dataJson).Data;
+                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
 
-                    pessoaJuridica = this._mapper.Map<PessoaJuridicaModel>(
-                        data);
+                    if (dataJson.IsValidJson())
+                    {
+                        var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
+                            dataJson).Data;
 
-                    pessoaJuridica.Bairro = data.Pessoa.Bairro;
-                    pessoaJuridica.Cep = data.Pessoa.Cep;
-                    pessoaJuridica.Cidade = data.Pessoa.Cidade;
-                    pessoaJuridica.Complemento = data.Pessoa.Complemento;
-                    pessoaJuridica.Email = data.Pessoa.Email;
-                    pessoaJuridica.Endereco = data.Pessoa.Endereco;
-                    pessoaJuridica.Numero = data.Pessoa.Numero;
-                    pessoaJuridica.Telefone = data.Pessoa.Telefone;
-                    pessoaJuridica.Uf = data.Pessoa.Uf;
+                        pessoaJuridica = this._mapper.Map<PessoaJuridicaModel>(
+                            data);
+
+                        pessoaJuridica.Bairro = data.Pessoa.Bairro;
+                        pessoaJuridica.Cep = data.Pessoa.Cep;
+                        pessoaJuridica.Cidade = data.Pessoa.Cidade;
+                        pessoaJuridica.Complemento = data.Pessoa.Complemento;
+                        pessoaJuridica.Email = data.Pessoa.Email;
+                        pessoaJuridica.Endereco = data.Pessoa.Endereco;
+                        pessoaJuridica.Numero = data.Pessoa.Numero;
+                        pessoaJuridica.Telefone = data.Pessoa.Telefone;
+                        pessoaJuridica.Uf = data.Pessoa.Uf;
+                    }
                 }
             }
 
@@ -414,25 +447,34 @@
         /// </summary>
         /// <returns></returns>
         [HttpPost()]
-        public IActionResult GetDataTable()
+        public async Task<IActionResult> GetDataTable()
         {
-            string requestUri = "PessoaJuridica";
-
             var pessoasJuridicas = default(IEnumerable<PessoaJuridicaModel>);
 
-            using (var webApiHelper = new WebApiHelper(
-                requestUri,
-                this._tokenBearer))
+            var tokenBearer = await this._authService.GetTokenAsync();
+
+            //  Inicia o HttpClientSingleton de consumo da API.
+            this._httpClientService.SetBearerAuthentication(
+                tokenBearer);
+
+            string requestUri = "PessoaJuridica";
+
+            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                HttpMethod.Get,
+                requestUri))
             {
-                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
-
-                if (dataJson.IsValidJson())
+                if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>>(
-                        dataJson).Data;
+                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
 
-                    pessoasJuridicas = this._mapper.Map<IEnumerable<PessoaJuridicaModel>>(
-                        source);
+                    if (dataJson.IsValidJson())
+                    {
+                        var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>>(
+                            dataJson).Data;
+
+                        pessoasJuridicas = this._mapper.Map<IEnumerable<PessoaJuridicaModel>>(
+                            source);
+                    }
                 }
             }
 

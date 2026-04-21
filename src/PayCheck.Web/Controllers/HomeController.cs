@@ -326,51 +326,51 @@ public class HomeController : Controller
     //        publicacao);
     //}
 
-    public IActionResult RenderImage(int id)
-    {
-        var tokenBearer = this._authService.GetTokenAsync().Result;
+    //public IActionResult RenderImage(int id)
+    //{
+    //    var tokenBearer = this._authService.GetTokenAsync().Result;
 
-        string requestUri = @$"Publicacao/getImage/{id}";
+    //    string requestUri = @$"Publicacao/getImage/{id}";
 
-        var publicacao = default(PublicacaoResponseDto);
+    //    var publicacao = default(PublicacaoResponseDto);
 
-        using (var webApiHelper = new WebApiHelper(
-            requestUri,
-            tokenBearer))
-        {
-            string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+    //    using (var webApiHelper = new WebApiHelper(
+    //        requestUri,
+    //        tokenBearer))
+    //    {
+    //        string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
 
-            if (dataJson.IsValidJson())
-                publicacao = JsonConvert.DeserializeObject<ApiResponseDto<PublicacaoResponseDto>>(
-                    dataJson).Data;
-        }
+    //        if (dataJson.IsValidJson())
+    //            publicacao = JsonConvert.DeserializeObject<ApiResponseDto<PublicacaoResponseDto>>(
+    //                dataJson).Data;
+    //    }
 
-        if (publicacao != null)
-        {
-            string contentType = "image/png";
+    //    if (publicacao != null)
+    //    {
+    //        string contentType = "image/png";
 
-            if (publicacao.ExtensaoArquivo == "bmp")
-                contentType = "image/bmp";
-            else if (publicacao.ExtensaoArquivo == "gif")
-                contentType = "image/gif";
-            else if (publicacao.ExtensaoArquivo == "jpeg" ||
-                publicacao.ExtensaoArquivo == "jpg")
-                contentType = "image/jpeg";
-            else if (publicacao.ExtensaoArquivo == "svg")
-                contentType = "image/svg+xml";
+    //        if (publicacao.ExtensaoArquivo == "bmp")
+    //            contentType = "image/bmp";
+    //        else if (publicacao.ExtensaoArquivo == "gif")
+    //            contentType = "image/gif";
+    //        else if (publicacao.ExtensaoArquivo == "jpeg" ||
+    //            publicacao.ExtensaoArquivo == "jpg")
+    //            contentType = "image/jpeg";
+    //        else if (publicacao.ExtensaoArquivo == "svg")
+    //            contentType = "image/svg+xml";
 
-            var base64String = Convert.ToBase64String(
-                publicacao.ConteudoImagem);
+    //        var base64String = Convert.ToBase64String(
+    //            publicacao.ConteudoImagem);
 
-            var arrayImage = Convert.FromBase64String(
-                base64String);
+    //        var arrayImage = Convert.FromBase64String(
+    //            base64String);
 
-            return this.File(
-                arrayImage,
-                contentType,
-                publicacao.NomeImagem);
-        }
+    //        return this.File(
+    //            arrayImage,
+    //            contentType,
+    //            publicacao.NomeImagem);
+    //    }
 
-        return null;
-    }
+    //    return null;
+    //}
 }

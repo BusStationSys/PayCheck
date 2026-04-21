@@ -115,8 +115,6 @@
             //    this._tokenBearer = authResponse.Token;
             //}
 
-
-
             this._emailService = emailService;
         }
 
