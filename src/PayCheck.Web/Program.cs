@@ -1,13 +1,14 @@
+using System.Net;
+using System.Net.Http.Headers;
 using ARVTech.Shared.Email;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
 using PayCheck.Web;
+using PayCheck.Web.Controllers;
 using PayCheck.Web.Infrastructure.Http;
 using PayCheck.Web.Infrastructure.Http.Interfaces;
 using PayCheck.Web.Services;
 using PayCheck.Web.Services.Interfaces;
-using System.Net;
-using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,10 @@ builder.Configuration.AddJsonFile(
     $"appsettings.{builder.Environment.EnvironmentName}.json",
     optional: true,
     reloadOnChange: true).AddEnvironmentVariables();
+
+builder.Services.AddAutoMapper(
+    typeof(
+        ColaboradorController));
 
 // Add services to the container.
 builder.Services.AddRazorPages();

@@ -1,5 +1,6 @@
 ﻿namespace PayCheck.Web.Controllers
 {
+    using System;
     using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared.Extensions;
@@ -10,113 +11,37 @@
     using PayCheck.Web.Infrastructure.Http.Interfaces;
     using PayCheck.Web.Models;
     using PayCheck.Web.Services.Interfaces;
-    using System;
-    using System.Text;
 
     [Authorize]
     public class ColaboradorController : Controller
     {
-        private readonly string _tokenBearer;
-
         private readonly IHttpClientService _httpClientService;
 
         private readonly IAuthService _authService;
 
-        private readonly Mapper _mapper;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ColaboradorController"/> class.
         /// </summary>
         /// <param name="httpClientService">The HTTP client service.</param>
         /// <param name="authService">The authentication service.</param>
-        public ColaboradorController(IHttpClientService httpClientService, IAuthService authService)
+        /// <param name="mapper">The AutoMapper instance.</param>
+        public ColaboradorController(IHttpClientService httpClientService, IAuthService authService, IMapper mapper)
         {
-            var mapperConfiguration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<PessoaFisicaRequestCreateDto, PessoaFisicaResponseDto>().ReverseMap();
-                cfg.CreateMap<PessoaFisicaRequestUpdateDto, PessoaFisicaResponseDto>().ReverseMap();
-                cfg.CreateMap<PessoaFisicaRequestCreateDto, PessoaFisicaModel>().ReverseMap();
-                cfg.CreateMap<PessoaFisicaRequestUpdateDto, PessoaFisicaModel>().ReverseMap();
-
-                cfg.CreateMap<PessoaFisicaResponseDto, PessoaFisicaModel>().ReverseMap();
-            });
-
-            this._mapper = new Mapper(
-                mapperConfiguration);
-
             this._httpClientService = httpClientService;
 
             this._authService = authService;
 
-            //using (var webApiHelper = new WebApiHelper(
-            //    string.Concat(
-            //        baseAddress,
-            //        "/auth"),
-            //    "arvtech",
-            //    "(@rV73Ch)"))
-            //{
-            //    var authDto = new AuthRequestDto
-            //    {
-            //        Username = "arvtech",
-            //        Password = "(@rV73Ch)",
-            //    };
-
-            //    string authDtoJson = JsonConvert.SerializeObject(authDto,
-            //        Formatting.None,
-            //        new JsonSerializerSettings
-            //        {
-            //            NullValueHandling = NullValueHandling.Ignore,
-            //        });
-
-            //    authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
-            //        authDtoJson);
-
-            //    var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
-            //        authDtoJson);
-
-            //    this._tokenBearer = authResponse.Token;
-            //}
-
-            //var authDto = new AuthRequestDto
-            //{
-            //    Username = "arvtech",
-            //    Password = "(@rV73Ch)"
-            //};
-
-            //var json = JsonConvert.SerializeObject(
-            //    authDto,
-            //    Formatting.None,
-            //    new JsonSerializerSettings
-            //    {
-            //        NullValueHandling = NullValueHandling.Ignore
-            //    });
-
-            //// 🔐 Basic Auth (igual ao que o WebApiHelper fazia)
-            //this._httpClientService.SetBasicAuthentication("arvtech", "(@rV73Ch)");
-
-            //using (var httpResponseMessage = this._httpClientService.ExecuteAsync(
-            //    HttpMethod.Post,
-            //    "auth",
-            //    json).GetAwaiter().GetResult())
-            //{
-            //    if (!httpResponseMessage.IsSuccessStatusCode)
-            //        throw new Exception("Erro ao autenticar.");
-
-            //    var responseJson = httpResponseMessage.Content
-            //        .ReadAsStringAsync()
-            //        .GetAwaiter()
-            //        .GetResult();
-
-            //    var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(responseJson);
-
-            //    this._tokenBearer = authResponse.Token;
-            //}
+            this._mapper = mapper;
         }
 
         /// <summary>
-        /// 
+        /// Returns the default view for the pessoa física page.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// An <see cref="IActionResult"/> that renders the corresponding view.
+        /// </returns>
         [HttpGet()]
         public IActionResult Index()
         {
@@ -124,57 +49,26 @@
         }
 
         /// <summary>
-        /// 
+        /// Displays the details view for a specific "Pessoa Física".
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <remarks>
+        /// If the identifier is not provided, the user is redirected to the Home/Index page.
+        /// Otherwise, the pessoa física data is loaded and passed to the details view.rvice httpClientService, IAuthService authService, IMapper mapper)
+        /// </remarks>
+        /// <param name="id">The unique identifier of the pessoa física.</param>
+        /// <returns>
+        /// An <see cref="IActionResult"/> that renders the details view or redirects when the identifier is null.
+        /// </returns>
         [HttpGet()]
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id is null)     // Se não encontrar os Dados do Colaborador ou é porque não existe o registro ou é porque está logado como UserMain.
+            if (id is null)
                 return RedirectToAction(
                     "Index",
-                    "Home");    // Em não existindo o registro, redireciona para a página inicial.
+                    "Home");
 
-            var pessoaFisicaViewModel = default(
-                PessoaFisicaModel);
-
-            var tokenBearer = await this._authService.GetTokenAsync();
-
-            //  Inicia o HttpClientSingleton de consumo da API.
-            this._httpClientService.SetBearerAuthentication(
-                tokenBearer);
-
-            string requestUri = @$"PessoaFisica/{id}";
-
-            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
-                HttpMethod.Get,
-                requestUri))
-            {
-                if (httpResponseMessage.IsSuccessStatusCode)
-                {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
-                    {
-                        var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(
-                            dataJson).Data;
-
-                        pessoaFisicaViewModel = this._mapper.Map<PessoaFisicaModel>(
-                            data);
-
-                        pessoaFisicaViewModel.Bairro = data.Pessoa.Bairro;
-                        pessoaFisicaViewModel.Cep = data.Pessoa.Cep;
-                        pessoaFisicaViewModel.Cidade = data.Pessoa.Cidade;
-                        pessoaFisicaViewModel.Complemento = data.Pessoa.Complemento;
-                        pessoaFisicaViewModel.Email = data.Pessoa.Email;
-                        pessoaFisicaViewModel.Endereco = data.Pessoa.Endereco;
-                        pessoaFisicaViewModel.Numero = data.Pessoa.Numero;
-                        pessoaFisicaViewModel.Telefone = data.Pessoa.Telefone;
-                        pessoaFisicaViewModel.Uf = data.Pessoa.Uf;
-                    }
-                }
-            }
+            var pessoaFisicaViewModel = await this.LoadPessoaFisicaAsync(
+                id.Value);
 
             return View(
                 "Details",
@@ -182,10 +76,17 @@
         }
 
         /// <summary>
-        /// 
+        /// Displays the edit view for a "Pessoa Física".
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <remarks>
+        /// If the identifier is null, a new instance is created and passed to the view,
+        /// allowing the creation of a new record. Otherwise, the existing "Pessoa Física"
+        /// data is loaded and provided for editing.
+        /// </remarks>
+        /// <param name="id">The unique identifier of the "Pessoa Física".</param>
+        /// <returns>
+        /// An <see cref="IActionResult"/> that renders the edit view with either a new or existing model.
+        /// </returns>
         [HttpGet()]
         public async Task<IActionResult> Edit(Guid? id)
         {
@@ -193,129 +94,65 @@
                 return View(
                     new PessoaFisicaModel());
 
-            var pessoaFisicaViewModel = default(
-                PessoaFisicaModel);
+            var pessoaFisicaViewModel = await this.LoadPessoaFisicaAsync(
+                id.Value);
 
-            var tokenBearer = await this._authService.GetTokenAsync();
-
-            //  Inicia o HttpClientSingleton de consumo da API.
-            this._httpClientService.SetBearerAuthentication(
-                tokenBearer);
-
-            string requestUri = @$"PessoaFisica/{id}";
-
-            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
-                HttpMethod.Get,
-                requestUri))
-            {
-                if (httpResponseMessage.IsSuccessStatusCode)
-                {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
-                    {
-                        var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(
-                            dataJson).Data;
-
-                        pessoaFisicaViewModel = this._mapper.Map<PessoaFisicaModel>(
-                            data);
-
-                        pessoaFisicaViewModel.Bairro = data.Pessoa.Bairro;
-                        pessoaFisicaViewModel.Cep = data.Pessoa.Cep;
-                        pessoaFisicaViewModel.Cidade = data.Pessoa.Cidade;
-                        pessoaFisicaViewModel.Complemento = data.Pessoa.Complemento;
-                        pessoaFisicaViewModel.Email = data.Pessoa.Email;
-                        pessoaFisicaViewModel.Endereco = data.Pessoa.Endereco;
-                        pessoaFisicaViewModel.Numero = data.Pessoa.Numero;
-                        pessoaFisicaViewModel.Telefone = data.Pessoa.Telefone;
-                        pessoaFisicaViewModel.Uf = data.Pessoa.Uf;
-                    }
-                }
-            }
-
-            return View("Edit",
+            return View(
+                "Edit",
                 pessoaFisicaViewModel);
         }
 
         /// <summary>
-        /// 
+        /// Handles the submission of "Pessoa Física" data for creation or update.
         /// </summary>
-        /// <param name="vm"></param>
-        /// <returns></returns>
+        /// <remarks>
+        /// Validates the incoming model and determines whether the operation is a create or update based on the identifier.
+        /// The data is sanitized, mapped to the appropriate request DTO, and sent to an external API using an authenticated request.
+        /// 
+        /// The API response is validated and deserialized, and success or error messages are assigned to the view accordingly.
+        /// In case of validation failure, the original view model is returned without processing.
+        /// </remarks>
+        /// <param name="vm">The view model containing "Pessoa Física" data.</param>
+        /// <returns>
+        /// An <see cref="IActionResult"/> that returns the view with success or error feedback.
+        /// </returns>
         [HttpPost()]
-        public IActionResult Edit(PessoaFisicaModel vm)
+        public async Task<IActionResult> Edit(PessoaFisicaModel vm)
         {
             ViewBag.ErrorMessage = null;
             ViewBag.SuccessMessage = null;
-            ViewBag.ValidateMessage = null;
 
             if (!ModelState.IsValid)
-            {
-                var errorMessageHtml = new StringBuilder();
+                return View(vm);
 
-                var modelStateErrors = this.ModelState.Keys.OrderBy(x => x).SelectMany(key => this.ModelState[key].Errors);
+            bool isNew = vm.Guid is null || vm.Guid == Guid.Empty;
 
-                if (modelStateErrors != null &&
-                    modelStateErrors.Count() > 0)
-                {
-                    errorMessageHtml.Append("<p></p>");
+            string cpfSanitized = vm.Cpf.Replace(
+                ".",
+                string.Empty).Replace(
+                    "-",
+                    string.Empty);
 
-                    foreach (var modelStateError in modelStateErrors)
-                    {
-                        errorMessageHtml.Append("<p style=\"text-align:justify\">");
-
-                        errorMessageHtml.Append($"- {modelStateError.ErrorMessage}");
-
-                        errorMessageHtml.Append("</p>");
-                    }
-
-                    //errorMessageHtml.Append("<ul class=\"list-group\">");
-
-                    //foreach (var modelStateError in modelStateErrors)
-                    //{
-                    //    errorMessageHtml.Append("<li class=\"list-group-item list-group-item-warning\" style=\"border: none\">");
-
-                    //    errorMessageHtml.Append($"- {modelStateError.ErrorMessage}");
-
-                    //    errorMessageHtml.Append("</li>");
-                    //}
-
-                    //errorMessageHtml.Append("</ul>");
-                }
-
-                ViewBag.ValidateMessage = errorMessageHtml.ToString();
-
-                return View(
-                    vm);
-            }
-
-            bool isNew = false;
-
-            var createDto = default(PessoaFisicaRequestCreateDto);
-            var updateDto = default(PessoaFisicaRequestUpdateDto);
-
-            if (vm.Guid is null ||
-                vm.Guid == Guid.Empty)
-            {
-                isNew = true;
-
-                createDto = this._mapper.Map<PessoaFisicaRequestCreateDto>(
-                    vm);
-
-                createDto.Cpf = createDto.Cpf.Replace(
-                    ".",
-                    "").Replace(
+            string cepSanitized = !string.IsNullOrEmpty(
+                vm.Cep) ?
+                    vm.Cep.Replace(
                         "-",
-                        string.Empty);
+                        string.Empty) :
+                    string.Empty;
+
+            object dto;
+
+            if (isNew)
+            {
+                var createDto = this._mapper.Map<PessoaFisicaRequestCreateDto>(
+                    vm);
+
+                createDto.Cpf = cpfSanitized;
 
                 createDto.Pessoa = new PessoaRequestCreateDto()
                 {
                     Bairro = vm.Bairro,
-
-                    Cep = vm.Cep.Replace(
-                        "-",
-                        string.Empty),
-
+                    Cep = cepSanitized,
                     Cidade = vm.Cidade,
                     Complemento = vm.Complemento,
                     Email = vm.Email,
@@ -324,86 +161,99 @@
                     Telefone = vm.Telefone,
                     Uf = vm.Uf,
                 };
+
+                dto = createDto;
             }
             else
             {
-                updateDto = this._mapper.Map<PessoaFisicaRequestUpdateDto>(
+                var updateDto = this._mapper.Map<PessoaFisicaRequestUpdateDto>(
                     vm);
 
-                updateDto.Cpf = updateDto.Cpf.Replace(
-                    ".",
-                    string.Empty).Replace(
-                        "-",
-                        string.Empty);
+                updateDto.Cpf = cpfSanitized;
 
-                if (updateDto.Pessoa is null)
-                    updateDto.Pessoa = new PessoaRequestUpdateDto();
+                updateDto.Pessoa = new PessoaRequestUpdateDto()
+                {
+                    Bairro = vm.Bairro,
+                    Cep = cepSanitized,
+                    Cidade = vm.Cidade,
+                    Complemento = vm.Complemento,
+                    Email = vm.Email,
+                    Endereco = vm.Endereco,
+                    Numero = vm.Numero,
+                    Telefone = vm.Telefone,
+                    Uf = vm.Uf,
+                };
 
-                updateDto.Pessoa.Bairro = vm.Bairro;
-
-                updateDto.Pessoa.Cep = !string.IsNullOrEmpty(vm.Cep) ?
-                    vm.Cep.Replace(
-                        "-",
-                        string.Empty) :
-                    string.Empty;
-
-                updateDto.Pessoa.Cidade = vm.Cidade;
-                updateDto.Pessoa.Complemento = vm.Complemento;
-                updateDto.Pessoa.Email = vm.Email;
-                updateDto.Pessoa.Endereco = vm.Endereco;
-                updateDto.Pessoa.Numero = vm.Numero;
-                updateDto.Pessoa.Telefone = vm.Telefone;
-                updateDto.Pessoa.Uf = vm.Uf;
+                dto = updateDto;
             }
 
-            string requestUri = "PessoaFisica";
-
-            string fromBodyString = JsonConvert.SerializeObject(
-                isNew ?
-                    createDto :
-                    updateDto,
+            string requestBody = JsonConvert.SerializeObject(
+                dto,
                 Formatting.Indented);
+
+            var tokenBearer = await this._authService.GetTokenAsync();
+
+            this._httpClientService.SetBearerAuthentication(
+                tokenBearer);
+
+            string requestUri = isNew ?
+                "PessoaFisica" :
+                $"PessoaFisica/{vm.Guid}";
+
+            var method = isNew ?
+                HttpMethod.Post :
+                HttpMethod.Put;
 
             var apiResponseDto = default(ApiResponseDto<PessoaFisicaResponseDto>);
 
-            using (var webApiHelper = new WebApiHelper(
+            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                method,
                 requestUri,
-                this._tokenBearer))
+                requestBody))
             {
-                if (isNew)
-                    fromBodyString = webApiHelper.ExecutePostWithAuthenticationByBearer(
-                        fromBodyString);
-                else
-                    fromBodyString = webApiHelper.ExecutePutWithAuthenticationByBearer(
-                        fromBodyString);
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
 
-                if (fromBodyString.IsValidJson())
-                    apiResponseDto = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(
-                        fromBodyString);
+                    if (responseBody.IsValidJson())
+                        apiResponseDto = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(
+                            responseBody);
+                }
             }
 
-            if (apiResponseDto != null &&
-                apiResponseDto.Success)
+            if (apiResponseDto?.Success is true)
                 ViewBag.SuccessMessage = "<p>Aguarde, você será redirecionado em alguns segundos.</p>";
             else
-                ViewBag.ErrorMessage = $"<p>{apiResponseDto.Message}</p>";
+                ViewBag.ErrorMessage = $"<p>{apiResponseDto?.Message ?? "Erro desconhecido ao salvar."}</p>";
 
             return View(
                 vm);
         }
 
         /// <summary>
-        /// 
+        /// Retrieves and returns a paginated, filtered, and sorted list of pessoa física records formatted for DataTables consumption.
         /// </summary>
-        /// <returns></returns>
+        /// <remarks>
+        /// This method performs an authenticated HTTP GET request to an external API to fetch pessoa física data,
+        /// validates and deserializes the response, and maps it to domain models.
+        /// The result is then transformed into a simplified anonymous object, including formatted CPF and birth date.
+        /// 
+        /// It also applies server-side processing based on DataTables parameters received via the request,
+        /// including paging, sorting, and filtering.
+        /// 
+        /// Returns a JSON result compatible with DataTables, containing the data set and metadata such as
+        /// total records, filtered records, and draw counter.
+        /// </remarks>
+        /// <returns>
+        /// A <see cref="JsonResult"/> containing the processed data and DataTables metadata.
+        /// </returns>
         [HttpPost()]
         public async Task<IActionResult> GetDataTable()
         {
-            var pessoasFisicas = default(IEnumerable<PessoaFisicaModel>);
+            var pessoasFisicas = Enumerable.Empty<PessoaFisicaModel>();
 
             var tokenBearer = await this._authService.GetTokenAsync();
 
-            //  Inicia o HttpClientSingleton de consumo da API.
             this._httpClientService.SetBearerAuthentication(
                 tokenBearer);
 
@@ -428,83 +278,112 @@
                 }
             }
 
-            //  Retrieve data from WebApi
             var query = from pessoaFisica in pessoasFisicas
+                        let cpfNumerico = pessoaFisica.Cpf?
+                            .Replace(".", string.Empty)
+                            .Replace("-", string.Empty)
+                        let cpfFormatado = long.TryParse(cpfNumerico, out var cpfLong)
+                            ? cpfLong.ToString(@"000\.000\.000\-00")
+                            : pessoaFisica.Cpf ?? string.Empty
                         select new
                         {
                             pessoaFisica.Guid,
-                            Cpf = Convert.ToInt64(
-                                pessoaFisica.Cpf).ToString(@"000\.000\.000\-00"),
-                            DataNascimento = pessoaFisica.DataNascimento.HasValue ?
-                                pessoaFisica.DataNascimento.Value.ToString("dd/MM/yyyy") :
-                                "__/__/____",
+                            Cpf = cpfFormatado,
+                            DataNascimento = pessoaFisica.DataNascimento.HasValue
+                                ? pessoaFisica.DataNascimento.Value.ToString("dd/MM/yyyy")
+                                : "__/__/____",
                             pessoaFisica.Nome,
                         };
 
             var draw = Request.Form["draw"].FirstOrDefault();
             var length = Request.Form["length"].FirstOrDefault();
-
             var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
             var sortColumnDir = Request.Form["order[0][dir]"].FirstOrDefault();
-
             var searchValue = Request.Form["search[value]"].FirstOrDefault() ?? string.Empty;
             var start = Request.Form["start"].FirstOrDefault();
 
-            //  Paging Size (10, 20, 50, 100)
-            int pageSize = length != null ?
-                Convert.ToInt32(
-                    length) :
-                    0;
+            int pageSize = length != null ? Convert.ToInt32(length) : 0;
+            int skip = start != null ? Convert.ToInt32(start) : 0;
 
-            int skip = start != null ?
-                Convert.ToInt32(
-                    start) :
-                    0;
-
-            //  Sorting
             if (!string.IsNullOrEmpty(sortColumn))
             {
-                if (!string.IsNullOrEmpty(sortColumnDir) &&
-                    sortColumnDir.ToUpper() == "DESC")
-                    query = query.OrderByDescending(pf => pf.GetType().GetProperty(
-                        sortColumn).GetValue(
-                            pf,
-                            null));
-                else
-                    query = query.OrderBy(pf => pf.GetType().GetProperty(
-                        sortColumn).GetValue(
-                            pf,
-                            null));
+                query = !string.IsNullOrEmpty(sortColumnDir) && sortColumnDir.Equals("DESC", StringComparison.OrdinalIgnoreCase)
+                    ? query.OrderByDescending(pf => pf.GetType().GetProperty(sortColumn).GetValue(pf, null))
+                    : query.OrderBy(pf => pf.GetType().GetProperty(sortColumn).GetValue(pf, null));
             }
 
-            //  Search
             if (!string.IsNullOrEmpty(searchValue))
-                query = query.Where(
-                    td => td.Nome.Contains(
-                            searchValue,
-                            StringComparison.OrdinalIgnoreCase) ||
-                        td.Cpf.Contains(
-                            searchValue,
-                            StringComparison.OrdinalIgnoreCase) ||
-                        td.DataNascimento.Contains(
-                            searchValue,
-                            StringComparison.OrdinalIgnoreCase) ||
-                        string.IsNullOrEmpty(searchValue));
+                query = query.Where(td =>
+                    td.Nome.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+                    td.Cpf.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+                    td.DataNascimento.Contains(searchValue, StringComparison.OrdinalIgnoreCase));
 
-            //  Total Number of Rows Count.
-            int recordsTotal = query.Count();
+            //  int recordsTotal = query.Count();
+            int recordsTotal = pessoasFisicas.Count();  // Total antes do filtro.
 
-            //  Paging.
+            int recordsFiltered = query.Count();        // Total após o filtro.
+
             var data = query.Skip(skip).Take(pageSize).ToList();
 
-            // Create a JSON response with the data and total count.
-            return new JsonResult(new
+            return new JsonResult(
+                new
+                {
+                    data,
+                    draw,
+                    recordsTotal,
+                    recordsFiltered,
+                });
+        }
+
+        /// <summary>
+        /// Retrieves a <see cref="PessoaFisicaModel"/> from the API based on the specified identifier.
+        /// </summary>
+        /// <remarks>
+        /// This method performs an authenticated HTTP GET request to obtain the data of a pessoa física,
+        /// validates the JSON response, deserializes it into a DTO, and maps it to the domain model.
+        /// Additional address-related properties are manually assigned after mapping.
+        /// Returns <c>null</c> if the request fails or the response content is invalid.
+        /// </remarks>
+        /// <param name="id">The unique identifier of the pessoa física.</param>
+        /// <returns>
+        /// A populated <see cref="PessoaFisicaModel"/> instance if successful; otherwise, <c>null</c>.
+        /// </returns>
+        private async Task<PessoaFisicaModel?> LoadPessoaFisicaAsync(Guid id)
+        {
+            var tokenBearer = await this._authService.GetTokenAsync();
+
+            this._httpClientService.SetBearerAuthentication(tokenBearer);
+
+            using var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                HttpMethod.Get,
+                $"PessoaFisica/{id}");
+
+            if (!httpResponseMessage.IsSuccessStatusCode)
+                return null;
+
+            string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
+
+            if (!dataJson.IsValidJson())
+                return null;
+
+            var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(dataJson).Data;
+
+            var model = this._mapper.Map<PessoaFisicaModel>(data);
+
+            if (data?.Pessoa is not null)
             {
-                data,
-                draw,
-                recordsTotal,
-                recordsFiltered = recordsTotal,
-            });
+                model.Bairro = data.Pessoa.Bairro;
+                model.Cep = data.Pessoa.Cep;
+                model.Cidade = data.Pessoa.Cidade;
+                model.Complemento = data.Pessoa.Complemento;
+                model.Email = data.Pessoa.Email;
+                model.Endereco = data.Pessoa.Endereco;
+                model.Numero = data.Pessoa.Numero;
+                model.Telefone = data.Pessoa.Telefone;
+                model.Uf = data.Pessoa.Uf;
+            }
+
+            return model;
         }
     }
 }
