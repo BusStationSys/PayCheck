@@ -357,33 +357,59 @@
             using var httpResponseMessage = await this._httpClientService.ExecuteAsync(
                 HttpMethod.Get,
                 $"PessoaFisica/{id}");
-
-            if (!httpResponseMessage.IsSuccessStatusCode)
-                return null;
-
-            string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-            if (!dataJson.IsValidJson())
-                return null;
-
-            var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(dataJson).Data;
-
-            var model = this._mapper.Map<PessoaFisicaModel>(data);
-
-            if (data?.Pessoa is not null)
             {
-                model.Bairro = data.Pessoa.Bairro;
-                model.Cep = data.Pessoa.Cep;
-                model.Cidade = data.Pessoa.Cidade;
-                model.Complemento = data.Pessoa.Complemento;
-                model.Email = data.Pessoa.Email;
-                model.Endereco = data.Pessoa.Endereco;
-                model.Numero = data.Pessoa.Numero;
-                model.Telefone = data.Pessoa.Telefone;
-                model.Uf = data.Pessoa.Uf;
-            }
+                if (!httpResponseMessage.IsSuccessStatusCode)
+                    return null;
 
-            return model;
+                string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
+
+                if (!dataJson.IsValidJson())
+                    return null;
+
+                var apiResponse = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(dataJson);
+
+                return apiResponse?.Data is not null
+                    ? this._mapper.Map<PessoaFisicaModel>(apiResponse.Data)
+                    : null;
+            }
         }
+
+        //    private async Task<PessoaFisicaModel?> LoadPessoaFisicaAsync(Guid id)
+        //    {
+        //        var tokenBearer = await this._authService.GetTokenAsync();
+
+        //        this._httpClientService.SetBearerAuthentication(tokenBearer);
+
+        //        using var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+        //            HttpMethod.Get,
+        //            $"PessoaFisica/{id}");
+
+        //        if (!httpResponseMessage.IsSuccessStatusCode)
+        //            return null;
+
+        //        string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
+
+        //        if (!dataJson.IsValidJson())
+        //            return null;
+
+        //        var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(dataJson).Data;
+
+        //        var model = this._mapper.Map<PessoaFisicaModel>(data);
+
+        //        if (data?.Pessoa is not null)
+        //        {
+        //            model.Bairro = data.Pessoa.Bairro;
+        //            model.Cep = data.Pessoa.Cep;
+        //            model.Cidade = data.Pessoa.Cidade;
+        //            model.Complemento = data.Pessoa.Complemento;
+        //            model.Email = data.Pessoa.Email;
+        //            model.Endereco = data.Pessoa.Endereco;
+        //            model.Numero = data.Pessoa.Numero;
+        //            model.Telefone = data.Pessoa.Telefone;
+        //            model.Uf = data.Pessoa.Uf;
+        //        }
+
+        //        return model;
+        //    }
+        //}
     }
-}
