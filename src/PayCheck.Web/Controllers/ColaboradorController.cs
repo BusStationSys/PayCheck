@@ -279,16 +279,10 @@
             }
 
             var query = from pessoaFisica in pessoasFisicas
-                        let cpfNumerico = pessoaFisica.Cpf?
-                            .Replace(".", string.Empty)
-                            .Replace("-", string.Empty)
-                        let cpfFormatado = long.TryParse(cpfNumerico, out var cpfLong)
-                            ? cpfLong.ToString(@"000\.000\.000\-00")
-                            : pessoaFisica.Cpf ?? string.Empty
                         select new
                         {
                             pessoaFisica.Guid,
-                            Cpf = cpfFormatado,
+                            Cpf = pessoaFisica.CpfFormatado,
                             DataNascimento = pessoaFisica.DataNascimento.HasValue
                                 ? pessoaFisica.DataNascimento.Value.ToString("dd/MM/yyyy")
                                 : "__/__/____",
