@@ -78,7 +78,7 @@
         /// <response code="404">Legal entity not found.</response>
         /// <response code="500">Internal server error.</response>
         [HttpGet("{guid}")]
-        [ProducesResponseType(typeof(PessoaFisicaResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PessoaJuridicaResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetPessoaJuridica(Guid guid)
@@ -212,7 +212,7 @@
         /// <response code="404">Legal entity not found.</response>
         /// <response code="500">Internal server error.</response>
         [HttpPut("{guid}")]
-        [ProducesResponseType(typeof(PessoaFisicaResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PessoaJuridicaResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

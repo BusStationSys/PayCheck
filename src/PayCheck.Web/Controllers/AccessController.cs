@@ -1,17 +1,12 @@
 ﻿namespace PayCheck.Web.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Security.Claims;
-    using System.Text;
-    using System.Web;
     using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared;
     using ARVTech.Shared.Email;
     using ARVTech.Shared.Extensions;
     using AutoMapper;
+    using Humanizer;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Mvc;
@@ -19,6 +14,12 @@
     using PayCheck.Web.Infrastructure.Http.Interfaces;
     using PayCheck.Web.Models;
     using PayCheck.Web.Services.Interfaces;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Security.Claims;
+    using System.Text;
+    using System.Web;
 
     public class AccessController : Controller
     {
@@ -217,7 +218,7 @@
         }
 
         [HttpPost]
-        public IActionResult ChangePassword(AlteracaoSenhaRequestDto alteracaoSenhaDto)
+        public async Task<IActionResult> ChangePassword(AlteracaoSenhaRequestDto alteracaoSenhaDto)
         {
             try
             {
@@ -226,9 +227,7 @@
                 ViewBag.ValidateMessage = null;
 
                 if (!ModelState.IsValid)
-                {
                     return View();
-                }
 
                 var usuarioUpdateDto = new UsuarioRequestUpdateDto
                 {
@@ -246,27 +245,28 @@
 
                 string requestUri = @$"Usuario/{usuarioUpdateDto.Guid:N}";
 
-                //var tokenBearer = await this._authService.GetTokenAsync();
+                var tokenBearer = await this._authService.GetTokenAsync();
 
-                var tokenBearer = this._authService.GetTokenAsync().Result;
+                string requestBody = JsonConvert.SerializeObject(
+                    alteracaoSenhaDto,
+                    Formatting.Indented);
 
-                using (var webApiHelper = new WebApiHelper(
+                this._httpClientService.SetBearerAuthentication(
+                    tokenBearer);
+
+                using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                    HttpMethod.Put,
                     requestUri,
-                    tokenBearer))
+                    requestBody))
                 {
-                    string usuarioUpdateDtoJson = JsonConvert.SerializeObject(
-                        usuarioUpdateDto,
-                        Formatting.None,
-                        new JsonSerializerSettings
-                        {
-                            NullValueHandling = NullValueHandling.Ignore,
-                        });
+                    if (httpResponseMessage.IsSuccessStatusCode)
+                    {
+                        string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
 
-                    usuarioUpdateDtoJson = webApiHelper.ExecutePutWithAuthenticationByBearer(
-                        usuarioUpdateDtoJson);
-
-                    usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponseDto>(
-                        usuarioUpdateDtoJson);
+                        if (responseBody.IsValidJson())
+                            usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponseDto>(
+                                responseBody);
+                    }
                 }
 
                 ViewBag.SuccessMessage = $"Senha alterada para o usuário {usuarioResponse.Username}.";

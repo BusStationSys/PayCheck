@@ -287,160 +287,276 @@
         /// <param name="vm"></param>
         /// <returns></returns>
         [HttpPost()]
-        public IActionResult Edit(PessoaJuridicaModel model)
+        public async Task<IActionResult> Edit(PessoaJuridicaModel vm)
         {
             ViewBag.ErrorMessage = null;
             ViewBag.SuccessMessage = null;
             ViewBag.ValidateMessage = null;
 
             if (!ModelState.IsValid)
-            {
-                var errorMessageHtml = new StringBuilder();
-
-                var modelStateErrors = this.ModelState.Keys.OrderBy(x => x).SelectMany(key => this.ModelState[key].Errors);
-
-                if (modelStateErrors != null &&
-                    modelStateErrors.Count() > 0)
-                {
-                    errorMessageHtml.Append("<p></p>");
-
-                    foreach (var modelStateError in modelStateErrors)
-                    {
-                        errorMessageHtml.Append("<p style=\"text-align:justify\">");
-
-                        errorMessageHtml.Append($"- {modelStateError.ErrorMessage}");
-
-                        errorMessageHtml.Append("</p>");
-                    }
-
-                    //errorMessageHtml.Append("<ul class=\"list-group\">");
-
-                    //foreach (var modelStateError in modelStateErrors)
-                    //{
-                    //    errorMessageHtml.Append("<li class=\"list-group-item list-group-item-warning\" style=\"border: none\">");
-
-                    //    errorMessageHtml.Append($"- {modelStateError.ErrorMessage}");
-
-                    //    errorMessageHtml.Append("</li>");
-                    //}
-
-                    //errorMessageHtml.Append("</ul>");
-                }
-
-                ViewBag.ValidateMessage = errorMessageHtml.ToString();
-
                 return View(
-                    model);
-            }
+                    vm);
 
-            bool isNew = false;
+            bool isNew = vm.Guid is null || vm.Guid == Guid.Empty;
 
-            var createDto = default(PessoaJuridicaRequestCreateDto);
-            var updateDto = default(PessoaJuridicaRequestUpdateDto);
-
-            if (model.Guid is null ||
-                model.Guid == Guid.Empty)
-            {
-                isNew = true;
-
-                createDto = this._mapper.Map<PessoaJuridicaRequestCreateDto>(
-                    model);
-
-                createDto.Cnpj = createDto.Cnpj.Replace(
-                    ".",
+            string cnpjSanitized = vm.Cnpj.Replace(
+                ".",
+                string.Empty).Replace(
+                    "-",
                     string.Empty).Replace(
                         "/",
-                        string.Empty).Replace(
-                            "-",
-                            string.Empty);
+                        string.Empty);
 
-                createDto.Pessoa = new PessoaRequestCreateDto()
-                {
-                    Bairro = model.Bairro,
-
-                    Cep = !string.IsNullOrEmpty(model.Cep) ?
-                        model.Cep.Replace(
-                            "-",
-                            string.Empty) :
-                        string.Empty,
-
-                    Cidade = model.Cidade,
-                    Complemento = model.Complemento,
-                    Email = model.Email,
-                    Endereco = model.Endereco,
-                    Numero = model.Numero,
-                    Telefone = model.Telefone,
-                    Uf = model.Uf,
-                };
-            }
-            else
-            {
-                updateDto = this._mapper.Map<PessoaJuridicaRequestUpdateDto>(
-                    model);
-
-                updateDto.Cnpj = updateDto.Cnpj.Replace(
-                    ".",
-                    string.Empty).Replace(
-                        "/",
-                        string.Empty).Replace(
-                            "-",
-                            string.Empty);
-
-                if (updateDto.Pessoa is null)
-                    updateDto.Pessoa = new PessoaRequestUpdateDto();
-
-                updateDto.Pessoa.Bairro = model.Bairro;
-
-                updateDto.Pessoa.Cep = !string.IsNullOrEmpty(model.Cep) ?
-                    model.Cep.Replace(
+            string cepSanitized = !string.IsNullOrEmpty(
+                vm.Cep) ?
+                    vm.Cep.Replace(
                         "-",
                         string.Empty) :
                     string.Empty;
 
-                updateDto.Pessoa.Cidade = model.Cidade;
-                updateDto.Pessoa.Complemento = model.Complemento;
-                updateDto.Pessoa.Email = model.Email;
-                updateDto.Pessoa.Endereco = model.Endereco;
-                updateDto.Pessoa.Numero = model.Numero;
-                updateDto.Pessoa.Telefone = model.Telefone;
-                updateDto.Pessoa.Uf = model.Uf;
+            object dto;
+
+            if (isNew)
+            {
+                var createDto = this._mapper.Map<PessoaJuridicaRequestCreateDto>(
+                    vm);
+
+                createDto.Cnpj = cnpjSanitized;
+
+                createDto.Pessoa = new PessoaRequestCreateDto()
+                {
+                    Bairro = vm.Bairro,
+                    Cep = cepSanitized,
+                    Cidade = vm.Cidade,
+                    Complemento = vm.Complemento,
+                    Email = vm.Email,
+                    Endereco = vm.Endereco,
+                    Numero = vm.Numero,
+                    Telefone = vm.Telefone,
+                    Uf = vm.Uf,
+                };
+
+                dto = createDto;
+            }
+            else
+            {
+                var updateDto = this._mapper.Map<PessoaJuridicaRequestUpdateDto>(
+                    vm);
+
+                updateDto.Cnpj = cnpjSanitized;
+
+                updateDto.Pessoa = new PessoaRequestUpdateDto()
+                {
+                    Bairro = vm.Bairro,
+                    Cep = cepSanitized,
+                    Cidade = vm.Cidade,
+                    Complemento = vm.Complemento,
+                    Email = vm.Email,
+                    Endereco = vm.Endereco,
+                    Numero = vm.Numero,
+                    Telefone = vm.Telefone,
+                    Uf = vm.Uf,
+                };
+
+                dto = updateDto;
             }
 
-            string requestUri = "PessoaJuridica";
-
-            string fromBodyString = JsonConvert.SerializeObject(
-                isNew ?
-                    createDto :
-                    updateDto,
+            string requestBody = JsonConvert.SerializeObject(
+                dto,
                 Formatting.Indented);
+
+            var tokenBearer = await this._authService.GetTokenAsync();
+
+            this._httpClientService.SetBearerAuthentication(
+                tokenBearer);
+
+            string requestUri = isNew ?
+                "PessoaJuridica" :
+                $"PessoaJuridica/{vm.Guid}";
+
+            var method = isNew ?
+                HttpMethod.Post :
+                HttpMethod.Put;
 
             var apiResponseDto = default(ApiResponseDto<PessoaJuridicaResponseDto>);
 
-            using (var webApiHelper = new WebApiHelper(
+            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                method,
                 requestUri,
-                this._tokenBearer))
+                requestBody))
             {
-                if (isNew)
-                    fromBodyString = webApiHelper.ExecutePostWithAuthenticationByBearer(
-                        fromBodyString);
-                else
-                    fromBodyString = webApiHelper.ExecutePutWithAuthenticationByBearer(
-                        fromBodyString);
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
 
-                if (fromBodyString.IsValidJson())
-                    apiResponseDto = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
-                        fromBodyString);
+                    if (responseBody.IsValidJson())
+                        apiResponseDto = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
+                            responseBody);
+                }
             }
 
-            if (apiResponseDto != null &&
-                apiResponseDto.Success)
+            if (apiResponseDto?.Success is true)
                 ViewBag.SuccessMessage = "<p>Aguarde, você será redirecionado em alguns segundos.</p>";
             else
-                ViewBag.ErrorMessage = $"<p>{apiResponseDto.Message}</p>";
+                ViewBag.ErrorMessage = $"<p>{apiResponseDto?.Message ?? "Erro desconhecido ao salvar."}</p>";
 
             return View(
-                model);
+                vm);
         }
+
+        //{
+        //    ViewBag.ErrorMessage = null;
+        //    ViewBag.SuccessMessage = null;
+        //    ViewBag.ValidateMessage = null;
+
+        //    if (!ModelState.IsValid)
+        //    {
+        //        var errorMessageHtml = new StringBuilder();
+
+        //        var modelStateErrors = this.ModelState.Keys.OrderBy(x => x).SelectMany(key => this.ModelState[key].Errors);
+
+        //        if (modelStateErrors != null &&
+        //            modelStateErrors.Count() > 0)
+        //        {
+        //            errorMessageHtml.Append("<p></p>");
+
+        //            foreach (var modelStateError in modelStateErrors)
+        //            {
+        //                errorMessageHtml.Append("<p style=\"text-align:justify\">");
+
+        //                errorMessageHtml.Append($"- {modelStateError.ErrorMessage}");
+
+        //                errorMessageHtml.Append("</p>");
+        //            }
+        //        }
+
+        //        ViewBag.ValidateMessage = errorMessageHtml.ToString();
+
+        //        return View(
+        //            vm);
+        //    }
+
+        //    bool isNew = vm.Guid is null || vm.Guid == Guid.Empty;
+
+        //    string cnpjSanitized = vm.Cnpj.Replace(
+        //        ".",
+        //        string.Empty).Replace(
+        //            "/",
+        //            string.Empty).Replace(
+        //                "-",
+        //                string.Empty);
+
+        //    string cepSanitized = !string.IsNullOrEmpty(
+        //        vm.Cep) ?
+        //            vm.Cep.Replace(
+        //                "-",
+        //                string.Empty) :
+        //            string.Empty;
+
+        //    object dto;
+
+
+        //    if (isNew)
+        //    {
+
+        //        createDto = this._mapper.Map<PessoaJuridicaRequestCreateDto>(
+        //            model);
+
+        //        createDto.Cnpj = createDto.Cnpj.Replace(
+        //            ".",
+        //            string.Empty).Replace(
+        //                "/",
+        //                string.Empty).Replace(
+        //                    "-",
+        //                    string.Empty);
+
+        //        createDto.Pessoa = new PessoaRequestCreateDto()
+        //        {
+        //            Bairro = model.Bairro,
+
+        //            Cep = !string.IsNullOrEmpty(model.Cep) ?
+        //                model.Cep.Replace(
+        //                    "-",
+        //                    string.Empty) :
+        //                string.Empty,
+
+        //            Cidade = model.Cidade,
+        //            Complemento = model.Complemento,
+        //            Email = model.Email,
+        //            Endereco = model.Endereco,
+        //            Numero = model.Numero,
+        //            Telefone = model.Telefone,
+        //            Uf = model.Uf,
+        //        };
+        //    }
+        //    else
+        //    {
+        //        updateDto = this._mapper.Map<PessoaJuridicaRequestUpdateDto>(
+        //            model);
+
+        //        updateDto.Cnpj = updateDto.Cnpj.Replace(
+        //            ".",
+        //            string.Empty).Replace(
+        //                "/",
+        //                string.Empty).Replace(
+        //                    "-",
+        //                    string.Empty);
+
+        //        if (updateDto.Pessoa is null)
+        //            updateDto.Pessoa = new PessoaRequestUpdateDto();
+
+        //        updateDto.Pessoa.Bairro = model.Bairro;
+
+        //        updateDto.Pessoa.Cep = !string.IsNullOrEmpty(model.Cep) ?
+        //            model.Cep.Replace(
+        //                "-",
+        //                string.Empty) :
+        //            string.Empty;
+
+        //        updateDto.Pessoa.Cidade = model.Cidade;
+        //        updateDto.Pessoa.Complemento = model.Complemento;
+        //        updateDto.Pessoa.Email = model.Email;
+        //        updateDto.Pessoa.Endereco = model.Endereco;
+        //        updateDto.Pessoa.Numero = model.Numero;
+        //        updateDto.Pessoa.Telefone = model.Telefone;
+        //        updateDto.Pessoa.Uf = model.Uf;
+        //    }
+
+        //    string requestUri = "PessoaJuridica";
+
+        //    string fromBodyString = JsonConvert.SerializeObject(
+        //        isNew ?
+        //            createDto :
+        //            updateDto,
+        //        Formatting.Indented);
+
+        //    var apiResponseDto = default(ApiResponseDto<PessoaJuridicaResponseDto>);
+
+        //    using (var webApiHelper = new WebApiHelper(
+        //        requestUri,
+        //        this._tokenBearer))
+        //    {
+        //        if (isNew)
+        //            fromBodyString = webApiHelper.ExecutePostWithAuthenticationByBearer(
+        //                fromBodyString);
+        //        else
+        //            fromBodyString = webApiHelper.ExecutePutWithAuthenticationByBearer(
+        //                fromBodyString);
+
+        //        if (fromBodyString.IsValidJson())
+        //            apiResponseDto = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
+        //                fromBodyString);
+        //    }
+
+        //    if (apiResponseDto != null &&
+        //        apiResponseDto.Success)
+        //        ViewBag.SuccessMessage = "<p>Aguarde, você será redirecionado em alguns segundos.</p>";
+        //    else
+        //        ViewBag.ErrorMessage = $"<p>{apiResponseDto.Message}</p>";
+
+        //    return View(
+        //        model);
+        //}
 
         /// <summary>
         /// 

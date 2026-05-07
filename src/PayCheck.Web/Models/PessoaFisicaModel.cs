@@ -85,4 +85,22 @@ public class PessoaFisicaModel
     [Required(ErrorMessage = "É necessário o preenchimento da UF CTPS.")]
     [StringLength(2, ErrorMessage = "A UF da CTPS deve ter 2 caracteres.", MinimumLength = 2)]
     public string UfCtps { get; set; }
+
+    /// <summary>
+    /// Returns the CPF formatted as ###.###.###-##.
+    /// If the value cannot be parsed, returns the raw CPF or an empty string.
+    /// </summary>
+    public string CpfFormatado
+    {
+        get
+        {
+            var cpfNumerico = this.Cpf?
+                .Replace(".", string.Empty)
+                .Replace("-", string.Empty);
+
+            return long.TryParse(cpfNumerico, out var cpfLong)
+                ? cpfLong.ToString(@"000\.000\.000\-00")
+                : this.Cpf ?? string.Empty;
+        }
+    }
 }

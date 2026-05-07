@@ -53,9 +53,6 @@ builder.Services.AddScoped<IPessoaFisicaService>(
 builder.Services.AddScoped<IPessoaJuridicaService>(
     provider => new PessoaJuridicaService(unitOfWork));
 
-builder.Services.AddScoped<IPublicacaoService>(
-    provider => new PublicacaoService(unitOfWork));
-
 builder.Services.AddScoped<IUsuarioService>(
     provider => new UsuarioService(unitOfWork));
 
@@ -223,9 +220,6 @@ app.Run();
 
 //builder.Services.AddScoped<IMatriculaDemonstrativoPagamentoBusiness>(
 //    provider => new MatriculaDemonstrativoPagamentoBusiness(unitOfWork));
-
-//builder.Services.AddScoped<IPessoaFisicaBusiness>(
-//    provider => new PessoaFisicaBusiness(unitOfWork));
 
 //builder.Services.AddScoped<IUsuarioBusiness>(
 //    provider => new UsuarioBusiness(unitOfWork));

@@ -15,8 +15,6 @@
     [Authorize]
     public class DemonstrativoPagamentoController : Controller
     {
-        private readonly string _tokenBearer;
-
         private readonly IHttpClientService _httpClientService;
 
         private readonly IAuthService _authService;
@@ -207,26 +205,34 @@
             matriculaDemonstrativoPagamentoRequestUpdateDto.DataConfirmacao = DateTimeOffset.UtcNow;
             matriculaDemonstrativoPagamentoRequestUpdateDto.IpConfirmacao = ipConfirmacao;
 
+            string requestBody = JsonConvert.SerializeObject(
+                matriculaDemonstrativoPagamentoRequestUpdateDto,
+                Formatting.None,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                });
+
+            var tokenBearer = await this._authService.GetTokenAsync();
+
+            this._httpClientService.SetBearerAuthentication(
+                tokenBearer);
+
             string requestUri = @$"DemonstrativoPagamento/{matriculaDemonstrativoPagamentoRequestUpdateDto.Guid:N}";
 
-            using (var webApiHelper = new WebApiHelper(
+            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                HttpMethod.Put,
                 requestUri,
-                this._tokenBearer))
+                requestBody))
             {
-                string matriculaDemonstrativoPagamentoRequestUpdateDtoJson = JsonConvert.SerializeObject(
-                    matriculaDemonstrativoPagamentoRequestUpdateDto,
-                    Formatting.None,
-                    new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore,
-                    });
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
 
-                string dataJson = webApiHelper.ExecutePutWithAuthenticationByBearer(
-                    matriculaDemonstrativoPagamentoRequestUpdateDtoJson);
-
-                if (dataJson.IsValidJson())
-                    matriculaDemonstrativoPagamentoResponse = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto>>(
-                        dataJson).Data;
+                    if (responseBody.IsValidJson())
+                        matriculaDemonstrativoPagamentoResponse = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto>>(
+                            responseBody).Data;
+                }
             }
 
             return RedirectToAction(

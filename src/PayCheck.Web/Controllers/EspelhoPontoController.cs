@@ -1,16 +1,18 @@
 ﻿namespace PayCheck.Web.Controllers
 {
-    using System;
     using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared;
     using ARVTech.Shared.Extensions;
     using AutoMapper;
+    using IdentityModel.Client;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Newtonsoft.Json;
     using PayCheck.Web.Infrastructure.Http.Interfaces;
     using PayCheck.Web.Models;
+    using PayCheck.Web.Services.Interfaces;
+    using System;
 
     [Authorize]
     public class EspelhoPontoController : Controller
@@ -19,103 +21,24 @@
 
         private readonly IHttpClientService _httpClientService;
 
-        private readonly Mapper _mapper;
+        private readonly IAuthService _authService;
+
+        private readonly IMapper _mapper;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EspelhoPontoController"/> class.
         /// </summary>
         /// <param name="httpClientService">The HTTP client service.</param>
-        /// <exception cref="Exception"></exception>
-        public EspelhoPontoController(IHttpClientService httpClientService)
+        /// <param name="authService">The authentication service.</param>
+        /// <param name="mapper">The AutoMapper instance.</param>
+        public EspelhoPontoController(IHttpClientService httpClientService, IAuthService authService, IMapper mapper)
         {
-            var mapperConfiguration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<MatriculaEspelhoPontoRequestCreateDto, MatriculaEspelhoPontoResponseDto>().ReverseMap();
-                cfg.CreateMap<MatriculaEspelhoPontoRequestUpdateDto, MatriculaEspelhoPontoResponseDto>().ReverseMap();
-
-                cfg.CreateMap<MatriculaEspelhoPontoResponseDto, EspelhoPontoViewModel>()
-                    .ForMember(
-                        dest => dest.NumeroMatricula,
-                        opt => opt.MapFrom(
-                            src => src.Matricula.Matricula))
-                    .ForMember(
-                        dest => dest.NomeColaborador,
-                        opt => opt.MapFrom(
-                            src => src.Matricula.Colaborador.Nome))
-                    .ForMember(
-                        dest => dest.RazaoSocialEmpregador,
-                        opt => opt.MapFrom(
-                            src => src.Matricula.Empregador.RazaoSocial)).ReverseMap();
-            });
-
-            this._mapper = new Mapper(
-                mapperConfiguration);
-
             this._httpClientService = httpClientService;
 
-            //using (var webApiHelper = new WebApiHelper(
-            //    string.Concat(
-            //        this._baseAddress,
-            //        "/auth"),
-            //    "arvtech",
-            //    "(@rV73Ch)"))
-            //{
-            //    var authDto = new AuthRequestDto
-            //    {
-            //        Username = "arvtech",
-            //        Password = "(@rV73Ch)",
-            //    };
+            this._authService = authService;
 
-            //    string authDtoJson = JsonConvert.SerializeObject(authDto,
-            //        Formatting.None,
-            //        new JsonSerializerSettings
-            //        {
-            //            NullValueHandling = NullValueHandling.Ignore,
-            //        });
-
-            //    authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
-            //        authDtoJson);
-
-            //    var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
-            //        authDtoJson);
-
-            //    this._tokenBearer = authResponse.Token;
-            //}
-
-            var authDto = new AuthRequestDto
-            {
-                Username = "arvtech",
-                Password = "(@rV73Ch)"
-            };
-
-            var json = JsonConvert.SerializeObject(
-                authDto,
-                Formatting.None,
-                new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
-
-            // 🔐 Basic Auth (igual ao que o WebApiHelper fazia)
-            this._httpClientService.SetBasicAuthentication("arvtech", "(@rV73Ch)");
-
-            using (var httpResponseMessage = this._httpClientService.ExecuteAsync(
-                HttpMethod.Post,
-                "auth",
-                json).GetAwaiter().GetResult())
-            {
-                if (!httpResponseMessage.IsSuccessStatusCode)
-                    throw new Exception("Erro ao autenticar.");
-
-                var responseJson = httpResponseMessage.Content
-                    .ReadAsStringAsync()
-                    .GetAwaiter()
-                    .GetResult();
-
-                var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(responseJson);
-
-                this._tokenBearer = authResponse.Token;
-            }
+            this._mapper = mapper;
         }
 
         /// <summary>
@@ -134,25 +57,37 @@
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet()]
-        public IActionResult Details(Guid? id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
                 return NotFound();
+
+            var tokenBearer = await this._authService.GetTokenAsync();
+
+            this._httpClientService.SetBearerAuthentication(
+                tokenBearer);
 
             string requestUri = @$"EspelhoPonto/{id}";
 
             var matriculaEspelhoPontoResponse = default(
                 MatriculaEspelhoPontoResponseDto);
 
-            using (var webApiHelper = new WebApiHelper(
-                requestUri,
-                this._tokenBearer))
-            {
-                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+            //  Inicia o HttpClientSingleton de consumo da API.
+            this._httpClientService.SetBearerAuthentication(
+                tokenBearer);
 
-                if (dataJson.IsValidJson())
-                    matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaEspelhoPontoResponseDto>>(
-                        dataJson).Data;
+            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                HttpMethod.Get,
+                requestUri))
+            {
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
+
+                    if (dataJson.IsValidJson())
+                        matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaEspelhoPontoResponseDto>>(
+                            dataJson).Data;
+                }
             }
 
             return View(
@@ -162,10 +97,12 @@
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="guid"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public IActionResult ConfirmarRealizacaoFrequencia(Guid id)
+        public async Task<IActionResult> ConfirmarRealizacaoFrequencia(Guid id)
         {
+            var tokenBearer = await this._authService.GetTokenAsync();
+
             var ipAddress = Common.GetIP();
 
             byte[] ipConfirmacao = null;
@@ -173,7 +110,7 @@
             if (ipAddress != null && ipAddress.GetAddressBytes != null)
                 ipConfirmacao = ipAddress.GetAddressBytes();
 
-            var matriculaEspelhoPontoResponse = this.GetMEP(
+            var matriculaEspelhoPontoResponse = await this.GetMEP(
                 id);
 
             var matriculaEspelhoPontoRequestUpdateDto = this._mapper.Map<MatriculaEspelhoPontoRequestUpdateDto>(
@@ -185,24 +122,31 @@
 
             string requestUri = @$"EspelhoPonto/{matriculaEspelhoPontoRequestUpdateDto.Guid:N}";
 
-            using (var webApiHelper = new WebApiHelper(
+            //  Inicia o HttpClientSingleton de consumo da API.
+            this._httpClientService.SetBearerAuthentication(
+                tokenBearer);
+
+            string content = JsonConvert.SerializeObject(
+                matriculaEspelhoPontoRequestUpdateDto,
+                Formatting.None,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                });
+
+            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                HttpMethod.Put,
                 requestUri,
-                this._tokenBearer))
+                content))
             {
-                string matriculaEspelhoPontoRequestUpdateDtoJson = JsonConvert.SerializeObject(
-                    matriculaEspelhoPontoRequestUpdateDto,
-                    Formatting.None,
-                    new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore,
-                    });
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
 
-                string dataJson = webApiHelper.ExecutePutWithAuthenticationByBearer(
-                    matriculaEspelhoPontoRequestUpdateDtoJson);
-
-                if (dataJson.IsValidJson())
-                    matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaEspelhoPontoResponseDto>>(
-                        dataJson).Data;
+                    if (dataJson.IsValidJson())
+                        matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaEspelhoPontoResponseDto>>(
+                            dataJson).Data;
+                }
             }
 
             return RedirectToAction(
@@ -218,8 +162,10 @@
         /// </summary>
         /// <returns></returns>
         [HttpPost()]
-        public IActionResult GetDataTable()
+        public async Task<IActionResult> GetDataTable()
         {
+            var tokenBearer = await this._authService.GetTokenAsync();
+
             var guidColaborador = default(Guid?);
 
             if (TempData.Peek("GuidColaborador") != null &&
@@ -235,19 +181,26 @@
 
             var espelhosPonto = default(IEnumerable<EspelhoPontoViewModel>);
 
-            using (var webApiHelper = new WebApiHelper(
-                requestUri,
-                this._tokenBearer))
+            //  Inicia o HttpClientSingleton de consumo da API.
+            this._httpClientService.SetBearerAuthentication(
+                tokenBearer);
+
+            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                HttpMethod.Get,
+                requestUri))
             {
-                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
-
-                if (dataJson.IsValidJson())
+                if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>>>(
-                        dataJson).Data;
+                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
 
-                    espelhosPonto = this._mapper.Map<IEnumerable<EspelhoPontoViewModel>>(
-                        source);
+                    if (dataJson.IsValidJson())
+                    {
+                        var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>>>(
+                            dataJson).Data;
+
+                        espelhosPonto = this._mapper.Map<IEnumerable<EspelhoPontoViewModel>>(
+                            source);
+                    }
                 }
             }
 
@@ -339,22 +292,31 @@
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private MatriculaEspelhoPontoResponseDto? GetMEP(Guid id)
+        private async Task<MatriculaEspelhoPontoResponseDto?> GetMEP(Guid id)
         {
+            var tokenBearer = await this._authService.GetTokenAsync();
+
             string requestUri = @$"EspelhoPonto/{id}";
 
-            using (var webApiHelper = new WebApiHelper(
-                requestUri,
-                this._tokenBearer))
+            //  Inicia o HttpClientSingleton de consumo da API.
+            this._httpClientService.SetBearerAuthentication(
+                tokenBearer);
+
+            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                HttpMethod.Get,
+                requestUri))
             {
-                string dataJson = webApiHelper.ExecuteGetWithAuthenticationByBearer();
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
 
-                if (dataJson.IsValidJson())
-                    return JsonConvert.DeserializeObject<ApiResponseDto<MatriculaEspelhoPontoResponseDto>>(
-                        dataJson).Data;
-
-                return null;
+                    if (dataJson.IsValidJson())
+                        return JsonConvert.DeserializeObject<ApiResponseDto<MatriculaEspelhoPontoResponseDto>>(
+                            dataJson).Data;
+                }
             }
+
+            return null;
         }
     }
 }

@@ -20,9 +20,15 @@ builder.Configuration.AddJsonFile(
     optional: true,
     reloadOnChange: true).AddEnvironmentVariables();
 
+//  Colaborador.
 builder.Services.AddAutoMapper(
     typeof(
         ColaboradorController));
+
+//  Espelho de Ponto.
+builder.Services.AddAutoMapper(
+    typeof(
+        EspelhoPontoController));
 
 // Add services to the container.
 builder.Services.AddRazorPages();

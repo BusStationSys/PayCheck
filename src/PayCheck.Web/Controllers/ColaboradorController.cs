@@ -121,9 +121,11 @@
         {
             ViewBag.ErrorMessage = null;
             ViewBag.SuccessMessage = null;
+            ViewBag.ValidateMessage = null;
 
             if (!ModelState.IsValid)
-                return View(vm);
+                return View(
+                    vm);
 
             bool isNew = vm.Guid is null || vm.Guid == Guid.Empty;
 
