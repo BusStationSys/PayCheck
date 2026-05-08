@@ -1,24 +1,21 @@
 ﻿namespace PayCheck.Web.Controllers
 {
+    using System;
     using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared;
     using ARVTech.Shared.Extensions;
     using AutoMapper;
-    using IdentityModel.Client;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Newtonsoft.Json;
     using PayCheck.Web.Infrastructure.Http.Interfaces;
     using PayCheck.Web.Models;
     using PayCheck.Web.Services.Interfaces;
-    using System;
 
     [Authorize]
     public class EspelhoPontoController : Controller
     {
-        private readonly string _tokenBearer;
-
         private readonly IHttpClientService _httpClientService;
 
         private readonly IAuthService _authService;

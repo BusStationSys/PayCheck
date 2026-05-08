@@ -10,13 +10,10 @@
     using PayCheck.Web.Infrastructure.Http.Interfaces;
     using PayCheck.Web.Models;
     using PayCheck.Web.Services.Interfaces;
-    using System.Text;
 
     [Authorize]
     public class EmpregadorController : Controller
     {
-        private readonly string _tokenBearer;
-
         private readonly IHttpClientService _httpClientService;
 
         private readonly IAuthService _authService;

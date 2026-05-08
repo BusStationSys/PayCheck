@@ -221,7 +221,7 @@
         [ProducesResponseType(typeof(PessoaFisicaResponseDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult CreatePessoaFisica([FromBody] PessoaFisicaRequestCreateDto createDto)
+        public IActionResult CreatePessoaFisica([FromBody] PessoaFisicaRequestCreateDto? createDto)
         {
             if (createDto is null)
                 return BadRequest(
@@ -279,7 +279,7 @@
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdatePessoaFisica(Guid guid, [FromBody] PessoaFisicaRequestUpdateDto updateDto)
+        public IActionResult UpdatePessoaFisica(Guid guid, [FromBody] PessoaFisicaRequestUpdateDto? updateDto)
         {
             if (updateDto is null)
                 return BadRequest(
@@ -319,16 +319,16 @@
             }
         }
 
-        private static bool IsValidMonthDay(string value)
-        {
-            // Formato esperado: MM-dd (ex: 01-15, 12-31)
-            if (value.Length != 5 || value[2] != '-')
-                return false;
+        //private static bool IsValidMonthDay(string value)
+        //{
+        //    // Formato esperado: MM-dd (ex: 01-15, 12-31)
+        //    if (value.Length != 5 || value[2] != '-')
+        //        return false;
 
-            return int.TryParse(value[..2], out int month)
-                && int.TryParse(value[3..], out int day)
-                && month >= 1 && month <= 12
-                && day >= 1 && day <= 31;
-        }
+        //    return int.TryParse(value[..2], out int month)
+        //        && int.TryParse(value[3..], out int day)
+        //        && month >= 1 && month <= 12
+        //        && day >= 1 && day <= 31;
+        //}
     }
 }

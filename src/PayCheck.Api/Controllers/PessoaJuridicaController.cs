@@ -162,7 +162,7 @@
         /// <response code="400">Invalid data or malformed request.</response>
         /// <response code="500">Internal server error.</response>
         [HttpPost]
-        public IActionResult CreatePessoaJuridica([FromBody] PessoaJuridicaRequestCreateDto createDto)
+        public IActionResult CreatePessoaJuridica([FromBody] PessoaJuridicaRequestCreateDto? createDto)
         {
             if (createDto is null)
                 return BadRequest(
@@ -216,7 +216,7 @@
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdatePessoaJuridica(Guid guid, [FromBody] PessoaJuridicaRequestUpdateDto updateDto)
+        public IActionResult UpdatePessoaJuridica(Guid guid, [FromBody] PessoaJuridicaRequestUpdateDto? updateDto)
         {
             if (updateDto is null)
                 return BadRequest(
