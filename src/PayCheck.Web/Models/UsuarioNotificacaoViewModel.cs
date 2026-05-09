@@ -1,5 +1,7 @@
 ﻿namespace PayCheck.Web.Models
 {
+    using System;
+
     public class UsuarioNotificacaoViewModel
     {
         public string Tipo { get; set; }

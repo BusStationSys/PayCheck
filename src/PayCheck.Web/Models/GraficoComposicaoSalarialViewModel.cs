@@ -1,5 +1,7 @@
 ﻿namespace PayCheck.Web.Models
 {
+    using System;
+
     public class GraficoComposicaoSalarialViewModel
     {
         public Guid GuidColaborador { get; set; }

@@ -1,12 +1,20 @@
 ﻿namespace PayCheck.Web.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Security.Claims;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Web;
     using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared;
     using ARVTech.Shared.Email;
     using ARVTech.Shared.Extensions;
     using AutoMapper;
-    using Humanizer;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Mvc;
@@ -14,12 +22,6 @@
     using PayCheck.Web.Infrastructure.Http.Interfaces;
     using PayCheck.Web.Models;
     using PayCheck.Web.Services.Interfaces;
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Security.Claims;
-    using System.Text;
-    using System.Web;
 
     public class AccessController : Controller
     {

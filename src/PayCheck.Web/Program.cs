@@ -1,7 +1,12 @@
+using System;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using ARVTech.Shared.Email;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using PayCheck.Web;
 using PayCheck.Web.Controllers;

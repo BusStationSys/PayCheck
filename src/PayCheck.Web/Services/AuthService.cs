@@ -1,5 +1,8 @@
 ﻿namespace PayCheck.Web.Services
 {
+    using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using Newtonsoft.Json;
     using PayCheck.Web.Infrastructure.Http.Interfaces;

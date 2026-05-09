@@ -1,5 +1,10 @@
 ﻿namespace PayCheck.Web.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Threading.Tasks;
     using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared;
@@ -139,7 +144,7 @@
         [HttpGet()]
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
+            if (id is null)
                 return NotFound();
 
             var matriculaDemonstrativoPagamentoResponse = default(

@@ -1,6 +1,10 @@
 ﻿namespace PayCheck.Web.ViewComponents
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http;
     using System.Security.Claims;
+    using System.Threading.Tasks;
     using ARVTech.DataAccess.DTOs;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.Shared.Extensions;

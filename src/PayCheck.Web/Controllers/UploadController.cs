@@ -1,7 +1,13 @@
 ﻿namespace PayCheck.Web.Controllers
 {
-    using Microsoft.AspNetCore.Mvc;
+    using System;
+    using System.Threading.Tasks;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Mvc;
 
     public class UploadController : Controller
     {
