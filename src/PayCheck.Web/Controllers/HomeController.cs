@@ -41,7 +41,7 @@ public class HomeController : Controller
             //cfg.CreateMap<PublicacaoRequestCreateDto, PublicacaoModel>().ReverseMap();
             //cfg.CreateMap<PublicacaoRequestUpdateDto, PublicacaoModel>().ReverseMap();
 
-            cfg.CreateMap<PublicacaoResponseDto, PublicacaoModel>().ReverseMap();
+            //cfg.CreateMap<PublicacaoResponseDto, PublicacaoModel>().ReverseMap();
         });
 
         this._mapper = new Mapper(

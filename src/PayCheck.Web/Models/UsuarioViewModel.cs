@@ -1,14 +1,15 @@
-﻿namespace PayCheck.Web.Models;
-
-using System;
-using System.ComponentModel.DataAnnotations;
-
-public class UsuarioViewModel
+﻿namespace PayCheck.Web.Models
 {
-    [Key]
-    public Guid? Guid { get; set; }
+    using System;
+    using System.ComponentModel.DataAnnotations;
 
-    public string Email { get; set; }
+    public class UsuarioViewModel
+    {
+        [Key]
+        public Guid? Guid { get; set; }
 
-    public string Username { get; set; }
+        public string Email { get; set; }
+
+        public string Username { get; set; }
+    }
 }

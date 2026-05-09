@@ -25,6 +25,11 @@ builder.Services.AddAutoMapper(
     typeof(
         ColaboradorController));
 
+//  Empregador.
+builder.Services.AddAutoMapper(
+    typeof(
+        EmpregadorController));
+
 //  Espelho de Ponto.
 builder.Services.AddAutoMapper(
     typeof(

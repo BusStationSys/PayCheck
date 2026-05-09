@@ -19,7 +19,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Publicacao\**" />
+    <Content Remove="Views\Publicacao\**" />
+    <EmbeddedResource Remove="Views\Publicacao\**" />
+    <None Remove="Views\Publicacao\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Controllers\PublicacaoController.cs" />
+    <Compile Remove="Models\PublicacaoModel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Home\SobreNos.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

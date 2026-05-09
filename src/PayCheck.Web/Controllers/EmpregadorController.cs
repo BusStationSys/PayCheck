@@ -18,113 +18,21 @@
 
         private readonly IAuthService _authService;
 
-        private readonly Mapper _mapper;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmpregadorController"/> class.
         /// </summary>
         /// <param name="httpClientService">The HTTP client service.</param>
         /// <param name="authService">The authentication service.</param>
-        public EmpregadorController(IHttpClientService httpClientService, IAuthService authService)
+        /// <param name="mapper">The AutoMapper instance.</param>
+        public EmpregadorController(IHttpClientService httpClientService, IAuthService authService, IMapper mapper)
         {
-            var mapperConfiguration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<PessoaJuridicaRequestCreateDto, PessoaJuridicaResponseDto>().ReverseMap();
-                cfg.CreateMap<PessoaJuridicaRequestUpdateDto, PessoaJuridicaResponseDto>().ReverseMap();
-                cfg.CreateMap<PessoaJuridicaRequestCreateDto, PessoaJuridicaModel>().ReverseMap();
-                cfg.CreateMap<PessoaJuridicaRequestUpdateDto, PessoaJuridicaModel>().ReverseMap();
-
-                cfg.CreateMap<MatriculaDemonstrativoPagamentoResponseDto, DemonstrativoPagamentoViewModel>()
-                    .ForMember(
-                        dest => dest.NumeroMatricula,
-                        opt => opt.MapFrom(
-                            src => src.Matricula.Matricula))
-                    .ForMember(
-                        dest => dest.NomeColaborador,
-                        opt => opt.MapFrom(
-                            src => src.Matricula.Colaborador.Nome))
-                    .ForMember(
-                        dest => dest.RazaoSocialEmpregador,
-                        opt => opt.MapFrom(
-                            src => src.Matricula.Empregador.RazaoSocial)).ReverseMap();
-
-                cfg.CreateMap<PessoaJuridicaResponseDto, PessoaJuridicaModel>()
-                    .ForMember(
-                        dest => dest.DescricaoUnidadeNegocio,
-                        opt => opt.MapFrom(
-                            src => src.UnidadeNegocio.Descricao)).ReverseMap();
-            });
-
-            this._mapper = new Mapper(
-                mapperConfiguration);
-
             this._httpClientService = httpClientService;
 
             this._authService = authService;
 
-            //using (var webApiHelper = new WebApiHelper(
-            //    string.Concat(
-            //        baseAddress,
-            //        "/auth"),
-            //    "arvtech",
-            //    "(@rV73Ch)"))
-            //{
-            //    var authDto = new AuthRequestDto
-            //    {
-            //        Username = "arvtech",
-            //        Password = "(@rV73Ch)",
-            //    };
-
-            //    string authDtoJson = JsonConvert.SerializeObject(authDto,
-            //        Formatting.None,
-            //        new JsonSerializerSettings
-            //        {
-            //            NullValueHandling = NullValueHandling.Ignore,
-            //        });
-
-            //    authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
-            //        authDtoJson);
-
-            //    var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
-            //        authDtoJson);
-
-            //    this._tokenBearer = authResponse.Token;
-            //}
-
-            //var authDto = new AuthRequestDto
-            //{
-            //    Username = "arvtech",
-            //    Password = "(@rV73Ch)"
-            //};
-
-            //var json = JsonConvert.SerializeObject(
-            //    authDto,
-            //    Formatting.None,
-            //    new JsonSerializerSettings
-            //    {
-            //        NullValueHandling = NullValueHandling.Ignore
-            //    });
-
-            //// 🔐 Basic Auth (igual ao que o WebApiHelper fazia)
-            //this._httpClientService.SetBasicAuthentication("arvtech", "(@rV73Ch)");
-
-            //using (var httpResponseMessage = this._httpClientService.ExecuteAsync(
-            //    HttpMethod.Post,
-            //    "auth",
-            //    json).GetAwaiter().GetResult())
-            //{
-            //    if (!httpResponseMessage.IsSuccessStatusCode)
-            //        throw new Exception("Erro ao autenticar.");
-
-            //    var responseJson = httpResponseMessage.Content
-            //        .ReadAsStringAsync()
-            //        .GetAwaiter()
-            //        .GetResult();
-
-            //    var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(responseJson);
-
-            //    this._tokenBearer = authResponse.Token;
-            //}
+            this._mapper = mapper;
         }
 
         /// <summary>
@@ -134,7 +42,7 @@
         [HttpGet()]
         public async Task<IActionResult> Index()
         {
-            var pessoasJuridicas = default(IEnumerable<PessoaJuridicaModel>);
+            var pessoasJuridicas = default(IEnumerable<PessoaJuridicaViewModel>);
 
             var tokenBearer = await this._authService.GetTokenAsync();
 
@@ -154,10 +62,10 @@
 
                     if (dataJson.IsValidJson())
                     {
-                        var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>>(
+                        var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>>(
                             dataJson).Data;
 
-                        pessoasJuridicas = this._mapper.Map<IEnumerable<PessoaJuridicaModel>>(
+                        pessoasJuridicas = this._mapper.Map<IEnumerable<PessoaJuridicaViewModel>>(
                             source);
                     }
                 }
@@ -180,7 +88,7 @@
                     "Index",
                     "Home");    // Em não existindo o registro, redireciona para a página inicial.
 
-            var pessoaJuridica = default(PessoaJuridicaModel);
+            var pessoaJuridica = default(PessoaJuridicaViewModel);
 
             var tokenBearer = await this._authService.GetTokenAsync();
 
@@ -203,18 +111,8 @@
                         var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
                             dataJson).Data;
 
-                        pessoaJuridica = this._mapper.Map<PessoaJuridicaModel>(
+                        pessoaJuridica = this._mapper.Map<PessoaJuridicaViewModel>(
                             data);
-
-                        pessoaJuridica.Bairro = data.Pessoa.Bairro;
-                        pessoaJuridica.Cep = data.Pessoa.Cep;
-                        pessoaJuridica.Cidade = data.Pessoa.Cidade;
-                        pessoaJuridica.Complemento = data.Pessoa.Complemento;
-                        pessoaJuridica.Email = data.Pessoa.Email;
-                        pessoaJuridica.Endereco = data.Pessoa.Endereco;
-                        pessoaJuridica.Numero = data.Pessoa.Numero;
-                        pessoaJuridica.Telefone = data.Pessoa.Telefone;
-                        pessoaJuridica.Uf = data.Pessoa.Uf;
                     }
                 }
             }
@@ -233,9 +131,9 @@
         {
             if (id == null)
                 return View(
-                    new PessoaJuridicaModel());
+                    new PessoaJuridicaViewModel());
 
-            var pessoaJuridica = default(PessoaJuridicaModel);
+            var pessoaJuridica = default(PessoaJuridicaViewModel);
 
             var tokenBearer = await this._authService.GetTokenAsync();
 
@@ -258,18 +156,8 @@
                         var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
                             dataJson).Data;
 
-                        pessoaJuridica = this._mapper.Map<PessoaJuridicaModel>(
+                        pessoaJuridica = this._mapper.Map<PessoaJuridicaViewModel>(
                             data);
-
-                        pessoaJuridica.Bairro = data.Pessoa.Bairro;
-                        pessoaJuridica.Cep = data.Pessoa.Cep;
-                        pessoaJuridica.Cidade = data.Pessoa.Cidade;
-                        pessoaJuridica.Complemento = data.Pessoa.Complemento;
-                        pessoaJuridica.Email = data.Pessoa.Email;
-                        pessoaJuridica.Endereco = data.Pessoa.Endereco;
-                        pessoaJuridica.Numero = data.Pessoa.Numero;
-                        pessoaJuridica.Telefone = data.Pessoa.Telefone;
-                        pessoaJuridica.Uf = data.Pessoa.Uf;
                     }
                 }
             }
@@ -284,7 +172,7 @@
         /// <param name="vm"></param>
         /// <returns></returns>
         [HttpPost()]
-        public async Task<IActionResult> Edit(PessoaJuridicaModel vm)
+        public async Task<IActionResult> Edit(PessoaJuridicaViewModel vm)
         {
             ViewBag.ErrorMessage = null;
             ViewBag.SuccessMessage = null;
@@ -401,160 +289,6 @@
                 vm);
         }
 
-        //{
-        //    ViewBag.ErrorMessage = null;
-        //    ViewBag.SuccessMessage = null;
-        //    ViewBag.ValidateMessage = null;
-
-        //    if (!ModelState.IsValid)
-        //    {
-        //        var errorMessageHtml = new StringBuilder();
-
-        //        var modelStateErrors = this.ModelState.Keys.OrderBy(x => x).SelectMany(key => this.ModelState[key].Errors);
-
-        //        if (modelStateErrors != null &&
-        //            modelStateErrors.Count() > 0)
-        //        {
-        //            errorMessageHtml.Append("<p></p>");
-
-        //            foreach (var modelStateError in modelStateErrors)
-        //            {
-        //                errorMessageHtml.Append("<p style=\"text-align:justify\">");
-
-        //                errorMessageHtml.Append($"- {modelStateError.ErrorMessage}");
-
-        //                errorMessageHtml.Append("</p>");
-        //            }
-        //        }
-
-        //        ViewBag.ValidateMessage = errorMessageHtml.ToString();
-
-        //        return View(
-        //            vm);
-        //    }
-
-        //    bool isNew = vm.Guid is null || vm.Guid == Guid.Empty;
-
-        //    string cnpjSanitized = vm.Cnpj.Replace(
-        //        ".",
-        //        string.Empty).Replace(
-        //            "/",
-        //            string.Empty).Replace(
-        //                "-",
-        //                string.Empty);
-
-        //    string cepSanitized = !string.IsNullOrEmpty(
-        //        vm.Cep) ?
-        //            vm.Cep.Replace(
-        //                "-",
-        //                string.Empty) :
-        //            string.Empty;
-
-        //    object dto;
-
-
-        //    if (isNew)
-        //    {
-
-        //        createDto = this._mapper.Map<PessoaJuridicaRequestCreateDto>(
-        //            model);
-
-        //        createDto.Cnpj = createDto.Cnpj.Replace(
-        //            ".",
-        //            string.Empty).Replace(
-        //                "/",
-        //                string.Empty).Replace(
-        //                    "-",
-        //                    string.Empty);
-
-        //        createDto.Pessoa = new PessoaRequestCreateDto()
-        //        {
-        //            Bairro = model.Bairro,
-
-        //            Cep = !string.IsNullOrEmpty(model.Cep) ?
-        //                model.Cep.Replace(
-        //                    "-",
-        //                    string.Empty) :
-        //                string.Empty,
-
-        //            Cidade = model.Cidade,
-        //            Complemento = model.Complemento,
-        //            Email = model.Email,
-        //            Endereco = model.Endereco,
-        //            Numero = model.Numero,
-        //            Telefone = model.Telefone,
-        //            Uf = model.Uf,
-        //        };
-        //    }
-        //    else
-        //    {
-        //        updateDto = this._mapper.Map<PessoaJuridicaRequestUpdateDto>(
-        //            model);
-
-        //        updateDto.Cnpj = updateDto.Cnpj.Replace(
-        //            ".",
-        //            string.Empty).Replace(
-        //                "/",
-        //                string.Empty).Replace(
-        //                    "-",
-        //                    string.Empty);
-
-        //        if (updateDto.Pessoa is null)
-        //            updateDto.Pessoa = new PessoaRequestUpdateDto();
-
-        //        updateDto.Pessoa.Bairro = model.Bairro;
-
-        //        updateDto.Pessoa.Cep = !string.IsNullOrEmpty(model.Cep) ?
-        //            model.Cep.Replace(
-        //                "-",
-        //                string.Empty) :
-        //            string.Empty;
-
-        //        updateDto.Pessoa.Cidade = model.Cidade;
-        //        updateDto.Pessoa.Complemento = model.Complemento;
-        //        updateDto.Pessoa.Email = model.Email;
-        //        updateDto.Pessoa.Endereco = model.Endereco;
-        //        updateDto.Pessoa.Numero = model.Numero;
-        //        updateDto.Pessoa.Telefone = model.Telefone;
-        //        updateDto.Pessoa.Uf = model.Uf;
-        //    }
-
-        //    string requestUri = "PessoaJuridica";
-
-        //    string fromBodyString = JsonConvert.SerializeObject(
-        //        isNew ?
-        //            createDto :
-        //            updateDto,
-        //        Formatting.Indented);
-
-        //    var apiResponseDto = default(ApiResponseDto<PessoaJuridicaResponseDto>);
-
-        //    using (var webApiHelper = new WebApiHelper(
-        //        requestUri,
-        //        this._tokenBearer))
-        //    {
-        //        if (isNew)
-        //            fromBodyString = webApiHelper.ExecutePostWithAuthenticationByBearer(
-        //                fromBodyString);
-        //        else
-        //            fromBodyString = webApiHelper.ExecutePutWithAuthenticationByBearer(
-        //                fromBodyString);
-
-        //        if (fromBodyString.IsValidJson())
-        //            apiResponseDto = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
-        //                fromBodyString);
-        //    }
-
-        //    if (apiResponseDto != null &&
-        //        apiResponseDto.Success)
-        //        ViewBag.SuccessMessage = "<p>Aguarde, você será redirecionado em alguns segundos.</p>";
-        //    else
-        //        ViewBag.ErrorMessage = $"<p>{apiResponseDto.Message}</p>";
-
-        //    return View(
-        //        model);
-        //}
-
         /// <summary>
         /// 
         /// </summary>
@@ -562,7 +296,7 @@
         [HttpPost()]
         public async Task<IActionResult> GetDataTable()
         {
-            var pessoasJuridicas = default(IEnumerable<PessoaJuridicaModel>);
+            var pessoasJuridicas = default(IEnumerable<PessoaJuridicaViewModel>);
 
             var tokenBearer = await this._authService.GetTokenAsync();
 
@@ -585,7 +319,7 @@
                         var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>>(
                             dataJson).Data;
 
-                        pessoasJuridicas = this._mapper.Map<IEnumerable<PessoaJuridicaModel>>(
+                        pessoasJuridicas = this._mapper.Map<IEnumerable<PessoaJuridicaViewModel>>(
                             source);
                     }
                 }
