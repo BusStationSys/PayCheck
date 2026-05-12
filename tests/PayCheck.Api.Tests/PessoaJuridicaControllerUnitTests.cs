@@ -132,7 +132,7 @@ namespace PayCheck.Api.Tests
             // Arrange
             this._pessoaJuridicaServiceMock.Setup(
                 s => s.GetAll()).Returns(
-                []);
+                Array.Empty<PessoaJuridicaResponseDto>());
 
             // Act
             var result = this._pessoaJuridicaController.GetPessoasJuridicas();

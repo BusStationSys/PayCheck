@@ -176,6 +176,11 @@ app.UseEndpoints(endpoints =>
 
 app.Run();
 
+/// <summary>
+/// 
+/// </summary>
+public partial class Program { }
+
 //using System.Data.SqlClient;
 //using System.Reflection;
 //using System.Text;

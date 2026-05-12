@@ -186,9 +186,9 @@ namespace PayCheck.Api.Tests
         public void GetPessoasFisicas_ShouldReturnNotFound_WhenEmpty()
         {
             // Arrange
-            this._pessoaFisicaServiceMock
-                .Setup(s => s.GetAll())
-                .Returns([]);
+            this._pessoaFisicaServiceMock.Setup(
+                s => s.GetAll()).Returns(
+                    Array.Empty<PessoaFisicaResponseDto>());
 
             // Act
             var result = this._pessoaFisicaController.GetPessoasFisicas();
@@ -431,7 +431,7 @@ namespace PayCheck.Api.Tests
                     "0101",
                     "3112"))
                 .Returns(
-                    []);
+                    Array.Empty<PessoaFisicaResponseDto>());
 
             // Act
             var result = this._pessoaFisicaController.GetAniversariantes(
