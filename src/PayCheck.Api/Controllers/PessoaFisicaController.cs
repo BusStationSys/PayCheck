@@ -73,7 +73,7 @@
                 var data = this._service.Get(guid);
 
                 return data is null ?
-                    NotFound() :
+                    NotFound("Nenhuma pessoa física encontrada.") :
                     Ok(data);
             }
             catch (Exception ex)
@@ -92,7 +92,7 @@
         /// <response code="500">Internal server error.</response>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<PessoaFisicaResponseDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetPessoasFisicas()
         {
@@ -101,7 +101,7 @@
                 var data = this._service.GetAll();
 
                 return data is null || !data.Any() ?
-                    NoContent() :
+                    NotFound("Nenhuma pessoa física encontrada.") :
                     Ok(data);
             }
             catch (Exception ex)
@@ -123,7 +123,7 @@
         /// <response code="500">Internal server error.</response>
         [HttpGet("Aniversariantes")]
         [ProducesResponseType(typeof(IEnumerable<PessoaFisicaResponseDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetAniversariantes(
@@ -141,8 +141,10 @@
                     periodoFinalString);
 
                 return data is null || !data.Any() ?
-                    NoContent() :
-                    Ok(data);
+                    NotFound(
+                        "Nenhuma pessoa física encontrada.") :
+                    Ok(
+                        data);
             }
             catch (Exception ex)
             {

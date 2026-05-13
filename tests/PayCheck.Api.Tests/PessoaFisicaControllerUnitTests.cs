@@ -22,6 +22,14 @@ namespace PayCheck.Api.Tests
         }
 
         [Fact]
+        public void Constructor_ShouldThrowArgumentNullException_WhenServiceIsNull()
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(
+                () => new PessoaFisicaController(null!));
+        }
+
+        [Fact]
         public void GetPessoaFisica_ShouldReturnOk_WhenFound()
         {
             // Arrange
@@ -54,6 +62,68 @@ namespace PayCheck.Api.Tests
         }
 
         [Fact]
+        public void DeletePessoaFisica_ShouldReturnInternalServerError_WhenExceptionThrown()
+        {
+            // Arrange
+            var guid = Guid.NewGuid();
+
+            this._pessoaFisicaServiceMock.Setup(
+                s => s.Get(
+                    guid)).Throws(
+                new Exception(
+                    "Erro inesperado."));
+
+            // Act
+            var result = this._pessoaFisicaController.DeletePessoaFisica(
+                guid);
+
+            // Assert
+            var objectResult = Assert.IsType<ObjectResult>(
+                result);
+
+            Assert.Equal(
+                StatusCodes.Status500InternalServerError,
+                objectResult.StatusCode);
+        }
+
+        [Fact]
+        public void GetPessoasFisicas_ShouldReturnInternalServerError_WhenExceptionThrown()
+        {
+            // Arrange
+            this._pessoaFisicaServiceMock.Setup(
+                s => s.GetAll()).Throws(
+                new Exception(
+                    "Erro inesperado."));
+
+            // Act
+            var result = this._pessoaFisicaController.GetPessoasFisicas();
+
+            // Assert
+            var objectResult = Assert.IsType<ObjectResult>(
+                result);
+
+            Assert.Equal(
+                StatusCodes.Status500InternalServerError,
+                objectResult.StatusCode);
+        }
+
+        [Fact]
+        public void GetPessoasFisicas_ShouldReturnNotFound_WhenNull()
+        {
+            // Arrange
+            this._pessoaFisicaServiceMock.Setup(
+                s => s.GetAll()).Returns(
+                    Enumerable.Empty<PessoaFisicaResponseDto>());
+
+            // Act
+            var result = this._pessoaFisicaController.GetPessoasFisicas();
+
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(
+                result);
+        }
+
+        [Fact]
         public void GetPessoaFisica_ShouldReturnNotFound_WhenNotFound()
         {
             // Arrange
@@ -69,11 +139,8 @@ namespace PayCheck.Api.Tests
                 guid);
 
             // Assert
-            var notFoundObjectResult = Assert.IsType<NotFoundObjectResult>(
+            Assert.IsType<NotFoundObjectResult>(
                 result);
-
-            Assert.NotNull(
-                notFoundObjectResult.Value);
         }
 
         [Fact]
@@ -142,15 +209,12 @@ namespace PayCheck.Api.Tests
                 (PessoaFisicaResponseDto?)null);
 
             // Act
-            var result = this._pessoaFisicaController.DeletePessoaFisica(
+            var notFoundResult = this._pessoaFisicaController.DeletePessoaFisica(
                 guid);
 
             // Assert
-            var notFoundObjectResult = Assert.IsType<NotFoundObjectResult>(
-                result);
-
-            Assert.NotNull(
-                notFoundObjectResult.Value);
+            Assert.IsType<NotFoundResult>(
+                notFoundResult);
         }
 
         [Fact]
@@ -241,11 +305,8 @@ namespace PayCheck.Api.Tests
                 null);
 
             // Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(
+            Assert.IsType<BadRequestResult>(
                 result);
-
-            Assert.NotNull(
-                badRequestResult.Value);
         }
 
         [Fact]
@@ -327,11 +388,8 @@ namespace PayCheck.Api.Tests
                 null);
 
             // Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(
+            Assert.IsType<BadRequestResult>(
                 result);
-
-            Assert.NotNull(
-                badRequestResult.Value);
         }
 
         [Fact]
@@ -353,11 +411,8 @@ namespace PayCheck.Api.Tests
                 updateDto);
 
             // Assert
-            var notFoundResult = Assert.IsType<NotFoundObjectResult>(
+            Assert.IsType<NotFoundResult>(
                 result);
-
-            Assert.NotNull(
-                notFoundResult.Value);
         }
 
         [Fact]
@@ -423,6 +478,27 @@ namespace PayCheck.Api.Tests
         }
 
         [Fact]
+        public void GetAniversariantes_ShouldReturnNotFound_WhenNull()
+        {
+            // Arrange
+            this._pessoaFisicaServiceMock.Setup(
+                s => s.GetAniversariantes(
+                    "0601",
+                    "3006"))
+                .Returns(
+                    Enumerable.Empty<PessoaFisicaResponseDto>());
+
+            // Act
+            var result = this._pessoaFisicaController.GetAniversariantes(
+                "0601",
+                "3006");
+
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(
+                result);
+        }
+
+        [Fact]
         public void GetAniversariantes_ShouldReturnNotFound_WhenEmpty()
         {
             // Arrange
@@ -452,11 +528,93 @@ namespace PayCheck.Api.Tests
                 string.Empty);
 
             // Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(
+            Assert.IsType<BadRequestResult>(
+                result);
+        }
+
+        [Fact]
+        public void GetAniversariantes_ShouldReturnBadRequest_WhenPeriodoFinalIsEmpty()
+        {
+            // Act
+            var result = this._pessoaFisicaController.GetAniversariantes(
+                "0101",
+                string.Empty);
+
+            // Assert
+            Assert.IsType<BadRequestResult>(
+                result);
+        }
+
+        [Fact]
+        public void GetAniversariantes_ShouldReturnBadRequest_WhenParametersAreWhiteSpace()
+        {
+            // Act
+            var result = this._pessoaFisicaController.GetAniversariantes(
+                "   ",
+                "   ");
+
+            // Assert
+            Assert.IsType<BadRequestResult>(
+                result);
+        }
+
+        [Fact]
+        public void GetAniversariantes_ShouldReturnInternalServerError_WhenExceptionThrown()
+        {
+            // Arrange
+            this._pessoaFisicaServiceMock.Setup(
+                s => s.GetAniversariantes(
+                    "0101",
+                    "3112")).Throws(
+                new Exception(
+                    "Erro inesperado."));
+
+            // Act
+            var result = this._pessoaFisicaController.GetAniversariantes(
+                "0101",
+                "3112");
+
+            // Assert
+            var objectResult = Assert.IsType<ObjectResult>(
                 result);
 
-            Assert.NotNull(
-                badRequestResult.Value);
+            Assert.Equal(
+                StatusCodes.Status500InternalServerError,
+                objectResult.StatusCode);
+        }
+
+        [Fact]
+        public void GetAniversariantes_ShouldReturnMultipleResults_WhenMultipleFound()
+        {
+            // Arrange
+            var dtos = new List<PessoaFisicaResponseDto>
+            {
+                new() { Guid = Guid.NewGuid() },
+                new() { Guid = Guid.NewGuid() },
+                new() { Guid = Guid.NewGuid() },
+            };
+
+            this._pessoaFisicaServiceMock.Setup(
+                s => s.GetAniversariantes(
+                    "0101",
+                    "3112")).Returns(
+                dtos);
+
+            // Act
+            var result = this._pessoaFisicaController.GetAniversariantes(
+                "0101",
+                "3112");
+
+            // Assert
+            var okObjectResult = Assert.IsType<OkObjectResult>(
+                result);
+
+            var returnValue = Assert.IsAssignableFrom<IEnumerable<PessoaFisicaResponseDto>>(
+                okObjectResult.Value);
+
+            Assert.Equal(
+                3,
+                returnValue.Count());
         }
     }
 }

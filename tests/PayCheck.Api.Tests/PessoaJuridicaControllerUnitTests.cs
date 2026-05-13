@@ -22,6 +22,14 @@ namespace PayCheck.Api.Tests
         }
 
         [Fact]
+        public void Constructor_ShouldThrowArgumentNullException_WhenServiceIsNull()
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(
+                () => new PessoaJuridicaController(null!));
+        }
+
+        [Fact]
         public void GetPessoaJuridica_ShouldReturnOK_WhenFound()
         {
             //  Arrange
@@ -124,6 +132,22 @@ namespace PayCheck.Api.Tests
             Assert.Equal(
                 2,
                 returnValue.Count());
+        }
+
+        [Fact]
+        public void GetPessoasJuridicas_ShouldReturnNotFound_WhenNull()
+        {
+            // Arrange
+            this._pessoaJuridicaServiceMock.Setup(
+                s => s.GetAll()).Returns(
+                (IEnumerable<PessoaJuridicaResponseDto>?)null);
+
+            // Act
+            var result = this._pessoaJuridicaController.GetPessoasJuridicas();
+
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(
+                result);
         }
 
         [Fact]
