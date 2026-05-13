@@ -4,16 +4,16 @@
     <TargetFramework>net7.0</TargetFramework>
     <IsTestProject>true</IsTestProject>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <BaseIntermediateOutputPath>bin\</BaseIntermediateOutputPath>
-    <BaseOutputPath>bin\</BaseOutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>IDE0028;IDE0063;IDE0290;1701;1702</NoWarn>
+    <OutputPath>bin\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <NoWarn>IDE0028;IDE0063;IDE0290;1701;1702</NoWarn>
+    <OutputPath>bin\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
