@@ -32,24 +32,22 @@
 
         private readonly IAuthService _authService;
 
-        private readonly Mapper _mapper;
-
         public HomeController(ILogger<HomeController> logger, IHttpClientService httpClientService, IAuthService authService)
         {
             this._logger = logger;
 
-            var mapperConfiguration = new MapperConfiguration(cfg =>
-            {
-                //cfg.CreateMap<PublicacaoRequestCreateDto, PublicacaoResponseDto>().ReverseMap();
-                //cfg.CreateMap<PublicacaoRequestUpdateDto, PublicacaoResponseDto>().ReverseMap();
-                //cfg.CreateMap<PublicacaoRequestCreateDto, PublicacaoModel>().ReverseMap();
-                //cfg.CreateMap<PublicacaoRequestUpdateDto, PublicacaoModel>().ReverseMap();
+            //var mapperConfiguration = new MapperConfiguration(cfg =>
+            //{
+            //    //cfg.CreateMap<PublicacaoRequestCreateDto, PublicacaoResponseDto>().ReverseMap();
+            //    //cfg.CreateMap<PublicacaoRequestUpdateDto, PublicacaoResponseDto>().ReverseMap();
+            //    //cfg.CreateMap<PublicacaoRequestCreateDto, PublicacaoModel>().ReverseMap();
+            //    //cfg.CreateMap<PublicacaoRequestUpdateDto, PublicacaoModel>().ReverseMap();
 
-                //cfg.CreateMap<PublicacaoResponseDto, PublicacaoModel>().ReverseMap();
-            });
+            //    //cfg.CreateMap<PublicacaoResponseDto, PublicacaoModel>().ReverseMap();
+            //});
 
-            this._mapper = new Mapper(
-                mapperConfiguration);
+            //this._mapper = new Mapper(
+            //    mapperConfiguration);
 
             this._httpClientService = httpClientService;
 

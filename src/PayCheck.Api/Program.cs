@@ -1,12 +1,14 @@
-using System.Reflection;
-using System.Text;
 using ARVTech.DataAccess.Infrastructure.UnitOfWork.SqlServer;
 using ARVTech.DataAccess.Service.UniPayCheck;
 using ARVTech.DataAccess.Service.UniPayCheck.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PayCheck.Api;
+using PayCheck.Api.Controllers;
+using System.Reflection;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,40 +23,65 @@ builder.Configuration.AddJsonFile(
     optional: true,
     reloadOnChange: true).AddEnvironmentVariables();
 
-//var adapter = new UnitOfWorkSqlServerAdapter(
-//    this._configuration);
-
-//var repository = new UnitOfWorkSqlServerRepository(
-//    (SqlConnection)adapter.Connection);
-
-//var repository2 = new UnitOfWorkSqlServerRepository(
-//    (SqlConnection)adapter.Connection,
-//    (SqlTransaction)adapter.Transaction);
-
-//services.AddSingleton(provider => unitOfWork);
-
-//services.AddSingleton(provider => adapter);
-
-//services.AddSingleton(provider => repository);
-//services.AddSingleton(provider => repository2);
+//  Services. Os registros do AddAutoMapper devem vir antes dos AddScoped, pois o IMapper precisa estar registrado no container antes de ser resolvido via provider.GetRequiredService<IMapper>().
+builder.Services.AddAutoMapper(
+    config =>
+    {
+        config.AllowNullCollections = true;
+    },
+    typeof(
+        EventoService).Assembly,
+    typeof(
+        MatriculaDemonstrativoPagamentoEventoService).Assembly,
+    typeof(
+        EspelhoPontoController).Assembly,
+    typeof(
+        MatriculaDemonstrativoPagamentoEventoService).Assembly,
+    typeof(
+        MatriculaDemonstrativoPagamentoService).Assembly,
+    typeof(
+        MatriculaDemonstrativoPagamentoTotalizadorService).Assembly,
+    typeof(
+        MatriculaEspelhoPontoCalculoService).Assembly,
+    typeof(
+        MatriculaEspelhoPontoMarcacaoService).Assembly,
+    typeof(
+        MatriculaEspelhoPontoService).Assembly,
+    typeof(
+        MatriculaService).Assembly,
+    typeof(
+        PessoaFisicaService).Assembly,
+    typeof(
+        PessoaJuridicaService).Assembly,
+    typeof(
+        UsuarioService).Assembly);
 
 builder.Services.AddScoped<IMatriculaService>(
-    provider => new MatriculaService(unitOfWork));
+    provider => new MatriculaService(
+        unitOfWork,
+        provider.GetRequiredService<IMapper>()));
 
 builder.Services.AddScoped<IMatriculaEspelhoPontoService>(
-    provider => new MatriculaEspelhoPontoService(unitOfWork));
+    provider => new MatriculaEspelhoPontoService(
+        unitOfWork,
+        provider.GetRequiredService<IMapper>()));
 
 builder.Services.AddScoped<IMatriculaDemonstrativoPagamentoService>(
-    provider => new MatriculaDemonstrativoPagamentoService(unitOfWork));
+    provider => new MatriculaDemonstrativoPagamentoService(
+        unitOfWork,
+        provider.GetRequiredService<IMapper>()));
 
 builder.Services.AddScoped<IPessoaFisicaService>(
-    provider => new PessoaFisicaService(unitOfWork));
+    provider => new PessoaFisicaService(unitOfWork,
+    provider.GetRequiredService<IMapper>()));
 
 builder.Services.AddScoped<IPessoaJuridicaService>(
-    provider => new PessoaJuridicaService(unitOfWork));
+    provider => new PessoaJuridicaService(unitOfWork,
+    provider.GetRequiredService<IMapper>()));
 
 builder.Services.AddScoped<IUsuarioService>(
-    provider => new UsuarioService(unitOfWork));
+    provider => new UsuarioService(unitOfWork,
+    provider.GetRequiredService<IMapper>()));
 
 //builder.Services.AddControllers();
 builder.Services.AddControllers(

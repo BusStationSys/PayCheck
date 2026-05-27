@@ -546,6 +546,19 @@ namespace PayCheck.Api.Tests
         }
 
         [Fact]
+        public void GetAniversariantes_ShouldReturnBadRequest_WhenPeriodoInicialIsEmpty()
+        {
+            // Act
+            var result = this._pessoaFisicaController.GetAniversariantes(
+                string.Empty,
+                "3112");
+
+            // Assert
+            Assert.IsType<BadRequestResult>(
+                result);
+        }
+
+        [Fact]
         public void GetAniversariantes_ShouldReturnBadRequest_WhenParametersAreWhiteSpace()
         {
             // Act

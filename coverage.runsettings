@@ -6,6 +6,11 @@
           <Include>
             [PayCheckApi*]*
           </Include>
+          <ExcludeByAttribute>
+            CompilerGeneratedAttribute,
+            GeneratedCodeAttribute,
+            ExcludeFromCodeCoverageAttribute
+          </ExcludeByAttribute>
         </Configuration>
       </DataCollector>
     </DataCollectors>

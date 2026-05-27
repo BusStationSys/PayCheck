@@ -14,6 +14,7 @@ using PayCheck.Web.Infrastructure.Http;
 using PayCheck.Web.Infrastructure.Http.Interfaces;
 using PayCheck.Web.Services;
 using PayCheck.Web.Services.Interfaces;
+using PayCheck.Web.ViewComponents;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,20 +26,27 @@ builder.Configuration.AddJsonFile(
     optional: true,
     reloadOnChange: true).AddEnvironmentVariables();
 
-//  Colaborador.
 builder.Services.AddAutoMapper(
+    config =>
+    {
+        config.AllowNullCollections = true;
+    },
     typeof(
-        ColaboradorController));
-
-//  Empregador.
-builder.Services.AddAutoMapper(
+        AccessController).Assembly,                     //  AccessController é um tipo que está no mesmo assembly dos Profiles de Access.
     typeof(
-        EmpregadorController));
-
-//  Espelho de Ponto.
-builder.Services.AddAutoMapper(
+        AlertCenterViewComponent).Assembly,             //  AlertCenterViewComponent é um tipo que está no mesmo assembly dos Profiles de AlertCenter.
     typeof(
-        EspelhoPontoController));
+        ColaboradorController).Assembly,                //  ColaboradorController é um tipo que está no mesmo assembly dos Profiles de Colaborador.
+    typeof(
+        DemonstrativoPagamentoController).Assembly,     //  DemonstrativoPagamentoController é um tipo que está no mesmo assembly dos Profiles de DemonstrativoPagamento.
+    typeof(
+        EmpregadorController).Assembly,                 //  EmpregadorController é um tipo que está no mesmo assembly dos Profiles de Empregador.
+    typeof(
+        EspelhoPontoController).Assembly,               //  EspelhoPontoController é um tipo que está no mesmo assembly dos Profiles de EspelhoPonto.
+    typeof(
+        SalaryCompositionChartViewComponent).Assembly,  //  SalaryCompositionChartViewComponent é um tipo que está no mesmo assembly dos Profiles de SalaryCompositionChart.
+    typeof(
+        SalaryEvolutionChartViewComponent).Assembly);   //  SalaryEvolutionChartViewComponent é um tipo que está no mesmo assembly dos Profiles de SalaryEvolutionChart.
 
 // Add services to the container.
 builder.Services.AddRazorPages();

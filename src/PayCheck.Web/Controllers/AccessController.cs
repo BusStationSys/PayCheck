@@ -33,7 +33,7 @@
 
         private readonly IAuthService _authService;
 
-        private readonly Mapper _mapper;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// /// Initializes a new instance of the <see cref="AccessController"/> class.
@@ -41,20 +41,15 @@
         /// <param name="emailService">The email service.</param>
         /// <param name="httpClientService">The HTTP client service.</param>
         /// <param name="authService">The authentication service.</param>
+        /// <param name="mapper">The AutoMapper instance.</param>
         /// <exception cref="Exception"></exception>
-        public AccessController(IEmailService emailService, IHttpClientService httpClientService, IAuthService authService)
+        public AccessController(IEmailService emailService, IHttpClientService httpClientService, IAuthService authService, IMapper mapper)
         {
-            var mapperConfiguration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<LoginRequestDto, LoginViewModel>().ReverseMap();
-            });
-
-            this._mapper = new Mapper(
-                mapperConfiguration);
-
             this._httpClientService = httpClientService;
 
             this._authService = authService;
+
+            this._mapper = mapper;
 
             //using (var webApiHelper = new WebApiHelper(
             //        "auth",

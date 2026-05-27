@@ -24,38 +24,18 @@
 
         private readonly IAuthService _authService;
 
-        private readonly Mapper _mapper;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DemonstrativoPagamentoController"/> class.
         /// </summary>
         /// <param name="httpClientService"></param>
         /// <param name="authService"></param>
+        /// <param name="mapper"></param>
         /// <exception cref="Exception"></exception>
-        public DemonstrativoPagamentoController(IHttpClientService httpClientService, IAuthService authService)
+        public DemonstrativoPagamentoController(IHttpClientService httpClientService, IAuthService authService, IMapper mapper)
         {
-            var mapperConfiguration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<MatriculaDemonstrativoPagamentoRequestCreateDto, MatriculaDemonstrativoPagamentoResponseDto>().ReverseMap();
-                cfg.CreateMap<MatriculaDemonstrativoPagamentoRequestUpdateDto, MatriculaDemonstrativoPagamentoResponseDto>().ReverseMap();
-
-                cfg.CreateMap<MatriculaDemonstrativoPagamentoResponseDto, DemonstrativoPagamentoViewModel>()
-                    .ForMember(
-                        dest => dest.NumeroMatricula,
-                        opt => opt.MapFrom(
-                            src => src.Matricula.Matricula))
-                    .ForMember(
-                        dest => dest.NomeColaborador,
-                        opt => opt.MapFrom(
-                            src => src.Matricula.Colaborador.Nome))
-                    .ForMember(
-                        dest => dest.RazaoSocialEmpregador,
-                        opt => opt.MapFrom(
-                            src => src.Matricula.Empregador.RazaoSocial)).ReverseMap();
-            });
-
-            this._mapper = new Mapper(
-                mapperConfiguration);
+            this._mapper = mapper;
 
             this._httpClientService = httpClientService;
 

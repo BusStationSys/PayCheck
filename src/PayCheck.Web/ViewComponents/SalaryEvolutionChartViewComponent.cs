@@ -21,31 +21,22 @@
 
         private readonly IAuthService _authService;
 
-        private readonly Mapper _mapper;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SalaryEvolutionChartViewComponent"/> class.
         /// </summary>
         /// <param name="httpClientService">The HTTP client service.</param>
         /// <param name="authService">The authentication service.</param>
+        /// <param name="mapper">The AutoMapper instance.</param>
         /// <exception cref="Exception"></exception>
-        public SalaryEvolutionChartViewComponent(IHttpClientService httpClientService, IAuthService authService)
+        public SalaryEvolutionChartViewComponent(IHttpClientService httpClientService, IAuthService authService, IMapper mapper)
         {
-            var mapperConfiguration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<GraficoEvolucaoSalarialResponseDto, GraficoEvolucaoSalarialViewModel>()
-                    .ForMember(
-                        dest => dest.Competencia,
-                        opt => opt.MapFrom(
-                            src => src.CompetenciaFormatada)).ReverseMap();
-            });
-
-            this._mapper = new Mapper(
-                mapperConfiguration);
-
             this._httpClientService = httpClientService;
 
             this._authService = authService;
+
+            this._mapper = mapper;
         }
 
         /// <summary>
