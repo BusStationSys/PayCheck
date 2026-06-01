@@ -1,4 +1,4 @@
-﻿namespace PayCheck.Api.IntegrationTests
+﻿namespace PayCheck.Api.Integration.Test
 {
     using ARVTech.DataAccess.Service.UniPayCheck.Interfaces;
     using Microsoft.AspNetCore.Authentication;

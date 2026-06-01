@@ -1,4 +1,4 @@
-namespace PayCheck.Api.Tests
+namespace PayCheck.Api.Unit.Test
 {
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.DataAccess.Service.UniPayCheck.Interfaces;

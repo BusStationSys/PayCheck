@@ -1,4 +1,4 @@
-namespace PayCheck.Api.IntegrationTests
+namespace PayCheck.Api.Integration.Test
 {
     using System;
     using System.Collections.Generic;

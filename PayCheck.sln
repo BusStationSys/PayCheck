@@ -23,14 +23,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.DataAccess.Domain",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARVTech.DataAccess.Service", "submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Service\ARVTech.DataAccess.Service.csproj", "{F26F70F4-6570-4736-8713-190849A1870E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayCheck.Api.Tests", "tests\PayCheck.Api.Tests\PayCheck.Api.Tests.csproj", "{AB411242-7E67-48EE-9D5D-1C91EA6BE97B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayCheck.Api.Unit.Test", "tests\PayCheck.Api.Tests\PayCheck.Api.Unit.Test.csproj", "{AB411242-7E67-48EE-9D5D-1C91EA6BE97B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Itens de Solução", "Itens de Solução", "{FC32B548-E484-493E-9EE4-9170216339B1}"
 	ProjectSection(SolutionItems) = preProject
 		coverage.runsettings = coverage.runsettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayCheck.Api.IntegrationTests", "tests\PayCheck.Api.IntegrationTests\PayCheck.Api.IntegrationTests.csproj", "{22DEFBC3-5E17-4398-917B-DA5B190E46FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayCheck.Api.Integration.Test", "tests\PayCheck.Api.IntegrationTests\PayCheck.Api.Integration.Test.csproj", "{22DEFBC3-5E17-4398-917B-DA5B190E46FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
