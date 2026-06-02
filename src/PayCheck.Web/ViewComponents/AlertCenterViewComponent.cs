@@ -17,8 +17,6 @@
 
     public class AlertCenterViewComponent : ViewComponent
     {
-        private readonly string _tokenBearer;
-
         private readonly IHttpClientService _httpClientService;
 
         private readonly IAuthService _authService;

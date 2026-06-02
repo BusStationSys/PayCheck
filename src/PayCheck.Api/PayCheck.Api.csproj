@@ -3,7 +3,6 @@
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
 		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
     <PreserveCompilationContext>true</PreserveCompilationContext>
@@ -20,7 +19,12 @@
 	</PropertyGroup>
   
 	<ItemGroup>
+	  <Compile Remove="Controllers\EspelhoPontoController.cs" />
+	  <Compile Remove="Controllers\MatriculaController.cs" />
+	  <Compile Remove="Controllers\PessoaFisicaController.cs" />
+	  <Compile Remove="Controllers\PessoaJuridicaController.cs" />
 	  <Compile Remove="Controllers\PublicacaoController.cs" />
+	  <Compile Remove="Controllers\UsuarioController.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -31,7 +35,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.DTOs\ARVTech.DataAccess.DTOs.csproj" />
 		<ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Service\ARVTech.DataAccess.Service.csproj" />
 		<ProjectReference Include="..\..\submodules\ARVTech.DataAccess\submodules\ARVTech.Shared\src\ARVTech.Shared.csproj" />
 	</ItemGroup>
@@ -49,6 +52,10 @@
 	  <Content Update="appsettings.Staging.json">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Models\" />
 	</ItemGroup>
 
 </Project>

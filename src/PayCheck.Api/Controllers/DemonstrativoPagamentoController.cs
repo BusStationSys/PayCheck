@@ -1,13 +1,15 @@
 ﻿namespace PayCheck.Api.Controllers
 {
-    using ARVTech.DataAccess.DTOs;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using ARVTech.DataAccess.DTOs.UniPayCheck;
     using ARVTech.DataAccess.Service.UniPayCheck.Interfaces;
     using ARVTech.Shared.Enums;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using System;
-    using System.Net;
 
     /// <summary>
     /// Provides API endpoints for managing payment statements.
@@ -35,346 +37,267 @@
         }
 
         /// <summary>
-        /// Retrieves the payment statement for a given identifier.
+        /// Retrieves a payment statement by its identifier.
         /// </summary>
-        /// <remarks>This method attempts to retrieve the payment statement associated with the specified <paramref
-        /// name="guid"/>. If the payment statement is found, the response will include the data and a success status. If not
-        /// found, the response will indicate a not found status. In case of an error, the response will contain the error
-        /// message and an internal server error status.</remarks>
-        /// <param name="guid">The unique identifier of the payment statement to retrieve.</param>
-        /// <returns>An <see cref="ApiResponseDto{MatriculaDemonstrativoPagamentoResponseDto}"/> containing the payment statement data if
-        /// found; otherwise, a response indicating that the payment statement was not found or an error occurred.</returns>
+        /// <param name="guid">The unique identifier of the payment statement.</param>
+        /// <returns>
+        /// A <see cref="MatriculaDemonstrativoPagamentoResponseDto"/> when found.
+        /// Returns <c>404 Not Found</c> when the resource does not exist.
+        /// </returns>
         [HttpGet("{guid}")]
-        public ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto> GetDemonstrativoPagamento(Guid guid)
+        [ProducesResponseType(typeof(MatriculaDemonstrativoPagamentoResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetDemonstrativoPagamentoAsync(Guid guid)
         {
-            try
-            {
-                var data = this._service.Get(
-                    guid);
+            var data = await Task.FromResult(
+                this._service.Get(
+                    guid));
 
-                if (data != null)
-                    return new ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto>
+            if (data is null)
+                return NotFound(
+                    new ProblemDetails
                     {
-                        Data = data,
-                        Success = true,
-                        StatusCode = HttpStatusCode.OK,
-                    };
+                        Title = "Not Found",
+                        Detail = $"Demonstrativo de Pagamento {guid} não encontrado!",
+                    });
 
-                return new ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto>
-                {
-                    Message = $"Demonstrativo de Pagamento {guid} não encontrado!",
-                    StatusCode = HttpStatusCode.NotFound,
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
-            }
+            return Ok(
+                data);
         }
 
         /// <summary>
-        /// Retrieves a collection of payment statements.
+        /// Retrieves all payment statements.
         /// </summary>
-        /// <remarks>This method fetches all available payment statements and returns them in a successful response. If no
-        /// payment statements are found, a not found response is returned. In case of an error, an internal server error
-        /// response is returned.</remarks>
-        /// <returns>An <see cref="ApiResponseDto{T}"/> containing a collection of <see
-        /// cref="MatriculaDemonstrativoPagamentoResponseDto"/>. The response indicates success with a status code of <see
-        /// cref="HttpStatusCode.OK"/> if data is found. If no data is found, the response indicates a status code of <see
-        /// cref="HttpStatusCode.NotFound"/>. In case of an error, the response indicates a status code of <see
-        /// cref="HttpStatusCode.InternalServerError"/>.</returns>
+        /// <remarks>
+        /// Returns a collection of payment statements when available.
+        /// </remarks>
+        /// <returns>
+        /// A collection of <see cref="MatriculaDemonstrativoPagamentoResponseDto"/>.
+        /// Returns <c>200 OK</c> when data is found, or <c>404 Not Found</c> when no records exist.
+        /// </returns>
         [HttpGet]
-        public ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>> GetDemonstrativosPagamento()
+        [ProducesResponseType(typeof(IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetDemonstrativosPagamentoAsync()
         {
-            try
-            {
-                var data = this._service.GetAll();
+            var data = await Task.FromResult(
+                this._service.GetAll());
 
-                if (data != null && data.Count() > 0)
-                    return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
+            if (data is null ||
+                !data.Any())
+                return NotFound(
+                    new ProblemDetails
                     {
-                        Data = data,
-                        Success = true,
-                        StatusCode = HttpStatusCode.OK,
-                    };
+                        Title = "Not Found",
+                        Detail = "Demonstrativos de Pagamento não encontrados!",
+                    });
 
-                return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
-                {
-                    Message = $"Demonstrativos de Pagamento não encontrados!",
-                    StatusCode = HttpStatusCode.NotFound,
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
-            }
+            return Ok(
+                data);
         }
 
         /// <summary>
-        /// Retrieves the payment statements associated with a specific collaborator identified by their GUID.
+        /// Retrieves payment statements for a specific collaborator.
         /// </summary>
-        /// <param name="guidColaborador">The unique identifier of the collaborator whose payment statements are to be retrieved.</param>
-        /// <returns>An <see cref="ApiResponseDto{T}"/> containing a collection of <see
-        /// cref="MatriculaDemonstrativoPagamentoResponseDto"/> objects. If no payment statements are found, the response will
-        /// include a message indicating this and a status code of <see cref="HttpStatusCode.NotFound"/>.</returns>
+        /// <param name="guidColaborador">The collaborator identifier.</param>
+        /// <returns>
+        /// A collection of <see cref="MatriculaDemonstrativoPagamentoResponseDto"/>.
+        /// Returns <c>404 Not Found</c> when no records exist.
+        /// </returns>
         [HttpGet("Colaborador/{guidColaborador}")]
-        public ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>> GetDemonstrativoPagamentoByGuidColaborador(Guid guidColaborador)
+        [ProducesResponseType(typeof(IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetDemonstrativoPagamentoByGuidColaboradorAsync(Guid guidColaborador)
         {
-            try
-            {
-                var data = this._service.GetByGuidColaborador(
-                    guidColaborador);
+            var data = await Task.FromResult(
+                this._service.GetByGuidColaborador(
+                    guidColaborador));
 
-                if (data != null &&
-                    data.Count() > 0)
-                    return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
+            if (data is null ||
+                !data.Any())
+                return NotFound(
+                    new ProblemDetails
                     {
-                        Data = data,
-                        Success = true,
-                        StatusCode = HttpStatusCode.OK,
-                    };
+                        Title = "Not Found",
+                        Detail = $"Demonstrativos de Pagamento não encontrados para o colaborador {guidColaborador}.",
+                    });
 
-                return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
-                {
-                    Message = $"Demonstrativos de Pagamento não encontrados para o Colaborador {guidColaborador}!",
-                    StatusCode = HttpStatusCode.NotFound,
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
-            }
+            return Ok(
+                data);
         }
 
         /// <summary>
-        /// Retrieves a collection of payment statements for a given competence and registration number.
+        /// Retrieves payment statements by competence and registration.
         /// </summary>
-        /// <remarks>This method returns an HTTP 200 status code with the data if successful, an HTTP 404 status code if
-        /// no data is found, or an HTTP 500 status code if an error occurs.</remarks>
-        /// <param name="competencia">The competence period for which the payment statements are requested. This is typically a string representing a date
-        /// or period format.</param>
-        /// <param name="matricula">The registration number associated with the payment statements. This is used to identify the specific account or
-        /// individual.</param>
-        /// <returns>An <see cref="ApiResponseDto{T}"/> containing a collection of <see
-        /// cref="MatriculaDemonstrativoPagamentoResponseDto"/> objects if found; otherwise, a response indicating that no
-        /// payment statements were found.</returns>
+        /// <param name="competencia">The competence period (e.g., YYYYMM).</param>
+        /// <param name="matricula">The registration identifier.</param>
+        /// <returns>
+        /// A collection of <see cref="MatriculaDemonstrativoPagamentoResponseDto"/>.
+        /// Returns <c>404 Not Found</c> when no records exist.
+        /// </returns>
         [HttpGet("{competencia}/{matricula}")]
-        public ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>> GetDemonstrativoPagamentoByCompetenciaAndMatricula(string competencia, string matricula)
+        [ProducesResponseType(typeof(IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetDemonstrativoPagamentoByCompetenciaAndMatricula(string competencia, string matricula)
         {
-            try
-            {
-                var data = this._service.Get(
+            var data = await Task.FromResult(
+                this._service.Get(
                     competencia,
-                    matricula);
+                    matricula));
 
-                if (data != null &&
-                    data.Count() > 0)
-                    return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
+            if (data is null ||
+                !data.Any())
+                return NotFound(
+                    new ProblemDetails
                     {
-                        Data = data,
-                        Success = true,
-                        StatusCode = HttpStatusCode.OK,
-                    };
+                        Title = "Not Found",
+                        Detail = $"Demonstrativos de Pagamento não encontrados para a Competência {competencia} e Matrícula {matricula}!",
+                    });
 
-                return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
-                {
-                    Message = $"Demonstrativos de Pagamento não encontrados para a Competência {competencia} e Matrícula {matricula}!",
-                    StatusCode = HttpStatusCode.NotFound,
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
-            }
+            return Ok(
+                data);
         }
 
         /// <summary>
-        /// Retrieves a list of payment statement pending items within a specified date range and status.
+        /// Retrieves pending payment statements within a specified period and status.
         /// </summary>
-        /// <remarks>This method queries pending payment statements based on the provided date range and status. If no
-        /// pending items are found, the response will indicate this with a <see cref="HttpStatusCode.NotFound"/>
-        /// status.</remarks>
-        /// <param name="periodoInicial">The start date of the period to search for pending items. Must be a valid <see cref="DateTime"/>.</param>
-        /// <param name="periodoFinal">The end date of the period to search for pending items. Must be a valid <see cref="DateTime"/>.</param>
-        /// <param name="situacao">The status of the pending items to filter by. Defaults to <see
-        /// cref="SituacaoPendenciaDemonstrativoPagamento.Todos"/>.</param>
-        /// <returns>An <see cref="ApiResponseDto{T}"/> containing a collection of <see
-        /// cref="MatriculaDemonstrativoPagamentoResponseDto"/> if pending items are found; otherwise, a message indicating no
-        /// items were found.</returns>
+        /// <param name="periodoInicial">The start date of the search period.</param>
+        /// <param name="periodoFinal">The end date of the search period.</param>
+        /// <param name="situacao">The status filter for pending items.</param>
+        /// <returns>
+        /// A collection of <see cref="MatriculaDemonstrativoPagamentoResponseDto"/>.
+        /// Returns <c>404 Not Found</c> when no records exist.
+        /// </returns>
         [HttpGet("Pendencias")]
-        public ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>> GetPendencias(
+        [ProducesResponseType(typeof(IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetPendenciasAsync(
             [FromQuery] DateTime periodoInicial,
             [FromQuery] DateTime periodoFinal,
             [FromQuery] SituacaoPendenciaDemonstrativoPagamento situacao = SituacaoPendenciaDemonstrativoPagamento.Todos)
         {
-            try
-            {
-                var data = this._service.GetPendencias(
-                    Convert.ToDateTime(
-                        periodoInicial),
-                    Convert.ToDateTime(
-                        periodoFinal),
-                    situacao);
+            var data = await Task.FromResult(
+                this._service.GetPendencias(
+                    periodoInicial,
+                    periodoFinal,
+                    situacao));
 
-                if (data != null &&
-                    data.Count() > 0)
-                    return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
+            if (data is null ||
+                !data.Any())
+                return NotFound(
+                    new ProblemDetails
                     {
-                        Data = data,
-                        Success = true,
-                        StatusCode = HttpStatusCode.OK,
-                    };
+                        Title = "Not Found",
+                        Detail = $"Pendências de Demonstrativos de Pagamento não encontrados para o Período de {periodoInicial} a {periodoFinal}!",
+                    });
 
-                return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
-                {
-                    Message = $"Pendências de Demonstrativos de Pagamento não encontrados para o Período de {periodoInicial} a {periodoFinal}!",
-                    StatusCode = HttpStatusCode.NotFound,
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
-            }
+            return Ok(
+                data);
         }
 
         /// <summary>
-        /// Retrieves the salary composition chart for a specified user and period.
+        /// Retrieves the salary composition chart for a specific user and competence.
         /// </summary>
-        /// <param name="guidUsuario">The unique identifier of the user for whom the salary composition chart is requested.</param>
-        /// <param name="competencia">The period for which the salary composition chart is requested, typically in a format like "YYYYMM".</param>
-        /// <returns>An <see cref="ApiResponseDto{T}"/> containing a collection of <see
-        /// cref="GraficoComposicaoSalarialResponseDto"/> objects representing the salary composition chart. If no data
-        /// is found, the response will indicate a not found status with an appropriate message.</returns>
+        /// <param name="guidUsuario">The user identifier.</param>
+        /// <param name="competencia">The competence period (e.g., YYYYMM).</param>
+        /// <returns>
+        /// A collection of <see cref="GraficoComposicaoSalarialResponseDto"/> representing the salary composition.
+        /// Returns <c>404 Not Found</c> when no data is available.
+        /// </returns>
         [HttpGet("GraficoComposicaoSalarial/{guidUsuario}/{competencia}")]
-        public ApiResponseDto<IEnumerable<GraficoComposicaoSalarialResponseDto>> GetGraficoComposicaoSalarial(Guid guidUsuario, string competencia)
+        [ProducesResponseType(typeof(IEnumerable<GraficoComposicaoSalarialResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetGraficoComposicaoSalarialAsync(Guid guidUsuario, string competencia)
         {
-            try
-            {
-                var data = this._service.GetSalaryCompositionChart(
+            var data = await Task.FromResult(
+                this._service.GetSalaryCompositionChart(
                     guidUsuario,
-                    competencia);
+                    competencia));
 
-                if (data != null &&
-                    data.Count() > 0)
-                    return new ApiResponseDto<IEnumerable<GraficoComposicaoSalarialResponseDto>>
+            if (data is null ||
+                !data.Any())
+                return NotFound(
+                    new ProblemDetails
                     {
-                        Data = data,
-                        Success = true,
-                        StatusCode = HttpStatusCode.OK,
-                    };
+                        Title = "Not Found",
+                        Detail = $"Gráfico de Composição Salarial não encontrado para o Usuário {guidUsuario}!",
+                    });
 
-                return new ApiResponseDto<IEnumerable<GraficoComposicaoSalarialResponseDto>>
-                {
-                    Message = $"Gráfico de Composição Salarial não encontrado para o Usuário {guidUsuario}!",
-                    StatusCode = HttpStatusCode.NotFound,
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponseDto<IEnumerable<GraficoComposicaoSalarialResponseDto>>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
-            }
+            return Ok(
+                data);
         }
 
         /// <summary>
-        /// Retrieves the salary evolution chart data for a specified user over a given number of past months.
+        /// Retrieves the salary evolution chart for a specific user over a given number of months.
         /// </summary>
-        /// <param name="guidUsuario">The unique identifier of the user for whom the salary evolution chart is requested.</param>
-        /// <param name="quantidadeMesesRetroativos">The number of months to look back for salary evolution data.</param>
-        /// <returns>An <see cref="ApiResponseDto{T}"/> containing a collection of <see cref="GraficoEvolucaoSalarialResponseDto"/>
-        /// objects representing the salary evolution chart data. If no data is found, the response indicates a not found
-        /// status.</returns>
+        /// <param name="guidUsuario">The user identifier.</param>
+        /// <param name="quantidadeMesesRetroativos">The number of past months to include in the evolution.</param>
+        /// <returns>
+        /// A collection of <see cref="GraficoEvolucaoSalarialResponseDto"/> representing the salary evolution.
+        /// Returns <c>404 Not Found</c> when no data is available.
+        /// </returns>
         [HttpGet("GraficoEvolucaoSalarial/{guidUsuario}/{quantidadeMesesRetroativos}")]
-        public ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>> GetGraficoEvolucaoSalarial(Guid guidUsuario, Int16 quantidadeMesesRetroativos)
+        [ProducesResponseType(typeof(IEnumerable<GraficoEvolucaoSalarialResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetGraficoEvolucaoSalarialAsync(Guid guidUsuario, Int16 quantidadeMesesRetroativos)
         {
-            try
-            {
-                var data = this._service.GetSalaryEvolutionChart(
+            var data = await Task.FromResult(
+                this._service.GetSalaryEvolutionChart(
                     guidUsuario,
-                    quantidadeMesesRetroativos);
+                    quantidadeMesesRetroativos));
 
-                if (data != null &&
-                    data.Count() > 0)
-                    return new ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>>
+            if (data is null ||
+                !data.Any())
+                return NotFound(
+                    new ProblemDetails
                     {
-                        Data = data,
-                        Success = true,
-                        StatusCode = HttpStatusCode.OK,
-                    };
+                        Title = "Not Found",
+                        Detail = $"Gráfico de Evolução Salarial não encontrado para o Usuário {guidUsuario}!",
+                    });
 
-                return new ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>>
-                {
-                    Message = $"Gráfico de Evolução Salarial não encontrado para o Usuário {guidUsuario}!",
-                    StatusCode = HttpStatusCode.NotFound,
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
-            }
+            return Ok(
+                data);
         }
 
         /// <summary>
-        /// Updates the payment statement for a specific enrollment identified by the provided GUID.
+        /// Updates a payment statement identified by its GUID.
         /// </summary>
-        /// <remarks>This method updates the payment statement for the specified enrollment and returns a response
-        /// indicating the success or failure of the operation. The response includes the updated payment statement details if
-        /// the operation is successful.</remarks>
-        /// <param name="guid">The unique identifier of the enrollment whose payment statement is to be updated.</param>
-        /// <param name="updateDto">The data transfer object containing the updated payment statement details.</param>
-        /// <returns>An <see cref="ApiResponseDto{T}"/> containing the updated payment statement details and the operation status.</returns>
+        /// <param name="guid">The payment statement identifier.</param>
+        /// <param name="updateDto">The data used to update the payment statement.</param>
+        /// <returns>
+        /// The updated <see cref="MatriculaDemonstrativoPagamentoResponseDto"/>.
+        /// </returns>
         [HttpPut("{guid}")]
-        public ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto> UpdateDemonstrativoPagamento(Guid guid, [FromBody] MatriculaDemonstrativoPagamentoRequestUpdateDto updateDto)
+        [ProducesResponseType(typeof(MatriculaDemonstrativoPagamentoResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateDemonstrativoPagamento(Guid guid, [FromBody] MatriculaDemonstrativoPagamentoRequestUpdateDto updateDto)
         {
-            try
-            {
-                updateDto.Guid = guid;
+            if (updateDto is null)
+                return BadRequest(
+                    new ProblemDetails
+                    {
+                        Title = "Bad Request",
+                        Detail = "Payload inválido."
+                    });
 
-                var data = this._service.SaveData(
-                    updateDto: updateDto);
+            updateDto.Guid = guid;
 
-                return new ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto>
-                {
-                    Data = data,
-                    Success = true,
-                    StatusCode = HttpStatusCode.NoContent,
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
-            }
+            var data = await Task.FromResult(
+                this._service.SaveData(
+                    updateDto: updateDto));
+
+            if (data is null)
+                return NotFound(
+                    new ProblemDetails
+                    {
+                        Title = "Not Found",
+                        Detail = $"Demonstrativo de Pagamento {guid} não encontrado.",
+                    });
+
+            return Ok(
+                data);
         }
     }
 }

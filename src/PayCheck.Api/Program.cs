@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using ARVTech.DataAccess.Infrastructure.UnitOfWork.SqlServer;
@@ -7,10 +9,12 @@ using ARVTech.Shared.Security.Implementations;
 using ARVTech.Shared.Security.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PayCheck.Api;
-using PayCheck.Api.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,8 +39,6 @@ builder.Services.AddAutoMapper(
         EventoService).Assembly,
     typeof(
         MatriculaDemonstrativoPagamentoEventoService).Assembly,
-    typeof(
-        EspelhoPontoController).Assembly,
     typeof(
         MatriculaDemonstrativoPagamentoEventoService).Assembly,
     typeof(
