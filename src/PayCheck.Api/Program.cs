@@ -1,14 +1,16 @@
+using System.Reflection;
+using System.Text;
 using ARVTech.DataAccess.Infrastructure.UnitOfWork.SqlServer;
 using ARVTech.DataAccess.Service.UniPayCheck;
 using ARVTech.DataAccess.Service.UniPayCheck.Interfaces;
+using ARVTech.Shared.Security.Implementations;
+using ARVTech.Shared.Security.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PayCheck.Api;
 using PayCheck.Api.Controllers;
-using System.Reflection;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,10 +58,14 @@ builder.Services.AddAutoMapper(
     typeof(
         UsuarioService).Assembly);
 
+builder.Services.AddSingleton<IPepperProvider, PepperProvider>();
+builder.Services.AddScoped<IPasswordHasher, Argon2IdPasswordHasher>();
+
 builder.Services.AddScoped<IMatriculaService>(
     provider => new MatriculaService(
         unitOfWork,
-        provider.GetRequiredService<IMapper>()));
+        provider.GetRequiredService<IMapper>(),
+        provider.GetRequiredService<IPasswordHasher>()));
 
 builder.Services.AddScoped<IMatriculaEspelhoPontoService>(
     provider => new MatriculaEspelhoPontoService(
@@ -80,10 +86,11 @@ builder.Services.AddScoped<IPessoaJuridicaService>(
     provider.GetRequiredService<IMapper>()));
 
 builder.Services.AddScoped<IUsuarioService>(
-    provider => new UsuarioService(unitOfWork,
-    provider.GetRequiredService<IMapper>()));
+    provider => new UsuarioService(
+        unitOfWork,
+        provider.GetRequiredService<IMapper>(),
+        provider.GetRequiredService<IPasswordHasher>()));
 
-//builder.Services.AddControllers();
 builder.Services.AddControllers(
     options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);   //  Removes the required attribute for non-nullable reference types.
 

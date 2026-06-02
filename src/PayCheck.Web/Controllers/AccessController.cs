@@ -503,7 +503,7 @@ A Equipe de Suporte PayCheck®.";
             this._httpClientService.SetBearerAuthentication(
                 tokenBearer);
 
-            using (var httpResponseMessage = await _httpClientService.ExecuteAsync(
+            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
                 HttpMethod.Post,
                 requestUri,
                 fromBodyString))
