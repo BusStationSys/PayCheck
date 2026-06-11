@@ -1,6 +1,8 @@
 ﻿namespace PayCheck.Web.Mappings
 {
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Create;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Update;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using AutoMapper;
     using PayCheck.Web.Models;
 
@@ -8,9 +10,9 @@
     {
         public DemonstrativoPagamentoMappingProfile()
         {
-            CreateMap<MatriculaDemonstrativoPagamentoRequestCreateDto, MatriculaDemonstrativoPagamentoResponseDto>().ReverseMap();
-            CreateMap<MatriculaDemonstrativoPagamentoRequestUpdateDto, MatriculaDemonstrativoPagamentoResponseDto>().ReverseMap();
-            CreateMap<MatriculaDemonstrativoPagamentoResponseDto, DemonstrativoPagamentoViewModel>().ForMember(
+            CreateMap<MatriculaDemonstrativoPagamentoCreateRequest, MatriculaDemonstrativoPagamentoResponse>().ReverseMap();
+            CreateMap<MatriculaDemonstrativoPagamentoUpdateRequest, MatriculaDemonstrativoPagamentoResponse>().ReverseMap();
+            CreateMap<MatriculaDemonstrativoPagamentoResponse, DemonstrativoPagamentoViewModel>().ForMember(
                 dest => dest.NumeroMatricula,
                 opt => opt.MapFrom(
                     src => src.Matricula.Matricula)).ForMember(

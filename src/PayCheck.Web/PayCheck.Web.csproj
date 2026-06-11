@@ -3,18 +3,17 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <ImplicitUsings>disable</ImplicitUsings>
     <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8765;IDE0057;IDE0063;IDE0290;NU1701;S112;S1155;S1751;S2259;S2589;S2344;S2737;SPELL</NoWarn>
+    <NoWarn>1701;1702;CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8765;IDE0057;IDE0059;IDE0063;IDE0290;IDE0301;NU1701;S112;S1155;S1751;S2259;S2589;S2344;S2737;SPELL</NoWarn>
     <OutputPath>bin\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <NoWarn>1701;1702;CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8765;IDE0057;IDE0063;IDE0290;NU1701;S112;S1155;S1751;S2259;S2589;S2344;S2737;SPELL</NoWarn>
+    <NoWarn>1701;1702;CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8765;IDE0057;IDE0059;IDE0063;IDE0290;IDE0301;NU1701;S112;S1155;S1751;S2259;S2589;S2344;S2737;SPELL</NoWarn>
     <OutputPath>bin\</OutputPath>
   </PropertyGroup>
 
@@ -50,7 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.DTOs\ARVTech.DataAccess.DTOs.csproj" />
+    <ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Contracts\ARVTech.DataAccess.Contracts.csproj" />
     <ProjectReference Include="..\..\submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Service\ARVTech.DataAccess.Service.csproj" />
   </ItemGroup>
 

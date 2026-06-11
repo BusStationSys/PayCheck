@@ -9,8 +9,9 @@
     using System.Text;
     using System.Threading.Tasks;
     using System.Web;
-    using ARVTech.DataAccess.DTOs;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Update;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using ARVTech.Shared;
     using ARVTech.Shared.Email;
     using ARVTech.Shared.Extensions;
@@ -215,69 +216,78 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangePassword(AlteracaoSenhaRequestDto alteracaoSenhaDto)
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest changePasswordRequest)
         {
-            try
+            ViewBag.ErrorMessage = null;
+            ViewBag.SuccessMessage = null;
+            ViewBag.ValidateMessage = null;
+
+            if (!ModelState.IsValid)
+                return View();
+
+            var usuarioUpdateRequest = new UsuarioUpdateRequest
             {
-                ViewBag.ErrorMessage = null;
-                ViewBag.SuccessMessage = null;
-                ViewBag.ValidateMessage = null;
+                Guid = Guid.Parse(TempData["ChangePasswordGuidUsuario"].ToString()),
+                GuidColaborador = Guid.Parse(TempData["ChangePasswordGuidColaborador"].ToString()),
+                Email = TempData["ChangePasswordEmail"].ToString(),
+                DataPrimeiroAcesso = DateTimeOffset.UtcNow,
+                Password = changePasswordRequest.Password,
+                ConfirmPassword = changePasswordRequest.ConfirmPassword,
+                Username = TempData["ChangePasswordUsername"].ToString(),
+                IdPerfilUsuario = int.Parse(TempData["ChangePasswordIdPerfilUsuario"].ToString()),
+            };
 
-                if (!ModelState.IsValid)
-                    return View();
+            var usuarioResponse = default(UsuarioResponse);
 
-                var usuarioUpdateDto = new UsuarioRequestUpdateDto
+            string requestUri = @$"Usuario/{usuarioUpdateRequest.Guid:N}";
+
+            var tokenBearer = await this._authService.GetTokenAsync();
+
+            string requestBody = JsonConvert.SerializeObject(
+                changePasswordRequest,
+                Formatting.Indented);
+
+            this._httpClientService.SetBearerAuthentication(
+                tokenBearer);
+
+            using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
+                HttpMethod.Put,
+                requestUri,
+                requestBody))
+            {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
+                if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    Guid = Guid.Parse(TempData["ChangePasswordGuidUsuario"].ToString()),
-                    GuidColaborador = Guid.Parse(TempData["ChangePasswordGuidColaborador"].ToString()),
-                    Email = TempData["ChangePasswordEmail"].ToString(),
-                    DataPrimeiroAcesso = DateTimeOffset.UtcNow,
-                    Password = alteracaoSenhaDto.Password,
-                    ConfirmPassword = alteracaoSenhaDto.ConfirmPassword,
-                    Username = TempData["ChangePasswordUsername"].ToString(),
-                    IdPerfilUsuario = int.Parse(TempData["ChangePasswordIdPerfilUsuario"].ToString()),
-                };
+                    if (responseBody.IsValidJson())
+                        usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(
+                            responseBody);
 
-                var usuarioResponse = default(UsuarioResponseDto);
+                    ViewBag.SuccessMessage = $"Senha alterada para o usuário {usuarioResponse.Username}.";
 
-                string requestUri = @$"Usuario/{usuarioUpdateDto.Guid:N}";
-
-                var tokenBearer = await this._authService.GetTokenAsync();
-
-                string requestBody = JsonConvert.SerializeObject(
-                    alteracaoSenhaDto,
-                    Formatting.Indented);
-
-                this._httpClientService.SetBearerAuthentication(
-                    tokenBearer);
-
-                using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
-                    HttpMethod.Put,
-                    requestUri,
-                    requestBody))
-                {
-                    if (httpResponseMessage.IsSuccessStatusCode)
-                    {
-                        string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                        if (responseBody.IsValidJson())
-                            usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponseDto>(
-                                responseBody);
-                    }
+                    return RedirectToAction(
+                        "Index",
+                        "Home");
                 }
+                else
+                {
+                    //        if (responseBody.IsValidJson())
+                    //        {
+                    //            var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(
+                    //                responseBody);
 
-                ViewBag.SuccessMessage = $"Senha alterada para o usuário {usuarioResponse.Username}.";
+                    //            ViewBag.ErrorMessage = problemDetails?.Detail ??
+                    //                problemDetails?.Title ??
+                    //                "Erro ao buscar notificações.";
+                    //        }
+                    //        else
+                    //        {
+                    //            ViewBag.ErrorMessage = "Erro desconhecido ao buscar notificações.";
+                    //        }
 
-                return RedirectToAction(
-                    "Index",
-                    "Home");
+                    return View();
+                }
             }
-            catch (Exception ex)
-            {
-                ViewBag.ErrorMessage = ex.Message;
-            }
-
-            return View();
         }
 
         public IActionResult LinkActivation()
@@ -370,7 +380,7 @@
 
                     string partialUrl = url.Substring(
                         0,
-                        url.LastIndexOf("/"));
+                        url.LastIndexOf('/'));
 
                     var linkActivation = $"{partialUrl}/ChangePassword?parametro={Uri.EscapeDataString(key)}";
 
@@ -455,7 +465,7 @@ A Equipe de Suporte PayCheck®.";
                 var modelStateErrors = this.ModelState.Keys.OrderBy(x => x).SelectMany(key => this.ModelState[key].Errors);
 
                 if (modelStateErrors != null &&
-                    modelStateErrors.Count() > 0)
+                    modelStateErrors.Any())
                 {
                     errorMessageHtml.Append("<p></p>");
 
@@ -475,7 +485,7 @@ A Equipe de Suporte PayCheck®.";
                     vm);
             }
 
-            var loginDto = this._mapper.Map<LoginRequestDto>(
+            var loginDto = this._mapper.Map<LoginRequest>(
                 vm);
 
             string requestUri = "Usuario";
@@ -484,7 +494,8 @@ A Equipe de Suporte PayCheck®.";
                 loginDto,
                 Formatting.Indented);
 
-            var apiResponseDto = default(ApiResponseDto<UsuarioResponseDto>);
+            var usuarioResponse = default(
+                UsuarioResponse);
 
             //using (var webApiHelper = new WebApiHelper(
             //    requestUri,
@@ -508,121 +519,125 @@ A Equipe de Suporte PayCheck®.";
                 requestUri,
                 fromBodyString))
             {
-                if (!httpResponseMessage.IsSuccessStatusCode)
-                    return StatusCode((int)httpResponseMessage.StatusCode);
+                var responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
 
-                var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                if (responseJson.IsValidJson())
+                if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    apiResponseDto = JsonConvert.DeserializeObject<
-                        ApiResponseDto<UsuarioResponseDto>>(responseJson);
-                }
-            }
-
-            if (apiResponseDto != null &&
-                apiResponseDto.Success)
-            {
-                var usuarioResponse = apiResponseDto.Data;
-
-                if (usuarioResponse.DataPrimeiroAcesso is null ||
-                    !usuarioResponse.DataPrimeiroAcesso.HasValue)
-                {
-                    TempData.Remove("GuidUsuario");
-                    TempData.Remove("GuidColaborador");
-                    TempData.Remove("NomeColaborador");
-                    TempData.Remove("EmailColaborador");
-                    TempData.Remove("Username");
-                    TempData.Remove("IdPerfilUsuario");
-
-                    TempData["GuidUsuario"] = usuarioResponse.Guid;
-                    TempData["GuidColaborador"] = usuarioResponse.Colaborador.Guid;
-                    TempData["NomeColaborador"] = usuarioResponse.Colaborador.Nome;
-                    TempData["EmailColaborador"] = usuarioResponse.Colaborador.Pessoa.Email;
-                    TempData["Username"] = usuarioResponse.Username;
-                    TempData["IdPerfilUsuario"] = usuarioResponse.IdPerfilUsuario;
-
-                    return RedirectToAction(
-                        "LinkActivation",
-                        "Access");
-                }
-                else
-                {
-                    string emailUsuario = string.Empty;
-                    string guidColaborador = string.Empty;
-                    string nomeColaborador = string.Empty;
-
-                    if (usuarioResponse.GuidColaborador != null &&
-                        usuarioResponse.GuidColaborador.HasValue &&
-                        usuarioResponse.GuidColaborador.Value != Guid.Empty)
+                    if (responseBody.IsValidJson())
                     {
-                        emailUsuario = usuarioResponse.Email;
-                        guidColaborador = usuarioResponse.Colaborador.Guid.ToString();
-                        nomeColaborador = usuarioResponse.Colaborador.Nome;
-                    }
-                    else
-                        nomeColaborador = usuarioResponse.Username;
+                        usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(
+                            responseBody);
 
-                    var claims = new List<Claim>
+                        if (usuarioResponse.DataPrimeiroAcesso is null ||
+                            !usuarioResponse.DataPrimeiroAcesso.HasValue)
                         {
-                            new (ClaimTypes.NameIdentifier, usuarioResponse.Guid.ToString()),
-                            new (ClaimTypes.Name, nomeColaborador),
-                            new (ClaimTypes.Email, emailUsuario),
+                            TempData.Remove("GuidUsuario");
+                            TempData.Remove("GuidColaborador");
+                            TempData.Remove("NomeColaborador");
+                            TempData.Remove("EmailColaborador");
+                            TempData.Remove("Username");
+                            TempData.Remove("IdPerfilUsuario");
 
-                            new (
-                                $"{nameof(
-                                    UsuarioResponseDto.Guid)}Usuario",
-                                usuarioResponse.Guid.ToString()),
+                            TempData["GuidUsuario"] = usuarioResponse.Guid;
+                            TempData["GuidColaborador"] = usuarioResponse.Colaborador.Guid;
+                            TempData["NomeColaborador"] = usuarioResponse.Colaborador.Nome;
+                            TempData["EmailColaborador"] = usuarioResponse.Colaborador.Pessoa.Email;
+                            TempData["Username"] = usuarioResponse.Username;
+                            TempData["IdPerfilUsuario"] = usuarioResponse.IdPerfilUsuario;
 
-                            new (
-                                $"{nameof(
-                                    UsuarioResponseDto.Colaborador.Guid)}Colaborador",
-                                guidColaborador),
+                            return RedirectToAction(
+                                "LinkActivation",
+                                "Access");
+                        }
+                        else
+                        {
+                            string emailUsuario = string.Empty;
+                            string guidColaborador = string.Empty;
+                            string nomeColaborador = string.Empty;
 
-                            new (
-                                $"{nameof(
-                                    UsuarioResponseDto.Colaborador.Nome)}Colaborador",
-                                nomeColaborador),
+                            if (usuarioResponse.GuidColaborador != null &&
+                                usuarioResponse.GuidColaborador.HasValue &&
+                                usuarioResponse.GuidColaborador.Value != Guid.Empty)
+                            {
+                                emailUsuario = usuarioResponse.Email;
+                                guidColaborador = usuarioResponse.Colaborador.Guid.ToString();
+                                nomeColaborador = usuarioResponse.Colaborador.Nome;
+                            }
+                            else
+                                nomeColaborador = usuarioResponse.Username;
 
-                            new (
-                                nameof(
-                                    UsuarioResponseDto.Username),
-                                usuarioResponse.Username),
+                            var claims = new List<Claim>
+                            {
+                                new (ClaimTypes.NameIdentifier, usuarioResponse.Guid.ToString()),
+                                new (ClaimTypes.Name, nomeColaborador),
+                                new (ClaimTypes.Email, emailUsuario),
 
-                            new (
-                                $"{nameof(UsuarioResponseDto.Email)}Usuario",
-                                emailUsuario),
+                                new ($"{nameof(
+                                    UsuarioResponse.Guid)}Usuario",
+                                    usuarioResponse.Guid.ToString()),
 
-                            new (
-                                $"{nameof(UsuarioResponseDto.IdPerfilUsuario)}",
-                                usuarioResponse.IdPerfilUsuario.ToString()),
+                                new ($"{nameof(
+                                    UsuarioResponse.Colaborador.Guid)}Colaborador",
+                                    guidColaborador),
+
+                                new ($"{nameof(
+                                    UsuarioResponse.Colaborador.Nome)}Colaborador",
+                                    nomeColaborador),
+
+                                new (nameof(
+                                    UsuarioResponse.Username),
+                                    usuarioResponse.Username),
+
+                                new ($"{nameof(
+                                    UsuarioResponse.Email)}Usuario",
+                                    emailUsuario),
+
+                                new ($"{nameof(
+                                    UsuarioResponse.IdPerfilUsuario)}",
+                                    usuarioResponse.IdPerfilUsuario.ToString()),
 
                             //new Claim("OtherProperty","OtherValue"),
                         };
 
-                    ClaimsIdentity claimsIdentity = new(
-                        claims,
-                        CookieAuthenticationDefaults.AuthenticationScheme);
+                            ClaimsIdentity claimsIdentity = new(
+                                claims,
+                                CookieAuthenticationDefaults.AuthenticationScheme);
 
-                    AuthenticationProperties authenticationProperties = new()
+                            AuthenticationProperties authenticationProperties = new()
+                            {
+                                AllowRefresh = true,
+                                IsPersistent = loginDto.KeepLoggedIn,
+                            };
+
+                            await HttpContext.SignInAsync(
+                                CookieAuthenticationDefaults.AuthenticationScheme,
+                                new ClaimsPrincipal(
+                                    claimsIdentity),
+                                authenticationProperties);
+
+                            return RedirectToAction(
+                                "Index",
+                                "Home");
+                        }
+                    }
+                }
+                else
+                {
+                    if (responseBody.IsValidJson())
                     {
-                        AllowRefresh = true,
-                        IsPersistent = loginDto.KeepLoggedIn,
-                    };
+                        var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(
+                            responseBody);
 
-                    await HttpContext.SignInAsync(
-                        CookieAuthenticationDefaults.AuthenticationScheme,
-                        new ClaimsPrincipal(
-                            claimsIdentity),
-                        authenticationProperties);
-
-                    return RedirectToAction(
-                        "Index",
-                        "Home");
+                        ViewBag.ErrorMessage = problemDetails?.Detail ??
+                            problemDetails?.Title ??
+                            "<p>Erro ao efetuar Login.</p>";
+                    }
+                    else
+                    {
+                        ViewBag.ErrorMessage = "<p>Erro desconhecido ao efetuar Login.</p>";
+                    }
                 }
             }
-            else
-                ViewBag.ErrorMessage = $"<p>{apiResponseDto.Message}</p>";
 
             vm.Password = string.Empty;
 

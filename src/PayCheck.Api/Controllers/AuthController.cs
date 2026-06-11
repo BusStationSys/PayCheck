@@ -5,7 +5,8 @@
     using System.Security.Claims;
     using System.Text;
     using System.Threading.Tasks;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
@@ -33,24 +34,24 @@
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="authDto"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult> Login([FromBody] AuthRequestDto authDto)
+        public async Task<ActionResult> Login([FromBody] AuthRequest request)
         {
-            if (authDto.Username != this._authentication.Username ||
-                authDto.Password != this._authentication.Password)
+            if (request.Username != this._authentication.Username ||
+                request.Password != this._authentication.Password)
                 return BadRequest(
                     "Username ou Password inválidos!");
 
             string jwtString = await this.GerarJwt(
-                authDto.Username);
+                request.Username);
 
             return Ok(
-                new AuthResponseDto
+                new AuthResponse
                 {
                     Token = jwtString,
-                    Username = authDto.Username,
+                    Username = request.Username,
                 });
         }
 

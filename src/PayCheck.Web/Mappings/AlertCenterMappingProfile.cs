@@ -1,6 +1,6 @@
 ﻿namespace PayCheck.Web.Mappings
 {
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using AutoMapper;
     using PayCheck.Web.Models;
 
@@ -8,7 +8,7 @@
     {
         public AlertCenterMappingProfile()
         {
-            CreateMap<MatriculaDemonstrativoPagamentoResponseDto, DemonstrativoPagamentoViewModel>().ForMember(
+            CreateMap<MatriculaDemonstrativoPagamentoResponse, DemonstrativoPagamentoViewModel>().ForMember(
                 dest => dest.NumeroMatricula,
                 opt => opt.MapFrom(
                     src => src.Matricula.Matricula)).ForMember(
@@ -19,7 +19,7 @@
                 opt => opt.MapFrom(
                     src => src.Matricula.Empregador.RazaoSocial)).ReverseMap();
 
-            CreateMap<UsuarioNotificacaoResponseDto, UsuarioNotificacaoViewModel>().ReverseMap();
+            CreateMap<UsuarioNotificacaoResponse, UsuarioNotificacaoViewModel>().ReverseMap();
         }
     }
 }

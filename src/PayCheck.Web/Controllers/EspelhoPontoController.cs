@@ -5,8 +5,8 @@
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using ARVTech.DataAccess.DTOs;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Update;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using ARVTech.Shared;
     using ARVTech.Shared.Extensions;
     using AutoMapper;
@@ -25,7 +25,6 @@
         private readonly IAuthService _authService;
 
         private readonly IMapper _mapper;
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EspelhoPontoController"/> class.
@@ -71,7 +70,7 @@
             string requestUri = @$"EspelhoPonto/{id}";
 
             var matriculaEspelhoPontoResponse = default(
-                MatriculaEspelhoPontoResponseDto);
+                MatriculaEspelhoPontoResponse);
 
             //  Inicia o HttpClientSingleton de consumo da API.
             this._httpClientService.SetBearerAuthentication(
@@ -81,13 +80,13 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
-                        matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaEspelhoPontoResponseDto>>(
-                            dataJson).Data;
+                    if (responseBody.IsValidJson())
+                        matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponse>(
+                            responseBody);
                 }
             }
 
@@ -114,21 +113,21 @@
             var matriculaEspelhoPontoResponse = await this.GetMEP(
                 id);
 
-            var matriculaEspelhoPontoRequestUpdateDto = this._mapper.Map<MatriculaEspelhoPontoRequestUpdateDto>(
+            var matriculaEspelhoPontoRequestUpdate = this._mapper.Map<MatriculaEspelhoPontoUpdateRequest>(
                 matriculaEspelhoPontoResponse);
 
-            matriculaEspelhoPontoRequestUpdateDto.Guid = id;
-            matriculaEspelhoPontoRequestUpdateDto.DataConfirmacao = DateTimeOffset.UtcNow;
-            matriculaEspelhoPontoRequestUpdateDto.IpConfirmacao = ipConfirmacao;
+            matriculaEspelhoPontoRequestUpdate.Guid = id;
+            matriculaEspelhoPontoRequestUpdate.DataConfirmacao = DateTimeOffset.UtcNow;
+            matriculaEspelhoPontoRequestUpdate.IpConfirmacao = ipConfirmacao;
 
-            string requestUri = @$"EspelhoPonto/{matriculaEspelhoPontoRequestUpdateDto.Guid:N}";
+            string requestUri = @$"EspelhoPonto/{matriculaEspelhoPontoRequestUpdate.Guid:N}";
 
             //  Inicia o HttpClientSingleton de consumo da API.
             this._httpClientService.SetBearerAuthentication(
                 tokenBearer);
 
             string content = JsonConvert.SerializeObject(
-                matriculaEspelhoPontoRequestUpdateDto,
+                matriculaEspelhoPontoRequestUpdate,
                 Formatting.None,
                 new JsonSerializerSettings
                 {
@@ -140,13 +139,13 @@
                 requestUri,
                 content))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
-                        matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaEspelhoPontoResponseDto>>(
-                            dataJson).Data;
+                    if (responseBody.IsValidJson())
+                        matriculaEspelhoPontoResponse = JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponse>(
+                            responseBody);
                 }
             }
 
@@ -190,14 +189,14 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
+                    if (responseBody.IsValidJson())
                     {
-                        var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaEspelhoPontoResponseDto>>>(
-                            dataJson).Data;
+                        var source = JsonConvert.DeserializeObject<IEnumerable<MatriculaEspelhoPontoResponse>>(
+                            responseBody);
 
                         espelhosPonto = this._mapper.Map<IEnumerable<EspelhoPontoViewModel>>(
                             source);
@@ -293,7 +292,7 @@
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private async Task<MatriculaEspelhoPontoResponseDto?> GetMEP(Guid id)
+        private async Task<MatriculaEspelhoPontoResponse?> GetMEP(Guid id)
         {
             var tokenBearer = await this._authService.GetTokenAsync();
 
@@ -307,13 +306,29 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
+                    if (responseBody.IsValidJson())
+                        return JsonConvert.DeserializeObject<MatriculaEspelhoPontoResponse>(
+                            responseBody);
+                }
+                else
+                {
+                    if (responseBody.IsValidJson())
+                    {
+                        var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(
+                            responseBody);
 
-                    if (dataJson.IsValidJson())
-                        return JsonConvert.DeserializeObject<ApiResponseDto<MatriculaEspelhoPontoResponseDto>>(
-                            dataJson).Data;
+                        ViewBag.ErrorMessage = problemDetails?.Detail ??
+                            problemDetails?.Title ??
+                            "Erro ao buscar notificações.";
+                    }
+                    else
+                    {
+                        ViewBag.ErrorMessage = "Erro desconhecido ao buscar notificações.";
+                    }
                 }
             }
 

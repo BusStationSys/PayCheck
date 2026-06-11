@@ -5,8 +5,8 @@
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using ARVTech.DataAccess.DTOs;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Update;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using ARVTech.Shared;
     using ARVTech.Shared.Extensions;
     using AutoMapper;
@@ -128,7 +128,7 @@
                 return NotFound();
 
             var matriculaDemonstrativoPagamentoResponse = default(
-                MatriculaDemonstrativoPagamentoResponseDto);
+                MatriculaDemonstrativoPagamentoResponse);
 
             string requestUri = @$"DemonstrativoPagamento/{id}";
 
@@ -142,13 +142,13 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
-                        matriculaDemonstrativoPagamentoResponse = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto>>(
-                            dataJson).Data;
+                    if (responseBody.IsValidJson())
+                        matriculaDemonstrativoPagamentoResponse = JsonConvert.DeserializeObject<MatriculaDemonstrativoPagamentoResponse>(
+                            responseBody);
                 }
             }
 
@@ -183,15 +183,15 @@
             var matriculaDemonstrativoPagamentoResponse = await this.GetMDPAsync(
                 id);
 
-            var matriculaDemonstrativoPagamentoRequestUpdateDto = this._mapper.Map<MatriculaDemonstrativoPagamentoRequestUpdateDto>(
+            var matriculaDemonstrativoPagamentoUpdateRequest = this._mapper.Map<MatriculaDemonstrativoPagamentoUpdateRequest>(
                 matriculaDemonstrativoPagamentoResponse);
 
-            matriculaDemonstrativoPagamentoRequestUpdateDto.Guid = id;
-            matriculaDemonstrativoPagamentoRequestUpdateDto.DataConfirmacao = DateTimeOffset.UtcNow;
-            matriculaDemonstrativoPagamentoRequestUpdateDto.IpConfirmacao = ipConfirmacao;
+            matriculaDemonstrativoPagamentoUpdateRequest.Guid = id;
+            matriculaDemonstrativoPagamentoUpdateRequest.DataConfirmacao = DateTimeOffset.UtcNow;
+            matriculaDemonstrativoPagamentoUpdateRequest.IpConfirmacao = ipConfirmacao;
 
             string requestBody = JsonConvert.SerializeObject(
-                matriculaDemonstrativoPagamentoRequestUpdateDto,
+                matriculaDemonstrativoPagamentoUpdateRequest,
                 Formatting.None,
                 new JsonSerializerSettings
                 {
@@ -203,20 +203,20 @@
             this._httpClientService.SetBearerAuthentication(
                 tokenBearer);
 
-            string requestUri = @$"DemonstrativoPagamento/{matriculaDemonstrativoPagamentoRequestUpdateDto.Guid:N}";
+            string requestUri = @$"DemonstrativoPagamento/{matriculaDemonstrativoPagamentoUpdateRequest.Guid:N}";
 
             using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
                 HttpMethod.Put,
                 requestUri,
                 requestBody))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
-
                     if (responseBody.IsValidJson())
-                        matriculaDemonstrativoPagamentoResponse = JsonConvert.DeserializeObject<ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto>>(
-                            responseBody).Data;
+                        matriculaDemonstrativoPagamentoResponse = JsonConvert.DeserializeObject<MatriculaDemonstrativoPagamentoResponse>(
+                            responseBody);
                 }
             }
 
@@ -377,14 +377,14 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
+                    if (responseBody.IsValidJson())
                     {
-                        var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>>(
-                            dataJson).Data;
+                        var source = JsonConvert.DeserializeObject<IEnumerable<MatriculaDemonstrativoPagamentoResponse>>(
+                            responseBody);
 
                         demonstrativosPagamento = this._mapper.Map<IEnumerable<DemonstrativoPagamentoViewModel>>(
                             source);
@@ -480,7 +480,7 @@
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private async Task<MatriculaDemonstrativoPagamentoResponseDto?> GetMDPAsync(Guid id)
+        private async Task<MatriculaDemonstrativoPagamentoResponse?> GetMDPAsync(Guid id)
         {
             var tokenBearer = await this._authService.GetTokenAsync();
 
@@ -494,13 +494,13 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
-                        return JsonConvert.DeserializeObject<ApiResponseDto<MatriculaDemonstrativoPagamentoResponseDto>>(
-                            dataJson).Data;
+                    if (responseBody.IsValidJson())
+                        return JsonConvert.DeserializeObject<MatriculaDemonstrativoPagamentoResponse>(
+                            responseBody);
                 }
             }
 
@@ -526,14 +526,14 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
+                    if (responseBody.IsValidJson())
                     {
-                        var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaDemonstrativoPagamentoResponseDto>>>(
-                            dataJson).Data;
+                        var source = JsonConvert.DeserializeObject<IEnumerable<MatriculaDemonstrativoPagamentoResponse>>(
+                            responseBody);
 
                         return this._mapper.Map<IEnumerable<DemonstrativoPagamentoViewModel>>(
                             source);

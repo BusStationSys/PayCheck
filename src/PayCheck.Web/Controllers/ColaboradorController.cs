@@ -5,8 +5,9 @@
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using ARVTech.DataAccess.DTOs;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Create;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Update;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using ARVTech.Shared.Extensions;
     using AutoMapper;
     using Microsoft.AspNetCore.Authorization;
@@ -146,16 +147,16 @@
                         string.Empty) :
                     string.Empty;
 
-            object dto;
+            var request = default(object);
 
             if (isNew)
             {
-                var createDto = this._mapper.Map<PessoaFisicaRequestCreateDto>(
+                var createRequest = this._mapper.Map<PessoaFisicaCreateRequest>(
                     vm);
 
-                createDto.Cpf = cpfSanitized;
+                createRequest.Cpf = cpfSanitized;
 
-                createDto.Pessoa = new PessoaRequestCreateDto()
+                createRequest.Pessoa = new PessoaCreateRequest()
                 {
                     Bairro = vm.Bairro,
                     Cep = cepSanitized,
@@ -168,16 +169,16 @@
                     Uf = vm.Uf,
                 };
 
-                dto = createDto;
+                request = createRequest;
             }
             else
             {
-                var updateDto = this._mapper.Map<PessoaFisicaRequestUpdateDto>(
+                var updateRequest = this._mapper.Map<PessoaFisicaUpdateRequest>(
                     vm);
 
-                updateDto.Cpf = cpfSanitized;
+                updateRequest.Cpf = cpfSanitized;
 
-                updateDto.Pessoa = new PessoaRequestUpdateDto()
+                updateRequest.Pessoa = new PessoaUpdateRequest()
                 {
                     Bairro = vm.Bairro,
                     Cep = cepSanitized,
@@ -190,11 +191,11 @@
                     Uf = vm.Uf,
                 };
 
-                dto = updateDto;
+                request = updateRequest;
             }
 
             string requestBody = JsonConvert.SerializeObject(
-                dto,
+                request,
                 Formatting.Indented);
 
             var tokenBearer = await this._authService.GetTokenAsync();
@@ -210,27 +211,46 @@
                 HttpMethod.Post :
                 HttpMethod.Put;
 
-            var apiResponseDto = default(ApiResponseDto<PessoaFisicaResponseDto>);
+            //  var response = default(PessoaFisicaResponse);
 
             using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
                 method,
                 requestUri,
                 requestBody))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+                    if (responseBody.IsValidJson())
+                    {
+                        var response = JsonConvert.DeserializeObject<PessoaFisicaResponse>(
+                            responseBody);
+
+                        ViewBag.SuccessMessage = "<p>Aguarde, você será redirecionado em alguns segundos.</p>";
+                    }
+                }
+                else
+                {
+                    string errorMessage = "";
 
                     if (responseBody.IsValidJson())
-                        apiResponseDto = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(
+                    {
+                        var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(
                             responseBody);
+
+                        if (!string.IsNullOrWhiteSpace(
+                            problemDetails?.Detail))
+                            errorMessage = problemDetails.Detail;
+
+                        else if (!string.IsNullOrWhiteSpace(
+                            problemDetails?.Title))
+                            errorMessage = problemDetails.Title;
+                    }
+
+                    ViewBag.ErrorMessage = $"<p>{errorMessage}</p>";
                 }
             }
-
-            if (apiResponseDto?.Success is true)
-                ViewBag.SuccessMessage = "<p>Aguarde, você será redirecionado em alguns segundos.</p>";
-            else
-                ViewBag.ErrorMessage = $"<p>{apiResponseDto?.Message ?? "Erro desconhecido ao salvar."}</p>";
 
             return View(
                 vm);
@@ -269,18 +289,37 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
+                    if (responseBody.IsValidJson())
                     {
-                        var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaFisicaResponseDto>>>(
-                            dataJson).Data;
+                        var source = JsonConvert.DeserializeObject<IEnumerable<PessoaFisicaResponse>>(
+                            responseBody);
 
                         pessoasFisicas = this._mapper.Map<IEnumerable<PessoaFisicaModel>>(
                             source);
                     }
+                }
+                else
+                {
+                    if (responseBody.IsValidJson())
+                    {
+                        var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(responseBody);
+
+                        return BadRequest(
+                            new
+                            {
+                                error = problemDetails?.Detail ?? problemDetails?.Title ?? "Erro ao buscar dados."
+                            });
+                    }
+
+                    return BadRequest(
+                        new
+                        {
+                            error = "Erro desconhecido ao buscar dados."
+                        });
                 }
             }
 
@@ -302,15 +341,20 @@
             var searchValue = Request.Form["search[value]"].FirstOrDefault() ?? string.Empty;
             var start = Request.Form["start"].FirstOrDefault();
 
-            int pageSize = length != null ? Convert.ToInt32(length) : 0;
-            int skip = start != null ? Convert.ToInt32(start) : 0;
+            int pageSize = length != null ?
+                Convert.ToInt32(
+                    length) :
+                    0;
+
+            int skip = start != null ?
+                Convert.ToInt32(
+                    start) :
+                    0;
 
             if (!string.IsNullOrEmpty(sortColumn))
-            {
                 query = !string.IsNullOrEmpty(sortColumnDir) && sortColumnDir.Equals("DESC", StringComparison.OrdinalIgnoreCase)
                     ? query.OrderByDescending(pf => pf.GetType().GetProperty(sortColumn).GetValue(pf, null))
                     : query.OrderBy(pf => pf.GetType().GetProperty(sortColumn).GetValue(pf, null));
-            }
 
             if (!string.IsNullOrEmpty(searchValue))
                 query = query.Where(td =>
@@ -323,15 +367,17 @@
 
             int recordsFiltered = query.Count();        // Total após o filtro.
 
-            var data = query.Skip(skip).Take(pageSize).ToList();
+            var data = query.Skip(
+                skip).Take(
+                pageSize).ToList();
 
-            return new JsonResult(
+            return Ok(
                 new
                 {
-                    data,
                     draw,
                     recordsTotal,
                     recordsFiltered,
+                    data,
                 });
         }
 
@@ -358,19 +404,30 @@
                 HttpMethod.Get,
                 $"PessoaFisica/{id}");
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (!httpResponseMessage.IsSuccessStatusCode)
+                {
+                    if (responseBody.IsValidJson())
+                    {
+                        var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(
+                            responseBody);
+                        // logar ou tratar aqui futuramente.
+                        // ex: ModelState.AddModelError("", problem?.Detail);
+                    }
+
+                    return null;
+                }
+
+                if (!responseBody.IsValidJson())
                     return null;
 
-                string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<PessoaFisicaResponse>(
+                    responseBody);
 
-                if (!dataJson.IsValidJson())
-                    return null;
-
-                var apiResponse = JsonConvert.DeserializeObject<ApiResponseDto<PessoaFisicaResponseDto>>(dataJson);
-
-                return apiResponse?.Data is not null
-                    ? this._mapper.Map<PessoaFisicaModel>(apiResponse.Data)
-                    : null;
+                return response is not null ?
+                    this._mapper.Map<PessoaFisicaModel>(response) :
+                    null;
             }
         }
     }

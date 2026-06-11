@@ -1,6 +1,8 @@
 ﻿namespace PayCheck.Web.Mappings
 {
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Create;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Update;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using AutoMapper;
     using PayCheck.Web.Models;
 
@@ -8,12 +10,12 @@
     {
         public EmpregadorMappingProfile()
         {
-            CreateMap<PessoaJuridicaRequestCreateDto, PessoaJuridicaResponseDto>().ReverseMap();
-            CreateMap<PessoaJuridicaRequestUpdateDto, PessoaJuridicaResponseDto>().ReverseMap();
-            CreateMap<PessoaJuridicaRequestCreateDto, PessoaJuridicaViewModel>().ReverseMap();
-            CreateMap<PessoaJuridicaRequestUpdateDto, PessoaJuridicaViewModel>().ReverseMap();
+            CreateMap<PessoaJuridicaCreateRequest, PessoaJuridicaResponse>().ReverseMap();
+            CreateMap<PessoaJuridicaUpdateRequest, PessoaJuridicaResponse>().ReverseMap();
+            CreateMap<PessoaJuridicaCreateRequest, PessoaJuridicaViewModel>().ReverseMap();
+            CreateMap<PessoaJuridicaUpdateRequest, PessoaJuridicaViewModel>().ReverseMap();
 
-            CreateMap<MatriculaDemonstrativoPagamentoResponseDto, DemonstrativoPagamentoViewModel>()
+            CreateMap<MatriculaDemonstrativoPagamentoResponse, DemonstrativoPagamentoViewModel>()
                 .ForMember(
                     dest => dest.NumeroMatricula,
                     opt => opt.MapFrom(
@@ -28,7 +30,7 @@
                         src => src.Matricula.Empregador.RazaoSocial))
                 .ReverseMap();
 
-            CreateMap<PessoaJuridicaResponseDto, PessoaJuridicaViewModel>()
+            CreateMap<PessoaJuridicaResponse, PessoaJuridicaViewModel>()
                 .ForMember(
                     dest => dest.DescricaoUnidadeNegocio,
                     opt => opt.MapFrom(

@@ -3,7 +3,8 @@
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using Newtonsoft.Json;
     using PayCheck.Web.Infrastructure.Http.Interfaces;
     using PayCheck.Web.Services.Interfaces;
@@ -40,14 +41,14 @@
             var username = "arvtech";   //   _externalApis.Auth.Username;
             var password = "(@rV73Ch)"; //   _externalApis.Auth.Password;
 
-            var authDto = new AuthRequestDto
+            var authRequest = new AuthRequest
             {
                 Username = username,
                 Password = password
             };
 
             var json = JsonConvert.SerializeObject(
-                authDto,
+                authRequest,
                 new JsonSerializerSettings
                 {
                     NullValueHandling = NullValueHandling.Ignore
@@ -67,7 +68,7 @@
 
                 var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
 
-                var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
+                var authResponse = JsonConvert.DeserializeObject<AuthResponse>(
                     responseJson);
 
                 this._token = authResponse.Token;

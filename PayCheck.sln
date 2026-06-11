@@ -32,6 +32,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Itens de Solução", "Itens
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayCheck.Api.Integration.Test", "tests\PayCheck.Api.IntegrationTests\PayCheck.Api.Integration.Test.csproj", "{22DEFBC3-5E17-4398-917B-DA5B190E46FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ARVTech.DataAccess.Contracts", "submodules\ARVTech.DataAccess\src\ARVTech.DataAccess.Contracts\ARVTech.DataAccess.Contracts.csproj", "{AD1CE9D2-244E-B455-BA79-B4256C810486}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +88,10 @@ Global
 		{22DEFBC3-5E17-4398-917B-DA5B190E46FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22DEFBC3-5E17-4398-917B-DA5B190E46FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22DEFBC3-5E17-4398-917B-DA5B190E46FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD1CE9D2-244E-B455-BA79-B4256C810486}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD1CE9D2-244E-B455-BA79-B4256C810486}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD1CE9D2-244E-B455-BA79-B4256C810486}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD1CE9D2-244E-B455-BA79-B4256C810486}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

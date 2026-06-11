@@ -1,6 +1,6 @@
 ﻿namespace PayCheck.Web.Mappings
 {
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests;
     using AutoMapper;
     using PayCheck.Web.Models;
 
@@ -8,7 +8,7 @@
     {
         public AccessMappingProfile()
         {
-            CreateMap<LoginRequestDto, LoginViewModel>().ReverseMap();
+            CreateMap<LoginRequest, LoginViewModel>().ReverseMap();
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿namespace PayCheck.Web.Mappings
 {
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Create;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Update;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using AutoMapper;
     using PayCheck.Web.Models;
 
@@ -8,12 +10,12 @@
     {
         public ColaboradorMappingProfile()
         {
-            CreateMap<PessoaFisicaRequestCreateDto, PessoaFisicaResponseDto>().ReverseMap();
-            CreateMap<PessoaFisicaRequestUpdateDto, PessoaFisicaResponseDto>().ReverseMap();
-            CreateMap<PessoaFisicaRequestCreateDto, PessoaFisicaModel>().ReverseMap();
-            CreateMap<PessoaFisicaRequestUpdateDto, PessoaFisicaModel>().ReverseMap();
+            CreateMap<PessoaFisicaCreateRequest, PessoaFisicaResponse>().ReverseMap();
+            CreateMap<PessoaFisicaUpdateRequest, PessoaFisicaResponse>().ReverseMap();
+            CreateMap<PessoaFisicaCreateRequest, PessoaFisicaModel>().ReverseMap();
+            CreateMap<PessoaFisicaUpdateRequest, PessoaFisicaModel>().ReverseMap();
 
-            CreateMap<PessoaFisicaResponseDto, PessoaFisicaModel>().AfterMap(
+            CreateMap<PessoaFisicaResponse, PessoaFisicaModel>().AfterMap(
                 (src, dest) =>
                 {
                     if (src.Pessoa is null)

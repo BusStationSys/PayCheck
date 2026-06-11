@@ -5,8 +5,7 @@
     using System.Net.Http;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using ARVTech.DataAccess.DTOs;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using ARVTech.Shared.Extensions;
     using AutoMapper;
     using Microsoft.AspNetCore.Mvc;
@@ -55,12 +54,12 @@
         {
             ClaimsPrincipal claimsPrincipal = HttpContext.User;
 
-            var guidUsuario = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponseDto.Guid)}Usuario").Value;
+            var guidUsuario = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponse.Guid)}Usuario").Value;
 
             var competencia = "20230401";
 
             var graficoComposicaoSalarialResponse = default(
-                IEnumerable<GraficoComposicaoSalarialResponseDto>);
+                IEnumerable<GraficoComposicaoSalarialResponse>);
 
             var tokenBearer = await this._authService.GetTokenAsync();
 
@@ -74,13 +73,13 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
-                        graficoComposicaoSalarialResponse = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<GraficoComposicaoSalarialResponseDto>>>(
-                            dataJson).Data;
+                    if (responseBody.IsValidJson())
+                        graficoComposicaoSalarialResponse = JsonConvert.DeserializeObject<IEnumerable<GraficoComposicaoSalarialResponse>>(
+                            responseBody);
                 }
             }
 

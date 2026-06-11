@@ -7,10 +7,8 @@
     using System.Net.Http;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using ARVTech.DataAccess.DTOs;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using ARVTech.Shared.Extensions;
-    using AutoMapper;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authorization;
@@ -36,19 +34,6 @@
         {
             this._logger = logger;
 
-            //var mapperConfiguration = new MapperConfiguration(cfg =>
-            //{
-            //    //cfg.CreateMap<PublicacaoRequestCreateDto, PublicacaoResponseDto>().ReverseMap();
-            //    //cfg.CreateMap<PublicacaoRequestUpdateDto, PublicacaoResponseDto>().ReverseMap();
-            //    //cfg.CreateMap<PublicacaoRequestCreateDto, PublicacaoModel>().ReverseMap();
-            //    //cfg.CreateMap<PublicacaoRequestUpdateDto, PublicacaoModel>().ReverseMap();
-
-            //    //cfg.CreateMap<PublicacaoResponseDto, PublicacaoModel>().ReverseMap();
-            //});
-
-            //this._mapper = new Mapper(
-            //    mapperConfiguration);
-
             this._httpClientService = httpClientService;
 
             this._authService = authService;
@@ -60,15 +45,15 @@
 
             if (claimsPrincipal.Identity.IsAuthenticated)
             {
-                TempData["GuidUsuario"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponseDto.Guid)}Usuario").Value;
+                TempData["GuidUsuario"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponse.Guid)}Usuario").Value;
 
-                TempData["Username"] = HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponseDto.Username)).Value;
+                TempData["Username"] = HttpContext.User.Claims.First(c => c.Type == nameof(UsuarioResponse.Username)).Value;
 
-                TempData["GuidColaborador"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponseDto.Colaborador.Guid)}Colaborador").Value;
+                TempData["GuidColaborador"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponse.Colaborador.Guid)}Colaborador").Value;
 
-                TempData["NomeColaborador"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponseDto.Colaborador.Nome)}Colaborador").Value;
+                TempData["NomeColaborador"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponse.Colaborador.Nome)}Colaborador").Value;
 
-                TempData["EmailUsuario"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponseDto.Email)}Usuario").Value;
+                TempData["EmailUsuario"] = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponse.Email)}Usuario").Value;
 
                 TempData.Keep();
             }
@@ -109,7 +94,7 @@
 
         private async Task<IEnumerable<dynamic>> LoadAniversariantesAsync(DateTime periodoInicial, DateTime periodoFinal)
         {
-            var pessoasFisicas = default(IEnumerable<PessoaFisicaResponseDto>);
+            var pessoasFisicas = default(IEnumerable<PessoaFisicaResponse>);
 
             var tokenBearer = await this._authService.GetTokenAsync();
 
@@ -126,16 +111,32 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    //if (dataJson.IsValidJson())
-                    //{
-                    //    matriculas = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaResponseDto>>>(
-                    //        dataJson).Data;
-                    //}
+                    if (responseBody.IsValidJson())
+                    {
+                        pessoasFisicas = JsonConvert.DeserializeObject<IEnumerable<PessoaFisicaResponse>>(
+                            responseBody);
+                    }
                 }
+                //else
+                //{
+                //    if (responseBody.IsValidJson())
+                //    {
+                //        var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(
+                //            responseBody);
+
+                //        ViewBag.ErrorMessage = problemDetails?.Detail ??
+                //            problemDetails?.Title ??
+                //            "Erro ao buscar notificações.";
+                //    }
+                //    else
+                //    {
+                //        ViewBag.ErrorMessage = "Erro desconhecido ao buscar notificações.";
+                //    }
+                //}
             }
 
             if (pessoasFisicas is null ||
@@ -166,7 +167,7 @@
 
         private async Task<IEnumerable<dynamic>> LoadAniversariantesEmpresaAsync(int mes)
         {
-            var matriculas = default(IEnumerable<MatriculaResponseDto>);
+            var matriculas = default(IEnumerable<MatriculaResponse>);
 
             var tokenBearer = await this._authService.GetTokenAsync();
 
@@ -180,14 +181,14 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
+                    if (responseBody.IsValidJson())
                     {
-                        matriculas = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<MatriculaResponseDto>>>(
-                            dataJson).Data;
+                        matriculas = JsonConvert.DeserializeObject<IEnumerable<MatriculaResponse>>(
+                            responseBody);
                     }
                 }
             }

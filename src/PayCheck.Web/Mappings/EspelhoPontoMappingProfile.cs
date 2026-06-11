@@ -1,6 +1,8 @@
 ﻿namespace PayCheck.Web.Mappings
 {
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Create;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Update;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using AutoMapper;
     using PayCheck.Web.Models;
 
@@ -8,10 +10,10 @@
     {
         public EspelhoPontoMappingProfile()
         {
-            CreateMap<MatriculaEspelhoPontoRequestCreateDto, MatriculaEspelhoPontoResponseDto>().ReverseMap();
-            CreateMap<MatriculaEspelhoPontoRequestUpdateDto, MatriculaEspelhoPontoResponseDto>().ReverseMap();
+            CreateMap<MatriculaEspelhoPontoCreateRequest, MatriculaEspelhoPontoResponse>().ReverseMap();
+            CreateMap<MatriculaEspelhoPontoUpdateRequest, MatriculaEspelhoPontoResponse>().ReverseMap();
 
-            CreateMap<MatriculaEspelhoPontoResponseDto, EspelhoPontoViewModel>()
+            CreateMap<MatriculaEspelhoPontoResponse, EspelhoPontoViewModel>()
                 .ForMember(
                     dest => dest.NumeroMatricula,
                     opt => opt.MapFrom(

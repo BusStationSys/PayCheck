@@ -5,8 +5,9 @@
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using ARVTech.DataAccess.DTOs;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Create;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Update;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using ARVTech.Shared.Extensions;
     using AutoMapper;
     using Microsoft.AspNetCore.Authorization;
@@ -61,14 +62,14 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
+                    if (responseBody.IsValidJson())
                     {
-                        var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>>(
-                            dataJson).Data;
+                        var source = JsonConvert.DeserializeObject<IEnumerable<PessoaJuridicaResponse>>(
+                            responseBody);
 
                         pessoasJuridicas = this._mapper.Map<IEnumerable<PessoaJuridicaViewModel>>(
                             source);
@@ -107,14 +108,14 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
+                    if (responseBody.IsValidJson())
                     {
-                        var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
-                            dataJson).Data;
+                        var data = JsonConvert.DeserializeObject<PessoaJuridicaResponse>(
+                            responseBody);
 
                         pessoaJuridica = this._mapper.Map<PessoaJuridicaViewModel>(
                             data);
@@ -152,14 +153,14 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
+                    if (responseBody.IsValidJson())
                     {
-                        var data = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
-                            dataJson).Data;
+                        var data = JsonConvert.DeserializeObject<PessoaJuridicaResponse>(
+                            responseBody);
 
                         pessoaJuridica = this._mapper.Map<PessoaJuridicaViewModel>(
                             data);
@@ -204,16 +205,16 @@
                         string.Empty) :
                     string.Empty;
 
-            object dto;
+            object request;
 
             if (isNew)
             {
-                var createDto = this._mapper.Map<PessoaJuridicaRequestCreateDto>(
+                var createRequest = this._mapper.Map<PessoaJuridicaCreateRequest>(
                     vm);
 
-                createDto.Cnpj = cnpjSanitized;
+                createRequest.Cnpj = cnpjSanitized;
 
-                createDto.Pessoa = new PessoaRequestCreateDto()
+                createRequest.Pessoa = new PessoaCreateRequest()
                 {
                     Bairro = vm.Bairro,
                     Cep = cepSanitized,
@@ -226,16 +227,16 @@
                     Uf = vm.Uf,
                 };
 
-                dto = createDto;
+                request = createRequest;
             }
             else
             {
-                var updateDto = this._mapper.Map<PessoaJuridicaRequestUpdateDto>(
+                var updateRequest = this._mapper.Map<PessoaJuridicaUpdateRequest>(
                     vm);
 
-                updateDto.Cnpj = cnpjSanitized;
+                updateRequest.Cnpj = cnpjSanitized;
 
-                updateDto.Pessoa = new PessoaRequestUpdateDto()
+                updateRequest.Pessoa = new PessoaUpdateRequest()
                 {
                     Bairro = vm.Bairro,
                     Cep = cepSanitized,
@@ -248,11 +249,11 @@
                     Uf = vm.Uf,
                 };
 
-                dto = updateDto;
+                request = updateRequest;
             }
 
             string requestBody = JsonConvert.SerializeObject(
-                dto,
+                request,
                 Formatting.Indented);
 
             var tokenBearer = await this._authService.GetTokenAsync();
@@ -268,27 +269,40 @@
                 HttpMethod.Post :
                 HttpMethod.Put;
 
-            var apiResponseDto = default(ApiResponseDto<PessoaJuridicaResponseDto>);
+            var pessoaJuridicaResponse = default(PessoaJuridicaResponse);
 
             using (var httpResponseMessage = await this._httpClientService.ExecuteAsync(
                 method,
                 requestUri,
                 requestBody))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+                    if (responseBody.IsValidJson())
+                        pessoaJuridicaResponse = JsonConvert.DeserializeObject<PessoaJuridicaResponse>(
+                            responseBody);
+
+                    ViewBag.SuccessMessage = "<p>Aguarde, você será redirecionado em alguns segundos.</p>";
+                }
+                else
+                {
+                    string message = "Erro desconhecido ao salvar.";
 
                     if (responseBody.IsValidJson())
-                        apiResponseDto = JsonConvert.DeserializeObject<ApiResponseDto<PessoaJuridicaResponseDto>>(
+                    {
+                        var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(
                             responseBody);
+
+                        message = problemDetails?.Detail ??
+                            problemDetails?.Title ??
+                            "Erro ao salvar.";
+                    }
+
+                    ViewBag.ErrorMessage = $"<p>{message}</p>";
                 }
             }
-
-            if (apiResponseDto?.Success is true)
-                ViewBag.SuccessMessage = "<p>Aguarde, você será redirecionado em alguns segundos.</p>";
-            else
-                ViewBag.ErrorMessage = $"<p>{apiResponseDto?.Message ?? "Erro desconhecido ao salvar."}</p>";
 
             return View(
                 vm);
@@ -315,14 +329,14 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
+                    if (responseBody.IsValidJson())
                     {
-                        var source = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<PessoaJuridicaResponseDto>>>(
-                            dataJson).Data;
+                        var source = JsonConvert.DeserializeObject<IEnumerable<PessoaJuridicaResponse>>(
+                            responseBody);
 
                         pessoasJuridicas = this._mapper.Map<IEnumerable<PessoaJuridicaViewModel>>(
                             source);

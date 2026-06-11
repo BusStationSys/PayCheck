@@ -5,8 +5,7 @@
     using System.Net.Http;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using ARVTech.DataAccess.DTOs;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using ARVTech.Shared.Extensions;
     using AutoMapper;
     using Microsoft.AspNetCore.Mvc;
@@ -51,12 +50,22 @@
         /// </returns>
         public async Task<IViewComponentResult> InvokeAsync()
         {
+            //var claim = HttpContext.User.Claims.FirstOrDefault(
+            //    c => c.Type == $"{nameof(UsuarioResponse.Guid)}Usuario");
+
+            //if (claim is null)
+            //{
+            //    // aqui você decide: redirect, erro, etc.
+            //    return Unauthorized();
+            //}
+
             ClaimsPrincipal claimsPrincipal = HttpContext.User;
 
-            var guid = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponseDto.Guid)}Usuario").Value;
+            var guid = HttpContext.User.Claims.First(
+                c => c.Type == $"{nameof(UsuarioResponse.Guid)}Usuario").Value;
 
             var usuarioNotificacaoResponse = default(
-                IEnumerable<UsuarioNotificacaoResponseDto>);
+                IEnumerable<UsuarioNotificacaoResponse>);
 
             var tokenBearer = await this._authService.GetTokenAsync();
 
@@ -70,13 +79,29 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
+                    if (responseBody.IsValidJson())
+                        usuarioNotificacaoResponse = JsonConvert.DeserializeObject<IEnumerable<UsuarioNotificacaoResponse>>(
+                            responseBody);
+                }
+                else
+                {
+                    if (responseBody.IsValidJson())
+                    {
+                        var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(
+                            responseBody);
 
-                    if (dataJson.IsValidJson())
-                        usuarioNotificacaoResponse = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<UsuarioNotificacaoResponseDto>>>(
-                            dataJson).Data;
+                        ViewBag.ErrorMessage = problemDetails?.Detail ?? 
+                            problemDetails?.Title ?? 
+                            "Erro ao buscar notificações.";
+                    }
+                    else
+                    {
+                        ViewBag.ErrorMessage = "Erro desconhecido ao buscar notificações.";
+                    }
                 }
             }
 

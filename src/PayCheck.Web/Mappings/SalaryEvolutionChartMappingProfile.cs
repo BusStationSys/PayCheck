@@ -1,6 +1,6 @@
 ﻿namespace PayCheck.Web.Mappings
 {
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using AutoMapper;
     using PayCheck.Web.Models;
 
@@ -8,7 +8,7 @@
     {
         public SalaryEvolutionChartMappingProfile()
         {
-            CreateMap<GraficoEvolucaoSalarialResponseDto, GraficoEvolucaoSalarialViewModel>().ForMember(
+            CreateMap<GraficoEvolucaoSalarialResponse, GraficoEvolucaoSalarialViewModel>().ForMember(
                         dest => dest.Competencia,
                         opt => opt.MapFrom(
                             src => src.CompetenciaFormatada)).ReverseMap();

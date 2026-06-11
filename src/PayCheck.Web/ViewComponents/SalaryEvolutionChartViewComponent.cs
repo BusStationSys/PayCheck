@@ -5,8 +5,7 @@
     using System.Net.Http;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using ARVTech.DataAccess.DTOs;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using ARVTech.DataAccess.Contracts.PayCheck.Responses;
     using ARVTech.Shared.Extensions;
     using AutoMapper;
     using Microsoft.AspNetCore.Mvc;
@@ -53,12 +52,12 @@
         {
             ClaimsPrincipal claimsPrincipal = HttpContext.User;
 
-            var guidUsuario = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponseDto.Guid)}Usuario").Value;
+            var guidUsuario = HttpContext.User.Claims.First(c => c.Type == $"{nameof(UsuarioResponse.Guid)}Usuario").Value;
 
             var quantidadeMesesRetroativos = 6;
 
             var graficoEvolucaoSalarialResponse = default(
-                IEnumerable<GraficoEvolucaoSalarialResponseDto>);
+                IEnumerable<GraficoEvolucaoSalarialResponse>);
 
             var tokenBearer = await this._authService.GetTokenAsync();
 
@@ -72,18 +71,27 @@
                 HttpMethod.Get,
                 requestUri))
             {
+                string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
+
                 if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    //var responseJson = await httpResponseMessage.Content.ReadAsStringAsync();
+                    if (responseBody.IsValidJson())
+                        graficoEvolucaoSalarialResponse = JsonConvert.DeserializeObject<IEnumerable<GraficoEvolucaoSalarialResponse>>(
+                            responseBody);
+                }
+                else
+                {
+                    if (responseBody.IsValidJson())
+                    {
+                        var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(
+                            responseBody);
 
-                    //graficoEvolucaoSalarialResponse = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>>>(
-                    //    responseJson).Data;
-
-                    string dataJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (dataJson.IsValidJson())
-                        graficoEvolucaoSalarialResponse = JsonConvert.DeserializeObject<ApiResponseDto<IEnumerable<GraficoEvolucaoSalarialResponseDto>>>(
-                            dataJson).Data;
+                        ViewBag.ErrorMessage = problemDetails?.Detail ??
+                            problemDetails?.Title ??
+                            "Erro ao buscar notificações.";
+                    }
+                    else
+                        ViewBag.ErrorMessage = "Erro desconhecido ao buscar notificações.";
                 }
             }
 
