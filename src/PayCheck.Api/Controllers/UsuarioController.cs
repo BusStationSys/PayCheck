@@ -11,8 +11,9 @@
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// 
+    /// Controller responsible for user-related operations.
     /// </summary>
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UsuarioController : ControllerBase
@@ -20,10 +21,10 @@
         private readonly IUsuarioService _service;
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of <see cref="UsuarioController"/>.
         /// </summary>
-        /// <param name="service"></param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <param name="service">The user service instance.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="service"/> is null.</exception>
         public UsuarioController(IUsuarioService service)
         {
             this._service = service ?? throw new ArgumentNullException(
@@ -32,36 +33,38 @@
         }
 
         /// <summary>
-        /// 
+        /// Authenticates a user based on the provided credentials.
         /// </summary>
-        /// <param name="loginRequest"></param>
-        /// <returns></returns>
-        [Authorize]
+        /// <param name="loginRequest">The login credentials.</param>
+        /// <returns>The authenticated user data.</returns>
+        [AllowAnonymous]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AuthenticateAsync([FromBody] LoginRequest loginRequest)
         {
-            var data = this._service.GetByUsername(
-                loginRequest.CpfEmailUsername).FirstOrDefault();
+            var data = await Task.FromResult(
+                this._service.GetByUsername(
+                    loginRequest.CpfEmailUsername).FirstOrDefault());
 
             if (data is null)
-                return NotFound(
+                return Unauthorized(
                     new ProblemDetails
                     {
-                        Title = "Not Found",
+                        Title = "Unauthorized",
                         Detail = $"Usuário não encontrado para a credencial {loginRequest.CpfEmailUsername}!",
                     });
 
-            data = this._service.CheckPasswordValid(
-                data.Guid,
-                loginRequest.Password);
+            data = await Task.FromResult(
+                this._service.CheckPasswordValid(
+                    data.Guid,
+                    loginRequest.Password));
 
             if (data is null)
-                return NotFound(
+                return Unauthorized(
                     new ProblemDetails
                     {
-                        Title = "Not Found",
+                        Title = "Unauthorized",
                         Detail = $"A Senha não confere para o Usuário com a credencial {loginRequest.CpfEmailUsername}!",
                     });
 
@@ -70,21 +73,21 @@
         }
 
         /// <summary>
-        /// 
+        /// Retrieves the notifications for a given user.
         /// </summary>
-        /// <param name="guid"></param>
-        /// <returns></returns>
-        [Authorize]
+        /// <param name="guid">The user unique identifier.</param>
+        /// <returns>The list of notifications for the user.</returns>
         [HttpGet("Notificacoes/{guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetNotificacoesAsync(Guid guid)
         {
-            var data = this._service.GetNotificacoes(
-                guidUsuario: guid);
+            var data = await Task.FromResult(
+                this._service.GetNotificacoes(
+                    guidUsuario: guid));
 
-            if (data != null &&
-                data.Count() > 0)
+            if (data is null ||
+                !data.Any())
                 return NotFound(
                     new ProblemDetails
                     {
@@ -97,12 +100,11 @@
         }
 
         /// <summary>
-        /// 
+        /// Updates the data of an existing user.
         /// </summary>
-        /// <param name="guid"></param>
-        /// <param name="updateRequest"></param>
-        /// <returns></returns>
-        [Authorize]
+        /// <param name="guid">The user unique identifier.</param>
+        /// <param name="updateRequest">The update payload.</param>
+        /// <returns>No content on success.</returns>
         [HttpPut("{guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -131,21 +133,15 @@
                         Detail = $"Usuário {guid} não encontrado.",
                     });
 
-            //return Ok(
-            //    data);
-
-            return StatusCode(
-                StatusCodes.Status204NoContent,
-                data);
+            return NoContent();
         }
 
         /// <summary>
-        /// 
+        /// Updates the password of an existing user.
         /// </summary>
-        /// <param name="guid"></param>
-        /// <param name="updateRequest"></param>
-        /// <returns></returns>
-        [Authorize]
+        /// <param name="guid">The user unique identifier.</param>
+        /// <param name="updateRequest">The update payload containing the new password.</param>
+        /// <returns>No content on success.</returns>
         [HttpPut("updatePassword/{guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -160,6 +156,8 @@
                         Detail = "Payload inválido."
                     });
 
+            updateRequest.Guid = guid;
+
             var data = await Task.FromResult(
                 this._service.SaveData(
                     updateRequest: updateRequest));
@@ -172,23 +170,7 @@
                         Detail = $"Usuário {guid} não encontrado.",
                     });
 
-            return StatusCode(
-                StatusCodes.Status204NoContent,
-                data);
-
-            //return Ok(
-            //    data);
-
-            //return CreatedAtAction(
-            //    nameof(
-            //        this.GetAgente),
-            //    new
-            //    {
-            //        id = agenteResponseDto.CodigoAgente,
-            //    },
-            //    agenteResponseDto);
-
-            //return NoContent();
+            return NoContent();
         }
     }
 }
