@@ -20,6 +20,8 @@
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Mvc;
     using Newtonsoft.Json;
+    using PayCheck.Web.Common;
+    using PayCheck.Web.Extensions;
     using PayCheck.Web.Infrastructure.Http.Interfaces;
     using PayCheck.Web.Models;
     using PayCheck.Web.Services.Interfaces;
@@ -485,29 +487,17 @@ A Equipe de Suporte PayCheck®.";
                     vm);
             }
 
-            var loginDto = this._mapper.Map<LoginRequest>(
+            var loginRequest = this._mapper.Map<LoginRequest>(
                 vm);
 
             string requestUri = "Usuario";
 
             string fromBodyString = JsonConvert.SerializeObject(
-                loginDto,
+                loginRequest,
                 Formatting.Indented);
 
             var usuarioResponse = default(
                 UsuarioResponse);
-
-            //using (var webApiHelper = new WebApiHelper(
-            //    requestUri,
-            //    this._tokenBearer))
-            //{
-            //    fromBodyString = webApiHelper.ExecutePostWithAuthenticationByBearer(
-            //        fromBodyString);
-
-            //    if (fromBodyString.IsValidJson())
-            //        apiResponseDto = JsonConvert.DeserializeObject<ApiResponseDto<UsuarioResponseDto>>(
-            //            fromBodyString);
-            //}
 
             var tokenBearer = this._authService.GetTokenAsync().Result;
 
@@ -592,12 +582,12 @@ A Equipe de Suporte PayCheck®.";
                                     UsuarioResponse.Email)}Usuario",
                                     emailUsuario),
 
+                                //new Claim("OtherProperty","OtherValue"),
+
                                 new ($"{nameof(
                                     UsuarioResponse.IdPerfilUsuario)}",
                                     usuarioResponse.IdPerfilUsuario.ToString()),
-
-                            //new Claim("OtherProperty","OtherValue"),
-                        };
+                            };
 
                             ClaimsIdentity claimsIdentity = new(
                                 claims,
@@ -606,7 +596,7 @@ A Equipe de Suporte PayCheck®.";
                             AuthenticationProperties authenticationProperties = new()
                             {
                                 AllowRefresh = true,
-                                IsPersistent = loginDto.KeepLoggedIn,
+                                IsPersistent = loginRequest.KeepLoggedIn,
                             };
 
                             await HttpContext.SignInAsync(
@@ -623,19 +613,33 @@ A Equipe de Suporte PayCheck®.";
                 }
                 else
                 {
+                    string message = string.Empty;
+
                     if (responseBody.IsValidJson())
                     {
                         var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(
                             responseBody);
 
-                        ViewBag.ErrorMessage = problemDetails?.Detail ??
+                        //ViewBag.ErrorMessage = problemDetails?.Detail ??
+                        //    problemDetails?.Title ??
+                        //    "<p>Erro ao efetuar Login.</p>";
+
+                        message = problemDetails?.Detail ??
                             problemDetails?.Title ??
-                            "<p>Erro ao efetuar Login.</p>";
+                            "Erro ao efetuar Login.";
+
+                        message = $"<p>{message}</p>";
                     }
                     else
                     {
-                        ViewBag.ErrorMessage = "<p>Erro desconhecido ao efetuar Login.</p>";
+                        //  ViewBag.ErrorMessage = "<p>Erro desconhecido ao efetuar Login.</p>";
+
+                        message = "<p>Erro desconhecido ao efetuar Login.</p>";
                     }
+
+                    TempData.AddNotification(
+                        NotificationType.Danger,
+                        message);
                 }
             }
 

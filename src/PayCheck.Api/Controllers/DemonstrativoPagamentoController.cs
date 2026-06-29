@@ -273,7 +273,7 @@
         [ProducesResponseType(typeof(MatriculaDemonstrativoPagamentoResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateDemonstrativoPagamento(Guid guid, [FromBody] MatriculaDemonstrativoPagamentoUpdateRequest updateRequest)
+        public async Task<IActionResult> UpdateDemonstrativoPagamentoAsync(Guid guid, [FromBody] MatriculaDemonstrativoPagamentoUpdateRequest updateRequest)
         {
             if (updateRequest is null)
                 return BadRequest(

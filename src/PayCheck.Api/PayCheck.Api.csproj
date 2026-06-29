@@ -24,7 +24,6 @@
 	  <Compile Remove="Controllers\PessoaFisicaController.cs" />
 	  <Compile Remove="Controllers\PessoaJuridicaController.cs" />
 	  <Compile Remove="Controllers\PublicacaoController.cs" />
-	  <Compile Remove="Controllers\UsuarioController.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -13,6 +13,8 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Newtonsoft.Json;
+    using PayCheck.Web.Common;
+    using PayCheck.Web.Extensions;
     using PayCheck.Web.Infrastructure.Http.Interfaces;
     using PayCheck.Web.Models;
     using PayCheck.Web.Services.Interfaces;
@@ -227,7 +229,11 @@
                         var response = JsonConvert.DeserializeObject<PessoaFisicaResponse>(
                             responseBody);
 
-                        ViewBag.SuccessMessage = "<p>Aguarde, você será redirecionado em alguns segundos.</p>";
+                        //  ViewBag.SuccessMessage = "<p>Aguarde, você será redirecionado em alguns segundos.</p>";
+
+                        TempData.AddNotification(
+                            NotificationType.Success, 
+                            "<p>Aguarde, você será redirecionado em alguns segundos.</p>");
                     }
                 }
                 else
@@ -248,7 +254,11 @@
                             errorMessage = problemDetails.Title;
                     }
 
-                    ViewBag.ErrorMessage = $"<p>{errorMessage}</p>";
+                    //  ViewBag.ErrorMessage = $"<p>{errorMessage}</p>";
+
+                    TempData.AddNotification(
+                        NotificationType.Danger,
+                        $"<p>{errorMessage}</p>");
                 }
             }
 

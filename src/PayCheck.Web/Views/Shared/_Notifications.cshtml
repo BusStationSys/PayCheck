@@ -1,0 +1,73 @@
+﻿@using ARVTech.Shared.Extensions
+@using PayCheck.Web.Extensions
+
+@{
+    var notifications = TempData.GetNotifications();
+}
+
+@if (notifications != null &&
+    notifications.Any())
+{
+    foreach (var notification in notifications)
+    {
+        var cssClass = notification.Type.ToString().ToLowerInvariant();
+
+        <div class="alert alert-@cssClass alert-dismissible fade show" role="alert">
+
+            @* <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a> *@
+
+            @if (notification.Icon is not null)
+            {
+                <h4>
+                    <i class="icon fa @notification.Icon.GetDisplayName().ToLowerInvariant()"></i>
+                    <strong>@notification.Type.GetDisplayName()</strong>
+                </h4>
+            }
+            else
+            {
+                <strong>@notification.Type.GetDisplayName()</strong>
+            }
+
+            @Html.Raw(
+                notification.Message)
+
+            @if (!string.IsNullOrEmpty(notification.Link))
+            {
+                <p>
+                    <small class="text-@cssClass">
+
+                        @if (!string.IsNullOrEmpty(notification.LinkMessage))
+                            @notification.LinkMessage
+
+                        <a href="@notification.Link" class="text-@cssClass">
+                            <strong>@(notification.LinkText ?? "aqui")</strong>
+                        </a>.
+                    </small>
+                </p>
+            }
+
+            <button type="button" class="close" data-dismiss="alert">
+                <span>&times;</span>
+            </button>
+        </div>
+    }
+}
+
+@*                 /*
+<div id="alertSuccess" class="alert alert-success alert-dismissible">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+
+    <h4>
+        <i class="icon fa fa-check"></i>
+        <strong>Sucesso</strong>
+    </h4>
+
+    @Html.Raw(@ViewBag.SuccessMessage)
+
+    <p>
+        <small class="text-success">
+            Se o redirecionamento não funcionar, clique <a href="@Url.Action("Index", "Colaborador")" class="text-success"><strong>aqui</strong></a>.
+        </small>
+    </p>
+</div>
+                */ *@

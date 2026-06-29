@@ -1,11 +1,13 @@
 ﻿namespace PayCheck.Api.Controllers
 {
     using System;
-    using System.Net;
-    using ARVTech.DataAccess.DTOs;
-    using ARVTech.DataAccess.DTOs.UniPayCheck;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests;
+    using ARVTech.DataAccess.Contracts.PayCheck.Requests.Update;
     using ARVTech.DataAccess.Service.UniPayCheck.Interfaces;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -32,60 +34,39 @@
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="loginDto"></param>
-        /// <returns><see cref="IActionResult"/></returns>
-        /// <response code="200">A busca foi realizada com sucesso.</response>
-        /// <response code="404">A busca não encontrou resultados.</response>
-        /// <response code="500">Ocorre</response>
+        /// <param name="loginRequest"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost]
-        public ApiResponseDto<UsuarioResponseDto> Authenticate([FromBody] LoginRequestDto loginDto)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> AuthenticateAsync([FromBody] LoginRequest loginRequest)
         {
-            try
-            {
-                //var usuarioResponse = this._business.GetByUsername(
-                //    loginDto.CpfEmailUsername).FirstOrDefault();
+            var data = this._service.GetByUsername(
+                loginRequest.CpfEmailUsername).FirstOrDefault();
 
-                var data = this._service.GetByUsername(
-                    loginDto.CpfEmailUsername).FirstOrDefault();
-
-                if (data is null)
-                {
-                    return new ApiResponseDto<UsuarioResponseDto>
+            if (data is null)
+                return NotFound(
+                    new ProblemDetails
                     {
-                        Message = $"Usuário não encontrado para a credencial {loginDto.CpfEmailUsername}!",
-                        StatusCode = HttpStatusCode.NotFound,
-                    };
-                }
-                else
-                {
-                    data = this._service.CheckPasswordValid(
-                        data.Guid,
-                        loginDto.Password);
+                        Title = "Not Found",
+                        Detail = $"Usuário não encontrado para a credencial {loginRequest.CpfEmailUsername}!",
+                    });
 
-                    if (data != null)
-                        return new ApiResponseDto<UsuarioResponseDto>
-                        {
-                            Data = data,
-                            Success = true,
-                            StatusCode = HttpStatusCode.OK,
-                        };
+            data = this._service.CheckPasswordValid(
+                data.Guid,
+                loginRequest.Password);
 
-                    return new ApiResponseDto<UsuarioResponseDto>
+            if (data is null)
+                return NotFound(
+                    new ProblemDetails
                     {
-                        Message = $"A Senha não confere para o Usuário com a credencial {loginDto.CpfEmailUsername}!",
-                        StatusCode = HttpStatusCode.NotFound,
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponseDto<UsuarioResponseDto>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
-            }
+                        Title = "Not Found",
+                        Detail = $"A Senha não confere para o Usuário com a credencial {loginRequest.CpfEmailUsername}!",
+                    });
+
+            return Ok(
+                data);
         }
 
         /// <summary>
@@ -95,134 +76,119 @@
         /// <returns></returns>
         [Authorize]
         [HttpGet("Notificacoes/{guid}")]
-        public ApiResponseDto<IEnumerable<UsuarioNotificacaoResponseDto>> GetNotificacoes(Guid guid)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetNotificacoesAsync(Guid guid)
         {
-            try
-            {
-                var data = this._service.GetNotificacoes(
-                    guidUsuario: guid);
+            var data = this._service.GetNotificacoes(
+                guidUsuario: guid);
 
-                if (data != null &&
-                    data.Count() > 0)
-                    return new ApiResponseDto<IEnumerable<UsuarioNotificacaoResponseDto>>
+            if (data != null &&
+                data.Count() > 0)
+                return NotFound(
+                    new ProblemDetails
                     {
-                        Data = data,
-                        Success = true,
-                        StatusCode = HttpStatusCode.OK,
-                    };
+                        Title = "Not Found",
+                        Detail = $"Notificações não encontradas para o Usuário {guid}.",
+                    });
 
-                return new ApiResponseDto<IEnumerable<UsuarioNotificacaoResponseDto>>
-                {
-                    Message = $"Notificações não encontradas para o Usuário {guid}!",
-                    StatusCode = HttpStatusCode.NotFound,
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponseDto<IEnumerable<UsuarioNotificacaoResponseDto>>
-                {
-                    Message = ex.Message,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                };
-            }
+            return Ok(
+                data);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="guid"></param>
-        /// <param name="updateDto"></param>
+        /// <param name="updateRequest"></param>
         /// <returns></returns>
         [Authorize]
         [HttpPut("{guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateUsuario(Guid guid, [FromBody] UsuarioRequestUpdateDto updateDto)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateUsuarioAsync(Guid guid, [FromBody] UsuarioUpdateRequest updateRequest)
         {
-            try
-            {
-                updateDto.Guid = guid;
+            if (updateRequest is null)
+                return BadRequest(
+                    new ProblemDetails
+                    {
+                        Title = "Bad Request",
+                        Detail = "Payload inválido."
+                    });
 
-                var usuarioResponse = this._service.SaveData(
-                    updateDto: updateDto);
+            updateRequest.Guid = guid;
 
-                usuarioResponse.StatusCode = HttpStatusCode.NoContent;
+            var data = await Task.FromResult(
+                this._service.SaveData(
+                    updateRequest: updateRequest));
 
-                //return StatusCode(
-                //    StatusCodes.Status204NoContent,
-                //    usuarioResponse);
+            if (data is null)
+                return NotFound(
+                    new ProblemDetails
+                    {
+                        Title = "Not Found",
+                        Detail = $"Usuário {guid} não encontrado.",
+                    });
 
-                return Ok(
-                    usuarioResponse);
+            //return Ok(
+            //    data);
 
-                //return CreatedAtAction(
-                //    nameof(
-                //        this.GetAgente),
-                //    new
-                //    {
-                //        id = agenteResponseDto.CodigoAgente,
-                //    },
-                //    agenteResponseDto);
-
-                //return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(
-                    StatusCodes.Status500InternalServerError,
-                    ex.Message);
-            }
+            return StatusCode(
+                StatusCodes.Status204NoContent,
+                data);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="guid"></param>
-        /// <param name="updateDto"></param>
+        /// <param name="updateRequest"></param>
         /// <returns></returns>
         [Authorize]
         [HttpPut("updatePassword/{guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-
-        public IActionResult UpdatePassword(Guid guid, [FromBody] UsuarioRequestUpdateDto updateDto)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdatePasswordAsync(Guid guid, [FromBody] UsuarioUpdateRequest updateRequest)
         {
-            try
-            {
-                var usuarioResponse = this._service.SaveData(
-                    updateDto: updateDto);
+            if (updateRequest is null)
+                return BadRequest(
+                    new ProblemDetails
+                    {
+                        Title = "Bad Request",
+                        Detail = "Payload inválido."
+                    });
 
-                usuarioResponse.StatusCode = HttpStatusCode.NoContent;
+            var data = await Task.FromResult(
+                this._service.SaveData(
+                    updateRequest: updateRequest));
 
-                //return StatusCode(
-                //    StatusCodes.Status204NoContent,
-                //    usuarioResponse);
+            if (data is null)
+                return NotFound(
+                    new ProblemDetails
+                    {
+                        Title = "Not Found",
+                        Detail = $"Usuário {guid} não encontrado.",
+                    });
 
-                return Ok(
-                    usuarioResponse);
+            return StatusCode(
+                StatusCodes.Status204NoContent,
+                data);
 
-                //return CreatedAtAction(
-                //    nameof(
-                //        this.GetAgente),
-                //    new
-                //    {
-                //        id = agenteResponseDto.CodigoAgente,
-                //    },
-                //    agenteResponseDto);
+            //return Ok(
+            //    data);
 
-                //return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(
-                    StatusCodes.Status500InternalServerError,
-                    ex.Message);
-            }
+            //return CreatedAtAction(
+            //    nameof(
+            //        this.GetAgente),
+            //    new
+            //    {
+            //        id = agenteResponseDto.CodigoAgente,
+            //    },
+            //    agenteResponseDto);
+
+            //return NoContent();
         }
     }
 }
