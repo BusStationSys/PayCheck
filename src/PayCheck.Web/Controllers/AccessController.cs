@@ -48,75 +48,13 @@
         /// <exception cref="Exception"></exception>
         public AccessController(IEmailService emailService, IHttpClientService httpClientService, IAuthService authService, IMapper mapper)
         {
+            this._emailService = emailService;
+
             this._httpClientService = httpClientService;
 
             this._authService = authService;
 
             this._mapper = mapper;
-
-            //using (var webApiHelper = new WebApiHelper(
-            //        "auth",
-            //    "arvtech",
-            //    "(@rV73Ch)"))
-            //{
-            //    var authDto = new AuthRequestDto
-            //    {
-            //        Username = "arvtech",
-            //        Password = "(@rV73Ch)",
-            //    };
-
-            //    string authDtoJson = JsonConvert.SerializeObject(authDto,
-            //        Formatting.None,
-            //        new JsonSerializerSettings
-            //        {
-            //            NullValueHandling = NullValueHandling.Ignore,
-            //        });
-
-            //    authDtoJson = webApiHelper.ExecutePostWithAuthenticationByBasic(
-            //        authDtoJson);
-
-            //    var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(
-            //        authDtoJson);
-
-            //    this._tokenBearer = authResponse.Token;
-            //}
-
-            //var authDto = new AuthRequestDto
-            //{
-            //    Username = "arvtech",
-            //    Password = "(@rV73Ch)"
-            //};
-
-            //var json = JsonConvert.SerializeObject(
-            //    authDto,
-            //    Formatting.None,
-            //    new JsonSerializerSettings
-            //    {
-            //        NullValueHandling = NullValueHandling.Ignore
-            //    });
-
-            //// 🔐 Basic Auth (igual ao que o WebApiHelper fazia)
-            //this._httpClientService.SetBasicAuthentication("arvtech", "(@rV73Ch)");
-
-            //using (var httpResponseMessage = this._httpClientService.ExecuteAsync(
-            //    HttpMethod.Post,
-            //    "auth",
-            //    json).GetAwaiter().GetResult())
-            //{
-            //    if (!httpResponseMessage.IsSuccessStatusCode)
-            //        throw new Exception("Erro ao autenticar.");
-
-            //    var responseJson = httpResponseMessage.Content
-            //        .ReadAsStringAsync()
-            //        .GetAwaiter()
-            //        .GetResult();
-
-            //    var authResponse = JsonConvert.DeserializeObject<AuthResponseDto>(responseJson);
-
-            //    this._tokenBearer = authResponse.Token;
-            //}
-
-            this._emailService = emailService;
         }
 
         public IActionResult ChangePassword()
@@ -220,10 +158,6 @@
         [HttpPost]
         public async Task<IActionResult> ChangePassword(ChangePasswordRequest changePasswordRequest)
         {
-            ViewBag.ErrorMessage = null;
-            ViewBag.SuccessMessage = null;
-            ViewBag.ValidateMessage = null;
-
             if (!ModelState.IsValid)
                 return View();
 
@@ -239,15 +173,13 @@
                 IdPerfilUsuario = int.Parse(TempData["ChangePasswordIdPerfilUsuario"].ToString()),
             };
 
-            var usuarioResponse = default(UsuarioResponse);
-
             string requestUri = @$"Usuario/{usuarioUpdateRequest.Guid:N}";
 
-            var tokenBearer = await this._authService.GetTokenAsync();
-
             string requestBody = JsonConvert.SerializeObject(
-                changePasswordRequest,
+                usuarioUpdateRequest,
                 Formatting.Indented);
+
+            var tokenBearer = await this._authService.GetTokenAsync();
 
             this._httpClientService.SetBearerAuthentication(
                 tokenBearer);
@@ -259,36 +191,38 @@
             {
                 string responseBody = await httpResponseMessage.Content.ReadAsStringAsync();
 
-                if (httpResponseMessage.IsSuccessStatusCode)
+                if (!httpResponseMessage.IsSuccessStatusCode)
                 {
+                    string message = "Erro desconhecido ao alterar a senha.";
+
                     if (responseBody.IsValidJson())
-                        usuarioResponse = JsonConvert.DeserializeObject<UsuarioResponse>(
+                    {
+                        var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(
                             responseBody);
 
-                    ViewBag.SuccessMessage = $"Senha alterada para o usuário {usuarioResponse.Username}.";
+                        message = problemDetails?.Detail ??
+                            problemDetails?.Title ??
+                            "Erro ao alterar a senha.";
+                    }
 
-                    return RedirectToAction(
-                        "Index",
-                        "Home");
-                }
-                else
-                {
-                    //        if (responseBody.IsValidJson())
-                    //        {
-                    //            var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(
-                    //                responseBody);
-
-                    //            ViewBag.ErrorMessage = problemDetails?.Detail ??
-                    //                problemDetails?.Title ??
-                    //                "Erro ao buscar notificações.";
-                    //        }
-                    //        else
-                    //        {
-                    //            ViewBag.ErrorMessage = "Erro desconhecido ao buscar notificações.";
-                    //        }
+                    TempData.AddNotification(
+                        NotificationType.Danger,
+                        message);
 
                     return View();
                 }
+
+                var usuarioResponse = responseBody.IsValidJson() ?
+                    JsonConvert.DeserializeObject<UsuarioResponse>(responseBody) :
+                    null;
+
+                TempData.AddNotification(
+                    NotificationType.Success,
+                    $"Senha alterada para o usuário <strong>{usuarioResponse?.Username}</strong>.");
+
+                return RedirectToAction(
+                    "Index",
+                    "Home");
             }
         }
 
@@ -499,7 +433,7 @@ A Equipe de Suporte PayCheck®.";
             var usuarioResponse = default(
                 UsuarioResponse);
 
-            var tokenBearer = this._authService.GetTokenAsync().Result;
+            var tokenBearer = await this._authService.GetTokenAsync();
 
             this._httpClientService.SetBearerAuthentication(
                 tokenBearer);

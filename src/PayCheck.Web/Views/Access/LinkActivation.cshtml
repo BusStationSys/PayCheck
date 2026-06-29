@@ -1,7 +1,16 @@
 ﻿@model ActivateViewModel
 
+@using PayCheck.Web.Common
+@using PayCheck.Web.Extensions
+
 @{
     Layout = null;
+
+    var _notifications = TempData.GetNotifications();
+
+    var _hasNotification = _notifications.Any();
+
+    var _hasNotificationSuccess = _notifications.Any(n => n.Type == NotificationType.Success);
 }
 
 <!DOCTYPE html>
@@ -45,7 +54,7 @@
                             </div>
                             <div class="col-lg-6">
                                 <div class="p-5">
-                                    <div class="alert alert-danger alert-dismissible" style="display: none;"></div>
+                                    @*                                     <div class="alert alert-danger alert-dismissible" style="display: none;"></div>
                                     <div class="alert alert-success alert-dismissible" style="display: none;"></div>
                                     <div class="alert alert-warning alert-dismissible" style="display: none;"></div>
                                     <div class="text-center" style="display: none;"></div>
@@ -87,6 +96,23 @@
                                         </div>
                                     }
                                     else
+                                    {
+                                        <div class="text-center" id="divTexto">
+                                            <h1 class="h4 text-gray-900 mb-2">Ative sua Conta de Usuário.</h1>
+                                            <p style="text-align:justify" class="mb-4">
+
+                                                Olá @ViewBag.NomeColaborador.
+
+                                                Para que o processo de ativação seja efetivado, é necessário enviar um link para o endereço de e-mail salvo em seu
+                                                cadastro e que está exibido abaixo. Através deste e-mail, será enviado o link de redirecionamento que vai possibilitar
+                                                redefinir a sua senha.
+                                            </p>
+                                        </div>
+                                    } *@
+
+                                    @await Html.PartialAsync("_Notifications")
+
+                                    @if (!_hasNotification)
                                     {
                                         <div class="text-center" id="divTexto">
                                             <h1 class="h4 text-gray-900 mb-2">Ative sua Conta de Usuário.</h1>
@@ -142,11 +168,16 @@
 </html>
 
 <script type="text/javascript">
-    $(document).ready(function () {
+    $(document).ready(function() {
         //  Controle para redirecionar a página se o ViewBag de Mensagem de Sucesso estiver preenchido.
-        var msg = '@ViewBag.SuccessMessage';
+        //  var msg = '@ViewBag.SuccessMessage';
 
-        if (msg !== '') {
+        //  var hasSuccess = @(_hasNotificationSuccess.ToString().ToLower());
+
+        var hasSuccess = @Json.Serialize(_hasNotificationSuccess);
+
+        //if (msg !== '') {
+        if (hasSuccess) {
             $("#btnEnviarLink").hide();
             $('#divEmail').hide();
             $('#divTexto').hide();
@@ -154,15 +185,12 @@
             $("#divProgressBar").removeClass("progress-bar-animated");
             $("#divProgress").hide();
 
-            setTimeout(function () {
-                window.location.replace(
-                    '@Url.Action(
-                        "Login",
-                        "Access")')
+            setTimeout(function() {
+                window.location.replace('@Url.Action("Login", "Access")');
             }, 4000);
         }
 
-        $("#btnEnviarLink").on("click", function () {
+        $("#btnEnviarLink").on("click", function() {
             $("#btnEnviarLink").hide();
             $("#divEmail").hide();
             $("#divTexto").hide();
