@@ -6,7 +6,7 @@
     using System.Threading.Tasks;
     using ARVTech.DataAccess.Contracts.PayCheck.Requests.Update;
     using ARVTech.DataAccess.Contracts.PayCheck.Responses;
-    using ARVTech.DataAccess.Service.UniPayCheck.Interfaces;
+    using ARVTech.DataAccess.Service.PayCheck.Interfaces;
     using ARVTech.Shared.Enums;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
